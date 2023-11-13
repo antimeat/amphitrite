@@ -6,8 +6,7 @@ Name:
 Classes:
     PartitionSplitter(origin,destination)
 
-Functions:
-    
+Functions:    
 """
 import os
 os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/'
@@ -18,64 +17,227 @@ import partition
 import pandas as pd
 import sys
 import argparse
+from tabulate import tabulate
+from sqlalchemy import create_engine
+
+#package imports
+import database
+
 
 class PartitionSplitter(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
 
-    def __init__(self,site_name='Woodside - North Rankin 10 days',period_split=9):
+    def __init__(self):
         self.partition = partition.Partitions()
-        self.table_name = self.get_table_name(site_name)
-        self.period_split = period_split
+        self.dir_path = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
+        self.config_file = os.path.join(self.dir_path,'site_config.txt')
+        self.site_tables = self.load_config(self.config_file)
         
-    def get_table_name(self,siteName):
-        """Get the table name related to the siteName
+    def get_site_config(self,site_name):
+        """Get the table config related to the siteName
         Paramaters:
+            site_name: ofcast site name
+        Returns:
+            the auswave table name and partition splits related to the site
+        """
+        print(self.site_tables)
+        return self.site_tables[site_name]
+
+    def load_config(self,config_file):
+        """
+        Get the table name and partition ranges related to the siteName
+        Parameters:
             siteName: ofcast site name
         Returns:
-            the auswave table name related to the site
+            a dictionary with the table name and partition ranges
         """
-        site_tables = {
-            'BHP - Pyrenees': 'Pyranees',
-            'Chevron - Gorgon': 'Gorgon',
-            'Chevron - Jansz': 'Jansz',
-            'Chevron - Wheatstone LNG Plant': 'WheatPlant',
-            'Chevron - Wheatstone LNG Plant AFS': 'WheatPlant',
-            'Chevron - Wheatstone Platform AFS': 'WheatPlat',
-            'Chevron Barrow Island AFS': 'WRB-B',
-            'Chevron Barrow Island AFS ML': 'WRB-B',
-            'Citic Pacific - Cape Preston Area': 'Cape-Prest',
-            'INPEX Ichthys 7 days':'Ichthys',
-            'Jadestone Energy - Stag': 'Stag',
-            'Jadestone Energy - Montara': 'Montara',
-            'Santos - John Brookes 4 days': 'John-Brook',
-            'Santos - Reindeer 4 days': 'Reindeer',
-            'Santos - Van Gogh 4 days': 'Van-Gogh',
-            'Santos - Varanus 4 days': 'Varanus',
-            'Santos - Spartan-2 4 days': 'Spartan-2 ',
-            'Santos - MS1Standby 4 days': 'MS-1_Stand',
-            'Santos - Frigate-1 4 days': 'Frigate-1',
-            'Vermilion - Wandoo': 'Wando',
-            'Woodside - Balnaves 7 days': 'Balnaves',
-            'Woodside - Mermaid Sound 7 days': 'Mermaid-Sn',
-            'Woodside - Enfield and Vincent 10 days': 'Enfield',
-            'Woodside - North Rankin 10 days': 'NorthRanki',
-            'Woodside - Pluto 10 days': 'Pluto',
-            'Woodside - Enfield and Vincent 7 days': 'Enfield',
-            'Woodside - North Rankin 7 days': 'NorthRanki',
-            'Woodside - Pluto 7 days': 'Pluto',
-            'Woodside - Scarborough 7 days': 'Scarboroug',
-            'WRB-A': 'WRB-A',
-            'WRB-B': 'WRB-B',
-            'CheJetty': 'CheJetty',
-            'Mermaid-Sn': 'Mermaid-Sn',
-            'Navaid9': 'Navaid9',
-            'Noblige': 'Noblige',
-            'Eagle-1': 'Eagle-1',
-            'Mermaid-St': 'Mermaid-St',
-            'Valaris': 'Valaris' 
-        }
+        site_tables = {}
+        with open(config_file, 'r') as file:
+            for line in file:
+                # Skip comment lines
+                if line.startswith('#'):
+                    continue
+
+                parts = line.strip().split(', ')
+                if len(parts) < 3:
+                    continue  # Skip malformed lines
+
+                site = parts[0]
+                table = parts[1]
+                # Parse all split ranges
+                split_ranges = [tuple(map(float, part.split('-'))) for part in parts[2:]]
+
+                site_tables[site] = {"table": table, "parts": split_ranges}
+
+        
+        return site_tables
+       
+    def to_ofcast_df(self,ws):
+        """Convert the wavespectra xarray to a usable dataFrame for merging into ofcast
+        
+        Parameters:
+            ws (xarray): wave spectra
+        Returns:
+            df (DataFrame): modified dataframe with parametes and columns fit for purpose        
+        """
+        
+        variables = list(ws.keys())
+        variables.remove("efth")
+        df = ws[variables].to_dataframe()
+        
+        #find how many swell partitions we have and add them to a reduced column list
+        all_swell_nums = ['{}_{}'.format(n.split('_')[0],n.split('_')[1]) for n in df.columns if "swell" in n]
+        unique_swell_nums = list(dict.fromkeys(all_swell_nums))
+
+        #clean up index
+        df.reset_index(inplace=True)        
+                     
+        #clean up some column names to match Ofcast expectations
+        #df["location"] = df["location"].apply(lambda x: x.decode('utf-8'))
+        df.rename(columns={"wdir":"wnd_dir","wspd":"wnd_spd","hs":"total_ht","time":"time_utc"},inplace=True)
+        for n in unique_swell_nums:
+            df.rename(columns={"{}_hs".format(n):"{}_ht".format(n),"{}_tm01".format(n):"{}_pd".format(n),"{}_dm".format(n):"{}_dirn".format(n)},inplace=True)
+        
+        #df.set_index("time_utc",inplace=True)
+        #df["time_utc"] = df.index
+        index = pd.DatetimeIndex(df["time_utc"].values,tz="utc")
+        df.set_index(index,inplace=True)
+        df["time_local"] = index.to_pydatetime()
+        
+        #reduced column list
+        cols = ["total_ht","wnd_dir","wnd_spd"]
+        for n in unique_swell_nums:
+            cols.extend(["{}_ht".format(n),"{}_pd".format(n),"{}_dirn".format(n)])
+            
+        cols.extend(["location","time_local"])
+        
+        #round stuff
+        df = df.apply(lambda x: x.round().astype(int) if "dir" in x.name else x)
+        df = df.apply(lambda x: x.round(2) if "ht" in x.name else x)
+        #df = df.apply(lambda x: x.round().astype(int) if "pd" in x.name else x)       
+        df = df.apply(lambda x: x.round() if "pd" in x.name else x)       
+        
+        return df[cols]
     
-        return site_tables[siteName]
+    def get_sites_list(self,ws):
+        """Return unique site names from the spectra
+        Parameters:
+            ws (xarray): wave spectra file
+        Returns:
+            sites (list): site names listed contained in model data
+        """
+        
+        df = self.to_ofcast_df(ws)
+        sites = df["location"].unique()
+        
+        return sites
+    
+    def get_ofcast_site(self,ws,siteName):
+        """Return unique site names from the spectra
+        Parameters:
+            ws (xarray): wave spectra file
+            siteName (string): site name that matches a listed site
+        Returns:
+            df_site (DataFrame): dataframe from the wave spectra of the selected site 
+        """
+        
+        df = self.to_ofcast_df(ws)
+        df_site = df[df["location"] == siteName]
+        
+        return df_site 
+
+    def to_api_df(self, ws):
+        """
+        Convert the wavespectra xarray to a DataFrame for an ofcast api.
+        
+        Parameters:
+            ws (xarray.Dataset): wave spectra.
+            
+        Returns:
+            df (pandas.DataFrame): Modified dataframe with parameters and columns fit for purpose.
+        """
+        
+        variables = list(ws.keys())
+        variables.remove("efth")
+        df = ws[variables].to_dataframe()
+        
+        #find how many swell partitions we have and add them to a reduced column list
+        all_swell_nums = ['{}'.format(n.split('_')[1]) for n in df.columns if "swell" in n]
+        unique_swell_nums = list(dict.fromkeys(all_swell_nums))
+
+        #clean up index
+        df.reset_index(inplace=True)        
+
+        # Set index to UTC time and add local time column
+        df.set_index(pd.DatetimeIndex(df["time"], tz='utc'), inplace=True)
+        df["run_time"] =  df.index[0].tz_localize(None)   
+        df["time_local"] = df.index.tz_convert('Australia/Perth').tz_localize(None)
+                
+        # Group by 'location' and use cumcount to count each group
+        df['fcst_hrs'] = df.groupby('station_name').cumcount()
+        df['fcst_hrs'] = df['fcst_hrs'].astype(str).str.zfill(3)
+        
+        col_mapping = {
+            "run_time": "run_time",
+            "station_name": "location",
+            "fcst_hrs": "time[hrs]",
+            "time": "time[UTC]",
+            "time_local": "time[WST]",
+            "wdir": "wnd_dir[degrees]",
+            "wspd": "wnd_spd[kn]",
+            "hs": "seasw_ht[m]",
+            "dp": "seasw_dir[degree]",
+            "tp": "seasw_pd[s]",            
+        }
+
+        # Dynamically generate swell column mappings based on the swells present
+        dir_type = 'dp'
+        swell_prefix_mapping = {}
+        for i,n in enumerate(unique_swell_nums):
+            if f"swell_{n}_hs" in df.columns:  # Check if the swell column actually exists
+                if i == 0:
+                    swell_prefix_mapping.update({
+                        f"swell_1_hs": "sea_ht[m]",
+                        f"swell_1_{dir_type}": "sea_dir[degree]",
+                        f"swell_1_tp": "sea_pd[s]",
+                    })
+                else:
+                    new_prefix = f'sw{i}_'
+                    swell_prefix_mapping.update({
+                        f"swell_{i+1}_hs": f"{new_prefix}ht[m]",
+                        f"swell_{i+1}_{dir_type}": f"{new_prefix}dir[degree]",
+                        f"swell_{i+1}_tp": f"{new_prefix}pd[s]",
+                    })
+
+        # Rename columns according to mappings and use values for out cols
+        col_mapping.update(swell_prefix_mapping)
+        df.rename(columns=col_mapping, inplace=True)
+        
+        # Rounding logic applied to columns based on their dtype
+        df = df.apply(lambda x: x.round(2) if 'ht' in x.name else x)
+        df = df.apply(lambda x: x.round().astype('Int64') if 'dir' in x.name else x)
+        df = df.apply(lambda x: x.round().astype('Int64') if 'spd' in x.name else x)
+        df = df.apply(lambda x: x.round().astype('Int64') if 'pd' in x.name else x)
+        
+        cols = col_mapping.values()
+        
+        df = df[cols]
+        
+        return df
+    
+    def get_api_site(self,ws,site_name):
+        """Return unique site names from the spectra
+        Parameters:
+            ws (xarray): wave spectra file
+            siteName (string): site name that matches a listed site
+        Returns:
+            df_site (DataFrame): dataframe from the wave spectra of the selected site 
+        """
+        
+        df = self.to_api_df(ws)
+        df_site = df[df["location"] == site_name]
+        
+        return df_site
     
     def get_site_partitions(self,site,*parts):
         """Return the wave spectra partions from site
@@ -86,8 +248,7 @@ class PartitionSplitter(object):
             df (DataFrame): dataframe ready to merge with an Ofcast forecast
          """
         ws = self.partition.multi_parts(*parts)
-        #print(self.partition.get_sites_list(ws))
-        df = self.partition.get_site(ws,site)
+        df = self.get_api_site(ws,site)
 
         return df
     
@@ -108,129 +269,113 @@ class PartitionSplitter(object):
 
         return df
     
-    def merge_seas(self,ofcast_df,party_df ):
-        """Merge seas from Ofcast with first swell partion from auswave partition (short period seas hoepfully!) 
-        Paramaters:
-            ofcast_df (DataFrame): Ofcast site name            
-            party_df (DataFrame): partition dataframe            
+    def format_df(self,df, location, *parts):
+        """
+        Formats a DataFrame into a custom table format for forecast data.
+
+        Parameters:
+        - df (pandas.DataFrame): The DataFrame to be formatted.
+        - location (str): The location string.
+       
+        Returns:
+        - str: A formatted string representing the table.
+        """
+
+        table = df["location"].iloc[0]
+        start_datetime = df["time[UTC]"].iloc[0]
+        start_timestamp = int(start_datetime.timestamp())
+        start_utc = start_datetime.strftime("%Y%m%d %H%M")
+        
+        #remove the location for the purposes of api output
+        df.drop("location",axis=1,inplace=True)        
+        df.drop("run_time",axis=1,inplace=True)        
+        fields = ",".join(df.columns)
+        
+        # Creating header
+        header = "### AUSWAVE Partition Forecast ###\n"
+        header += f"# Location:  {location}\n"
+        header += f"# Table:  {table}\n"
+        header += f"# StartTime: {start_timestamp}\n"
+        header += f"# StartUTC:  {start_utc}\n"
+        header += f"# Partitions:  {','.join(str(part) for part in parts)}\n"
+        header += f"# Fields:    {fields}\n"
+        header += "###\n"
+        
+        # Creating table body
+        table_body = tabulate(df, headers='keys', tablefmt='plain', showindex=False)
+
+        # Concatenating the header, table body, and footer
+        final_output = header + table_body
+
+        return final_output
+
+    def query_db(db_name, table_name, runtime=None, location=None):
+        """
+        Queries an SQLite database using SQLAlchemy based on specified conditions.
+
+        Parameters:
+        - db_name (str): Name of the SQLite database file.
+        - table_name (str): Name of the table to query.
+        - runtime (datetime, optional): The runtime to query for.
+        - model (str, optional): The model name to query for.
+        - location (str, optional): The location to query for.
 
         Returns:
-            df (DataFrame): with merged seas and first swell partion from auswave partition
-         """
-    
-        ofcast_df = ofcast_df[["seas_ht","seas_pd","seas_dirn"]].copy()
-        merged = ofcast_df.merge(party_df,how="inner",left_index=True,right_index=True)
-        
-        return merged
-    
-    def smush_seas(self,df):
-        """Smush the seas and by default the swell_1 partion from auswave partition (short period seas hoepfully!) 
-        Paramaters:
-            df (DataFrame): merged datafram from Ofcast seas and auswave swells
-        Returns:
-            df (DataFrame): with smushed seas and swells unchanged
-         """
-        df = df.copy()
-        seas_df = self.smusher.calculate_simpleSwell(df,seas=True)
-        
-        return seas_df
-    
-    def format_swell(self,df):
-        """Format the swell partitions by removing seas... by default the swell_1 partion from auswave partition (short period seas hoepfully!) 
-        Paramaters:
-            df (DataFrame): merged datafram from Ofcast seas and auswave swells
-        Returns:
-            df (DataFrame): with formated swell dataframe with seas removed
-         """
-        cols = [
-            "seas_ht","seas_pd","seas_dirn",
-            "swell_1_ht","swell_1_pd","swell_1_dirn",
-            "total_ht","wnd_dir","wnd_spd","station_name","time_local"
-        ]      
-        
-        swell_df = df.copy()
-        swell_df.drop(cols,axis=1,inplace=True)
-        
-        #setup some initial stuff
-        df = pd.DataFrame()
-        swell_df = swell_df.copy()
-        swell_df_index = swell_df.index
-        
-        #split out the period ranges to a mean value
-        df = self.smusher.simplify_periods(swell_df,seas=False)
-        
-        #mask on the seas/swells
-        #df = self.get_maskedSwells(df,ofcast_df,seas)
-        
-        #tidy up some directions
-        df = self.smusher.tidyDirections(df)            
-        
-        #calculate the power for each masked swell traini
-        df = self.smusher.derive_max_power(df)
-        
-        #tidy up the indexing and time formatting
-        df['time_local'] = df.index
-        #df = df.set_index('time_local').reindex(index=ofcast_df_index).reset_index()
-        df['time_local'] = df['time_local'].dt.strftime('%Y-%m-%d %I %p')
+        - pandas.DataFrame: The result of the query.
+        """
 
-        return df
-    
-    def merge_seas_swell(self,seas_df,swell_df):
-        """Merge sweas and swell dataframes together and finalise for output
-        Paramaters:
-            seas_df (DataFrame): merged dataframe from Ofcast seas and auswave short period swells
-            swell_df (DataFrame): formatted swell dataframe from auswave
-        Returns:
-            df (DataFrame): merged and formated dataframe ready for output
-         """
-        seas_df = seas_df.copy()
-        swell_df = swell_df.copy()
-        seas_df.drop("time_local",axis=1,inplace=True)
-        swell_df.drop("time_local",axis=1,inplace=True)
-        #print(seas_df)
-        #print(swell_df)
-        
-        swell_seas_df = swell_df.merge(seas_df,how='inner',left_index=True,right_index=True,suffixes=('_swell','_seas'))
-        #print(swell_seas_df.head())        
-        swell_seas_df = self.smusher.finalFormatting(swell_seas_df)
+        # Create a SQLAlchemy engine
+        engine = create_engine(f'sqlite:///{db_name}')
 
-        return swell_seas_df
-            
-    
-if __name__ == '__main__':
+        # Start building the SQL query
+        query = f"SELECT * FROM {table_name} WHERE 1=1"
 
+        # Add conditions to the query
+        if runtime:
+            query += f" AND run_time = '{runtime}'"
+        if location:
+            query += f" AND location = '{location}'"
+
+        # Execute the query and return the results in a DataFrame
+        return pd.read_sql_query(query, engine)
+
+    def add_db_site(site_name, location, partition_list):
+        """Update the database""" 
+        session = database.get_session()
+        new_site = database.Site(site_name=site_name, location=location)
+        new_site.set_partitions(partition_list)
+        session.add(new_site)
+        session.commit()
+
+    def get_site_partitions_from_db(site_name):
+        session = database.get_session()
+        site = session.query(database.Site).filter_by(site_name=site_name).first()
+        if site:
+            return site.get_partitions()
+        return None
+
+    # Example of adding a site
+    # add_site("BHP - Pyrenees", "Location1", [(0.001, 10), (10, 40)])
+
+    # Example of retrieving partitions for a site
+    # partitions = get_site_partitions("BHP - Pyrenees")
+
+
+def main():
+    
     parser = argparse.ArgumentParser()
-    
     parser.add_argument("--site",dest="site_name",nargs="?", default="Woodside - Pluto 10 days",help="the forecast site name from Ofcast",required=False)
-    parser.add_argument("--period",dest="period_split",nargs=1,default=9,type=int,help="seas/swell split",required=False)
-    
     args = parser.parse_args()
     
-    print(f"{args.site_name},{args.period_split}")
+    toolbox = PartitionSplitter()        
+    table_config = toolbox.get_site_config(args.site_name)
+    table_name = table_config["table"]
+    table_partitions = table_config["parts"]
     
-    parts = [(0.001,args.period_split),(args.period_split,40)]
-        
-    toolbox = PartitionSplitter(site_name=args.site_name,period_split=args.period_split)        
-    print(toolbox.get_table_name(args.site_name))
+    partitioned_df = toolbox.get_site_partitions(table_name,*table_partitions)
+    formated_df = toolbox.format_df(partitioned_df,args.site_name,*table_partitions)
     
-    # ofcast_df = toolbox.get_ofcast_forecast(siteName)
-    party_df = toolbox.get_site_partitions(toolbox.get_table_name(args.site_name),*parts)
-    # merged = toolbox.merge_seas(ofcast_df,party_df)
-    # seas = toolbox.smush_seas(merged)
-    # swell = toolbox.format_swell(merged)
-    # swell_seas = toolbox.merge_seas_swell(seas,swell)
-    
-    # # if version != 'debug':
-    # #     swell_seas = toolbox.smusher.removeColumns(swell_seas)
-    
-    # swell_seas['time_local'] = swell_seas.index
-    # swell_seas['time_local'] = swell_seas['time_local'].dt.strftime('%Y-%m-%d %I %p')
-
-    # print(toolbox.smusher.outputToBoxes(swell_seas))
-    # print(toolbox.smusher.apply_styles(df=swell_seas))    
-    ws = toolbox.partition.single_part(*parts)
-    #print(self.partition.get_sites_list(ws))
-    df = toolbox.partition.get_site(ws,toolbox.get_table_name(args.site_name))
-
-    print(party_df)
-    print(df)
+    print(formated_df)
+            
+if __name__ == '__main__':
+    main()

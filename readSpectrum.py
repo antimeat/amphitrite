@@ -71,7 +71,7 @@ def noPartition(filename):
     
     #read in file
     ws = amendVariablesNames(filename)
-    ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dm", "dspr"])
+    ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     
     ws['hs'] = ws_total.hs
     ws['hmax'] = ws_total.hmax
@@ -80,6 +80,7 @@ def noPartition(filename):
     ws['tm02'] = ws_total.tm02
     ws['tp'] = ws_total.tp
     ws['dpm'] = ws_total.dpm
+    ws['dp'] = ws_total.dp
     ws['dm'] = ws_total.dm
     ws['dspr'] = ws_total.dspr
     
@@ -106,13 +107,13 @@ def onePartition(filename, period = 9):
     
     #read in file
     ws = amendVariablesNames(filename)
-    ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dm", "dspr"])
+    ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     
     #get sea and swell split
     sea = ws.spec.split(fmin=1/period).chunk({"freq": -1})
-    sea_stats = sea.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dm", "dspr"])
+    sea_stats = sea.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     swell = ws.spec.split(fmax=1/period).chunk({"freq": -1})
-    swell_stats = swell.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dm", "dspr"])
+    swell_stats = swell.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     
     ws['hs'] = ws_total.hs
     ws['hmax'] = ws_total.hmax
@@ -121,6 +122,7 @@ def onePartition(filename, period = 9):
     ws['tm02'] = ws_total.tm02
     ws['tp'] = ws_total.tp
     ws['dpm'] = ws_total.dpm
+    ws['dp'] = ws_total.dp
     ws['dm'] = ws_total.dm
     ws['dspr'] = ws_total.dspr
     
@@ -135,6 +137,8 @@ def onePartition(filename, period = 9):
     ws.tm01.attrs['standard_name'] = ws.tm01.attrs['standard_name']+'_sea_partition'
     ws['tm02_sea'] = sea_stats.tm02
     ws.tm02.attrs['standard_name'] = ws.tm02.attrs['standard_name']+'_sea_partition'
+    ws['dpm_sea'] = sea_stats.dpm
+    ws.dpm_sea.attrs['standard_name'] = ws.dpm_sea.attrs['standard_name']+'_sea_partition'
     ws['dp_sea'] = sea_stats.dp
     ws.dp_sea.attrs['standard_name'] = ws.dp_sea.attrs['standard_name']+'_sea_partition'
     ws['dm_sea'] = sea_stats.dm
@@ -152,6 +156,8 @@ def onePartition(filename, period = 9):
     ws.tm01_sw.attrs['standard_name'] = ws.tm01_sw.attrs['standard_name']+'_swell_partition'
     ws['tm02_sw'] = swell_stats.tm02
     ws.tm02_sw.attrs['standard_name'] = ws.tm02_sw.attrs['standard_name']+'_swell_partition'
+    ws['dpm_sw'] = swell_stats.dpm
+    ws.dpm_sw.attrs['standard_name'] = ws.dpm_sw.attrs['standard_name']+'_swell_partition'
     ws['dp_sw'] = swell_stats.dp
     ws.dp_sw.attrs['standard_name'] = ws.dp.attrs['standard_name']+'_swell_partition'
     ws['dm_sw'] = swell_stats.dm
@@ -194,7 +200,7 @@ def rangePartition(filename, start, end):
         
     #get sea and swell split
     part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
-    params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dp", "dm", "dspr"])
+    params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     tp = part.spec.tp(smooth=False).fillna(1 / part.freq.max())
     params['tp'] = tp
     params['station_name'] = ws.station_name

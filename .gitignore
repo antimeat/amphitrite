@@ -11,3 +11,6 @@ plots/
 
 #logging
 *.log
+
+#database
+*.db

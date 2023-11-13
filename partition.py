@@ -1,5 +1,4 @@
 #!/cws/anaconda/envs/mlenv/bin/python -W ignore
-
 """
 Name:
     partition.py
@@ -16,6 +15,9 @@ import readSpectrum
 import pandas as pd
 import glob, os
 import time
+import warnings
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 class Partitions(object):   
     """Class of methods for bespoke swell partitions and transformations"""
@@ -84,6 +86,8 @@ class Partitions(object):
         ws['swell_{}_tm01'.format(i)].attrs['standard_name'] = ws['swell_{}_tm01'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         ws['swell_{}_tm02'.format(i)] = part.tm02
         ws['swell_{}_tm02'.format(i)].attrs['standard_name'] = ws['swell_{}_tm02'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
+        ws['swell_{}_dpm'.format(i)] = part.dpm
+        ws['swell_{}_dpm'.format(i)].attrs['standard_name'] = ws['swell_{}_dpm'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         ws['swell_{}_dp'.format(i)] = part.dp
         ws['swell_{}_dp'.format(i)].attrs['standard_name'] = ws['swell_{}_dp'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         ws['swell_{}_dm'.format(i)] = part.dm
@@ -111,7 +115,6 @@ class Partitions(object):
         #loop through intermediate swell partitions        
         for i in range(1,len(parts)+1):
             part = readSpectrum.rangePartition(filename, parts[i-1][0], parts[i-1][1])
-            print(part)
         
             ws['swell_{}_hs'.format(i)] = part.hs
             ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -123,6 +126,8 @@ class Partitions(object):
             ws['swell_{}_tm01'.format(i)].attrs['standard_name'] = ws['swell_{}_tm01'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
             ws['swell_{}_tm02'.format(i)] = part.tm02
             ws['swell_{}_tm02'.format(i)].attrs['standard_name'] = ws['swell_{}_tm02'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
+            ws['swell_{}_dpm'.format(i)] = part.dpm
+            ws['swell_{}_dpm'.format(i)].attrs['standard_name'] = ws['swell_{}_dpm'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
             ws['swell_{}_dp'.format(i)] = part.dp
             ws['swell_{}_dp'.format(i)].attrs['standard_name'] = ws['swell_{}_dp'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
             ws['swell_{}_dm'.format(i)] = part.dm
@@ -160,6 +165,8 @@ class Partitions(object):
         ws['swell_{}_tm01'.format(i)].attrs['standard_name'] = ws['swell_{}_tm01'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         ws['swell_{}_tm02'.format(i)] = part.tm02_sea
         ws['swell_{}_tm02'.format(i)].attrs['standard_name'] = ws['swell_{}_tm02'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
+        ws['swell_{}_dpm'.format(i)] = part.dpm_sea
+        ws['swell_{}_dpm'.format(i)].attrs['standard_name'] = ws['swell_{}_dpm'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         ws['swell_{}_dp'.format(i)] = part.dp_sea
         ws['swell_{}_dp'.format(i)].attrs['standard_name'] = ws['swell_{}_dp'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         ws['swell_{}_dm'.format(i)] = part.dm_sea
@@ -180,6 +187,8 @@ class Partitions(object):
             ws['swell_{}_tm01'.format(i)].attrs['standard_name'] = ws['swell_{}_tm01'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
             ws['swell_{}_tm02'.format(i)] = part.tm02
             ws['swell_{}_tm02'.format(i)].attrs['standard_name'] = ws['swell_{}_tm02'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
+            ws['swell_{}_dpm'.format(i)] = part.dpm
+            ws['swell_{}_dpm'.format(i)].attrs['standard_name'] = ws['swell_{}_dpm'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
             ws['swell_{}_dp'.format(i)] = part.dp
             ws['swell_{}_dp'.format(i)].attrs['standard_name'] = ws['swell_{}_dp'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
             ws['swell_{}_dm'.format(i)] = part.dm
@@ -200,6 +209,8 @@ class Partitions(object):
         ws['swell_{}_tm01'.format(i)].attrs['standard_name'] = ws['swell_{}_tm01'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         ws['swell_{}_tm02'.format(i)] = part.tm02_sw
         ws['swell_{}_tm02'.format(i)].attrs['standard_name'] = ws['swell_{}_tm02'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
+        ws['swell_{}_dpm'.format(i)] = part.dpm_sw
+        ws['swell_{}_dpm'.format(i)].attrs['standard_name'] = ws['swell_{}_dpm'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         ws['swell_{}_dp'.format(i)] = part.dp_sw
         ws['swell_{}_dp'.format(i)].attrs['standard_name'] = ws['swell_{}_dp'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         ws['swell_{}_dm'.format(i)] = part.dm_sw
@@ -217,81 +228,4 @@ class Partitions(object):
         parts = [(0.0001,7),(7,13),(13,18),(16.5,40)]
         
         ws = self.multi_parts_test(*parts)
-        return ws
-    
-    def to_df(self,ws):
-        """Convert the wavespectra xarray to a usable dataFrame for merging into ofcast
-        
-        Parameters:
-            ws (xarray): wave spectra
-        Returns:
-            df (DataFrame): modified dataframe with parametes and columns fit for purpose        
-        """
-        
-        variables = list(ws.keys())
-        variables.remove("efth")
-        df = ws[variables].to_dataframe()
-        
-        #find how many swell partitions we have and add them to a reduced column list
-        all_swell_nums = ['{}_{}'.format(n.split('_')[0],n.split('_')[1]) for n in df.columns if "swell" in n]
-        unique_swell_nums = list(dict.fromkeys(all_swell_nums))
-
-        #clean up index
-        df.reset_index(inplace=True)        
-                     
-        #clean up some column names to match Ofcast expectations
-        #df["station_name"] = df["station_name"].apply(lambda x: x.decode('utf-8'))
-        df.rename(columns={"wdir":"wnd_dir","wspd":"wnd_spd","hs":"total_ht","time":"time_utc"},inplace=True)
-        for n in unique_swell_nums:
-            df.rename(columns={"{}_hs".format(n):"{}_ht".format(n),"{}_tm01".format(n):"{}_pd".format(n),"{}_dm".format(n):"{}_dirn".format(n)},inplace=True)
-        
-        #df.set_index("time_utc",inplace=True)
-        #df["time_utc"] = df.index
-        index = pd.DatetimeIndex(df["time_utc"].values,tz="utc")
-        df.set_index(index,inplace=True)
-        df["time_local"] = index.to_pydatetime()
-        
-        #reduced column list
-        cols = ["total_ht","wnd_dir","wnd_spd"]
-        for n in unique_swell_nums:
-            cols.extend(["{}_ht".format(n),"{}_pd".format(n),"{}_dirn".format(n)])
-            
-        cols.extend(["station_name","time_local"])
-        
-        #round stuff
-        df = df.apply(lambda x: x.round().astype(int) if "dir" in x.name else x)
-        df = df.apply(lambda x: x.round(2) if "ht" in x.name else x)
-        #df = df.apply(lambda x: x.round().astype(int) if "pd" in x.name else x)       
-        df = df.apply(lambda x: x.round() if "pd" in x.name else x)       
-        
-        return df[cols]
-    
-    def get_sites_list(self,ws):
-        """Return unique site names from the spectra
-        Parameters:
-            ws (xarray): wave spectra file
-        Returns:
-            sites (list): site names listed contained in model data
-        """
-        
-        df = self.to_df(ws)
-        sites = df["station_name"].unique()
-        
-        return sites
-    
-    def get_site(self,ws,siteName):
-        """Return unique site names from the spectra
-        Parameters:
-            ws (xarray): wave spectra file
-            siteName (string): site name that matches a listed site
-        Returns:
-            df_site (DataFrame): dataframe from the wave spectra of the selected site 
-        """
-        
-        df = self.to_df(ws)
-        df_site = df[df["station_name"] == siteName]
-        
-        return df_site
-    
-
-    
+        return ws   
