@@ -17,9 +17,10 @@ import partition
 import pandas as pd
 from tabulate import tabulate
 import argparse
+import logging
 
 #package imports
-import database
+import database as db
 
 class PartitionSplitter(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
@@ -42,9 +43,9 @@ class PartitionSplitter(object):
 
     def get_site_config_db(self,site_name):
         """Get the table config related to the site_name from the database"""
-        session = database.get_session()
+        session = db.get_session()
         try:
-            site = session.query(database.Site).filter_by(site_name=site_name).first()
+            site = session.query(db.Site).filter_by(site_name=site_name).first()
             if site:
                 return {"success": True, "message": f"'{site_name} data found", "data": site.to_json()}
             else:
@@ -322,40 +323,62 @@ class PartitionSplitter(object):
 
         return final_output
 
+    def generate_all_sites_to_db(self):
+        """Generate the partition splits for all sites and save to the database"""
+        site_names = db.get_all_sites()["data"]
+        logging.info(site_names)
+        for site_name in site_names:
+            logging.info(site_name)
+            try:
+                self.generate_site_to_db(site_name=site_name)
+            except:
+                pass
+
+    def generate_site_to_db(self,site_name):
+        """Generate the partition splits for all sites and save to the database"""
+        
+        try:
+            table_config = self.get_site_config_db(site_name)
+            
+            #exit stage left if no data
+            if not table_config["success"]:
+                print(table_config["message"])
+                return
+            # all the site parms from the database
+            site_name = table_config["data"]["site_name"]    
+            table_name = table_config["data"]["table"]        
+            partitions = table_config["data"]["partitions"]    
+            
+            #generate our table output
+            partitioned_df = self.get_site_partitions_df(table_name,*partitions)
+            run_time = partitioned_df["run_time"].iloc[0]
+            run_time = run_time.to_pydatetime()
+            table_output = self.format_df(partitioned_df,site_name,*partitions)
+            
+            #update the database and printout results
+            wave_table = db.add_wavetable_to_db(site_name, run_time, table_output)
+            logging.info(f"successfly saved {site_name} to database")
+                
+            return wave_table
+        
+        except Exception as e:
+            logging.warning(f"Not able to save {site_name} to database. Exception: {str(e)}")
+            return None
+
 def main():
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--site",dest="site_name",nargs="?", default="Woodside - Pluto 10 days",help="the forecast site name from Ofcast",required=False)
+    parser.add_argument("--site",dest="site_name",nargs="?", default="all",help="the forecast site name from Ofcast",required=False)
     args = parser.parse_args()
     
-    toolbox = PartitionSplitter()        
-    # table_config = toolbox.get_site_config(args.site_name)
-    # table_name = table_config["table"]
-    # table_partitions = table_config["parts"]
+    toolbox = PartitionSplitter()
     
-    table_config = toolbox.get_site_config_db(args.site_name)
-    
-    #exit stage left if no data
-    if not table_config["success"]:
-        print(table_config["message"])
-        return
-    
-    # all the site parms from the database
-    site_name = table_config["data"]["site_name"]    
-    table_name = table_config["data"]["table"]        
-    partitions = table_config["data"]["partitions"]    
-    
-    #generate our table output
-    partitioned_df = toolbox.get_site_partitions_df(table_name,*partitions)
-    run_time = partitioned_df["run_time"].iloc[0]
-    run_time = run_time.to_pydatetime()
-    table_output = toolbox.format_df(partitioned_df,site_name,*partitions)
-    
-    #update the database and printout results
-    wave_table = database.add_wavetable_to_db(site_name, run_time, table_output)
-    table = wave_table["data"]
-    
-    print(table)
+    if args.site_name.strip().lower() == 'all':
+        toolbox.generate_all_sites_to_db()
+    else:
+        wave_table = toolbox.generate_site_to_db(site_name=args.site_name)
+        table = wave_table["data"]
+        print(table)
             
 if __name__ == '__main__':
     main()

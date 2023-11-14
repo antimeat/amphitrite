@@ -79,8 +79,33 @@ def init_db():
 def get_session():
     """Get a new session."""
     return Session()
+    
+def site_runtime_exists(site_name, run_time):
+    """return true if site and runtime is in the database"""
+    session = get_session()
+    try:
+        site = session.query(Site).filter(site_name=site_name).first()
+        wave_table = session.query(WaveData).filter(site_id=site.site_id, run_time=run_time).first()
+        if wave_table:
+            return {"success": True, "message": f"{site.site_name} and {run_time} already exist"}
+        else:
+            return {"success": False, "message": f"{site.site_name} and {run_time} dont exist"}
+        
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+    
+def get_all_sites():
+    """return all sites"""
+    session = get_session()
+    try:
+        sites = session.query(Site).all()
+        site_names = [site.site_name for site in sites] 
 
-def add_site_to_db( site_name, location, partition_list):
+        return {"success": False, "message": "All sites returned", "data":site_names}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+    
+def add_site_to_db(site_name, location, partition_list):
     """Add a new site to the database."""
     session = get_session()
     try:
