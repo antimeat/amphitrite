@@ -9,20 +9,17 @@ Classes:
 Functions:    
 """
 import os
-os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/'
+# os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/'
 #os.environ[ 'CONDA_DEFAULT_ENV' ] = 'mlenv'
 
 # import swellSmusher
 import partition
 import pandas as pd
-import sys
-import argparse
 from tabulate import tabulate
-from sqlalchemy import create_engine
+import argparse
 
 #package imports
 import database
-
 
 class PartitionSplitter(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
@@ -31,7 +28,7 @@ class PartitionSplitter(object):
         self.partition = partition.Partitions()
         self.dir_path = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
         self.config_file = os.path.join(self.dir_path,'site_config.txt')
-        self.site_tables = self.load_config(self.config_file)
+        self.site_tables = self.load_config_file(self.config_file)
         
     def get_site_config(self,site_name):
         """Get the table config related to the siteName
@@ -43,7 +40,23 @@ class PartitionSplitter(object):
         print(self.site_tables)
         return self.site_tables[site_name]
 
-    def load_config(self,config_file):
+    def get_site_config_db(self,site_name):
+        """Get the table config related to the site_name from the database"""
+        session = database.get_session()
+        try:
+            site = session.query(database.Site).filter_by(site_name=site_name).first()
+            if site:
+                return {"success": True, "message": f"'{site_name} data found", "data": site.to_json()}
+            else:
+                return {"success": False, "message": f"Site with name '{site_name}' not found"}
+        except Exception as e:
+            # Log the exception as needed
+            return {"success": False, "message": str(e)}
+        finally:
+            session.close()
+        
+        
+    def load_config_file(self,config_file):
         """
         Get the table name and partition ranges related to the siteName
         Parameters:
@@ -239,7 +252,7 @@ class PartitionSplitter(object):
         
         return df_site
     
-    def get_site_partitions(self,site,*parts):
+    def get_site_partitions_df(self,site,*parts):
         """Return the wave spectra partions from site
         Paramaters:
             site (str): Ofcast site name
@@ -309,58 +322,6 @@ class PartitionSplitter(object):
 
         return final_output
 
-    def query_db(db_name, table_name, runtime=None, location=None):
-        """
-        Queries an SQLite database using SQLAlchemy based on specified conditions.
-
-        Parameters:
-        - db_name (str): Name of the SQLite database file.
-        - table_name (str): Name of the table to query.
-        - runtime (datetime, optional): The runtime to query for.
-        - model (str, optional): The model name to query for.
-        - location (str, optional): The location to query for.
-
-        Returns:
-        - pandas.DataFrame: The result of the query.
-        """
-
-        # Create a SQLAlchemy engine
-        engine = create_engine(f'sqlite:///{db_name}')
-
-        # Start building the SQL query
-        query = f"SELECT * FROM {table_name} WHERE 1=1"
-
-        # Add conditions to the query
-        if runtime:
-            query += f" AND run_time = '{runtime}'"
-        if location:
-            query += f" AND location = '{location}'"
-
-        # Execute the query and return the results in a DataFrame
-        return pd.read_sql_query(query, engine)
-
-    def add_db_site(site_name, location, partition_list):
-        """Update the database""" 
-        session = database.get_session()
-        new_site = database.Site(site_name=site_name, location=location)
-        new_site.set_partitions(partition_list)
-        session.add(new_site)
-        session.commit()
-
-    def get_site_partitions_from_db(site_name):
-        session = database.get_session()
-        site = session.query(database.Site).filter_by(site_name=site_name).first()
-        if site:
-            return site.get_partitions()
-        return None
-
-    # Example of adding a site
-    # add_site("BHP - Pyrenees", "Location1", [(0.001, 10), (10, 40)])
-
-    # Example of retrieving partitions for a site
-    # partitions = get_site_partitions("BHP - Pyrenees")
-
-
 def main():
     
     parser = argparse.ArgumentParser()
@@ -368,14 +329,33 @@ def main():
     args = parser.parse_args()
     
     toolbox = PartitionSplitter()        
-    table_config = toolbox.get_site_config(args.site_name)
-    table_name = table_config["table"]
-    table_partitions = table_config["parts"]
+    # table_config = toolbox.get_site_config(args.site_name)
+    # table_name = table_config["table"]
+    # table_partitions = table_config["parts"]
     
-    partitioned_df = toolbox.get_site_partitions(table_name,*table_partitions)
-    formated_df = toolbox.format_df(partitioned_df,args.site_name,*table_partitions)
+    table_config = toolbox.get_site_config_db(args.site_name)
     
-    print(formated_df)
+    #exit stage left if no data
+    if not table_config["success"]:
+        print(table_config["message"])
+        return
+    
+    # all the site parms from the database
+    site_name = table_config["data"]["site_name"]    
+    table_name = table_config["data"]["table"]        
+    partitions = table_config["data"]["partitions"]    
+    
+    #generate our table output
+    partitioned_df = toolbox.get_site_partitions_df(table_name,*partitions)
+    run_time = partitioned_df["run_time"].iloc[0]
+    run_time = run_time.to_pydatetime()
+    table_output = toolbox.format_df(partitioned_df,site_name,*partitions)
+    
+    #update the database and printout results
+    wave_table = database.add_wavetable_to_db(site_name, run_time, table_output)
+    table = wave_table["data"]
+    
+    print(table)
             
 if __name__ == '__main__':
     main()
