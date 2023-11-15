@@ -79,6 +79,29 @@ def init_db():
 def get_session():
     """Get a new session."""
     return Session()
+
+def add_site(site_name, location, partitions):
+    """Add a new site to the database or update it if it already exists."""
+    session = get_session()
+    try:
+        existing_site = session.query(Site).filter(Site.site_name == site_name).one_or_none()
+        
+        if existing_site:
+            # Update existing site
+            existing_site.table = location
+            existing_site.set_partitions(partitions)
+            print(f"Updated site: '{site_name}'")
+        else:
+            # Add new site
+            new_site = Site(site_name=site_name, table=location)
+            new_site.set_partitions(partitions)
+            session.add(new_site)
+            print(f"Added new site: '{site_name}'")
+        
+        session.commit()
+    except Exception as e:
+        print(f"Error processing site '{site_name}': {e}")
+        session.rollback()
     
 def site_runtime_exists(site_name, run_time):
     """return true if site and runtime is in the database"""
@@ -99,9 +122,11 @@ def get_all_sites():
     session = get_session()
     try:
         sites = session.query(Site).all()
-        site_names = [site.site_name for site in sites] 
+        site_names = [site.site_name for site in sites]
+        tables = [site.table for site in sites]
+        partitions = [site.get_partitions() for site in sites]
 
-        return {"success": False, "message": "All sites returned", "data":site_names}
+        return {"success": False, "message": "All sites returned", "data":[site_names,tables,partitions]}
     except Exception as e:
         return {"success": False, "message": str(e)}
     
@@ -230,3 +255,7 @@ def update_site_to_db( site_name, table, partition_list):
         raise e
     finally:
         session.close()
+        
+if __name__ == "__main__":
+    data = get_all_sites()
+    print(data)

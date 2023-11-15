@@ -266,23 +266,6 @@ class PartitionSplitter(object):
 
         return df
     
-    def get_ofcast_forecast(self,site):
-        """Return the Ofcast forecast from site
-        Paramaters:
-            site (str): Ofcast site name            
-        Returns:
-            df (DataFrame): dataframe of forecast from Ofcast 
-         """
-    
-        df = pd.DataFrame()
-        df = self.smusher.get_archived_forecast()[0]
-        index = self.smusher.get_archived_forecast()[1]
-        index = pd.DatetimeIndex(index.values,tz="Australia/Perth")
-        df.index = index
-        df["time_local"] = index.to_pydatetime()
-
-        return df
-    
     def format_df(self,df, location, *parts):
         """
         Formats a DataFrame into a custom table format for forecast data.
@@ -368,7 +351,7 @@ class PartitionSplitter(object):
 def main():
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--site",dest="site_name",nargs="?", default="all",help="the forecast site name from Ofcast",required=False)
+    parser.add_argument("--site",dest="site_name",nargs="?", default="Woodside - North Rankin 10 days",help="the forecast site name from Ofcast",required=False)
     args = parser.parse_args()
     
     toolbox = PartitionSplitter()

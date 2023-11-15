@@ -1,21 +1,27 @@
 #!/cws/anaconda/envs/mlenv/bin/python -W ignore
 """
 Refactored script for extracting images or listing sites as links.
+author: Daz Vink
+date: 2023-11-14
 """
-__author__ = "Daz Vink"
-__date__ = "2023-11-14"
 
 import cgi
 import database as db
+import os
 
+BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
+BASE_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite"
 def list_sites_as_links():
-    site_names = db.get_all_sites()["data"]
+    site_data = db.get_all_sites()["data"]
+    site_names = site_data[0]
+    tables = site_data[1]
+    partitions = site_data[2]
     table_style = """
         <style>
             table { 
                 border-collapse: collapse; 
                 width: 50%; 
-                margin: 20px auto; /* Centers the table */
+                margin: 20px auto; 
             }
             th, td { 
                 border: 1px solid black; 
@@ -30,8 +36,10 @@ def list_sites_as_links():
             }
         </style>
     """
-    html_table_rows = "".join([f"<tr><td><a href='api.cgi?site_name={name}',target='_blank'>{name}</a></td></tr>" for name in site_names])
-    return f"{table_style}<h2>Partitioned Swell Tables</h2><table>{html_table_rows}</table>"
+    headers = "<tr><th>Forecast site</th><th>Auswave table</th><th>Partitions</th></tr>"
+
+    html_table_rows = "".join([f"<tr><td><a href='api.cgi?site_name={site_names[i]}' target='_blank'>{site_names[i]}</a></td><td>{tables[i]}</td><td>{', '.join(map(str, partitions[i]))}</td></tr>" for i in range(len(site_names))])
+    return f"{table_style}<h2>Partitioned Swell Tables</h2><table>{headers}{html_table_rows}</table>"
 
 def main():
     # Parse the parameters
