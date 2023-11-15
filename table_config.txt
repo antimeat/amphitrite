@@ -1,0 +1,40 @@
+# Site Configuration File
+# Format: Table Name, Split Range 1, Split Range 2
+# Example of a line: Pyranees, 0.001-9, 9-40
+# Please follow the format strictly while editing
+
+Anglogold - Tropicana, -29.24,124.54
+BHP - Pyrenees, -21.54,114.12
+Boskalis - Dampier 7 Days, -20.6,116.75
+Boskalis - Scarborough 7 Days, -19.926,113.242
+Chevron - Gorgon, -20.46,114.84
+Chevron - Jansz, -19.81,114.61
+Chevron - Wheatstone LNG Plant, -21.667,115.012
+Chevron - Wheatstone Platform AFS, -19.93,115.38
+Chevron Barrow Island AFS ML ext, -20.8137,115.498
+Chevron Barrow Island white beach, -20.691,115.406
+Citic Pacific - Cape Preston Area, -20.67,116.17
+Dampier Salt - Cape Cuvier 7 days, -24.22,113.397
+INPEX - Ichthys 7 days, -13.92,123.22
+Jadestone Energy - Montara, -12.67,124.55
+Jadestone Energy - Stag, -20.3,116.3
+Petrofac - Northern Endeavour 7 days, -10.62,125.99
+Pilbara Port Authority - Port Hedland, -20.3,118.5
+Pilbara Ports Authority - Ashburton, -21.6,115.0
+Pilbara Ports Authority - Dampier, -20.6,116.7
+Santos - John Brookes 4 days, -20.45,115.1
+Santos - MS1Standby 4 days, -12.04,130.23
+Santos - Reindeer 4 days, -20.02,116.31
+Santos - Van Gogh 4 days, -21.4,114.1
+Santos - Varanus 4 days, -20.6,115.6
+Santos ABUW - Bayu-Undan, -11.07,126.61
+Vermilion - Wandoo, -20.14,116.42
+Woodside - Dampier Port dps1 10 days, -20.498,116.402
+Woodside - Enfield and Vincent 7 days, -21.5,114.0
+Woodside - Logistics Karratha 7 days, -20.6,116.8
+Woodside - Logistics Learmonth 7 days, -22.24,114.09
+Woodside - Mermaid Sound 7 days, -20.58,116.76
+Woodside - North Rankin 7 days, -19.58,116.14
+Woodside - Pluto 7 days, -20.0,115.37
+Woodside - Scarborough 7 Days, -19.926,113.242
+Woodside - Stybarrow 10 Days, -21.45,113.82

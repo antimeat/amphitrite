@@ -103,7 +103,7 @@ def onePartition(filename, period = 9):
     xarray
         An xarray object with the partitioned and total wave paramters, and spectrum"""
     
-    print(f"one_partition period: {period}")
+    # print(f"one_partition period: {period}")
     
     #read in file
     ws = amendVariablesNames(filename)
@@ -165,7 +165,7 @@ def onePartition(filename, period = 9):
     ws['dspr_sw'] = swell_stats.dspr
     ws.dspr_sw.attrs['standard_name'] = ws.dspr_sw.attrs['standard_name']+'_swell_partition'
     
-    print(f"ws_sea: {ws['hs_sea']}, ws_sw: {ws['hs_sw']}")
+    # print(f"ws_sea: {ws['hs_sea']}, ws_sw: {ws['hs_sw']}")
     return ws
     
 def rangePartition(filename, start, end):
@@ -193,7 +193,7 @@ def rangePartition(filename, start, end):
     rangePartition(filename, 8, 16)
     
     """
-    print(f"range_partition start: {start}, end: {end}")
+    # print(f"range_partition start: {start}, end: {end}")
     
     #read in file
     ws = amendVariablesNames(filename)

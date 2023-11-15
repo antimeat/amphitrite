@@ -299,7 +299,7 @@ class PartitionSplitter(object):
         header += "###\n"
         
         # Creating table body
-        table_body = tabulate(df, headers='keys', tablefmt='plain', showindex=False)
+        table_body = tabulate(df, headers=[], tablefmt='plain', showindex=False)
 
         # Concatenating the header, table body, and footer
         final_output = header + table_body
@@ -308,7 +308,7 @@ class PartitionSplitter(object):
 
     def generate_all_sites_to_db(self):
         """Generate the partition splits for all sites and save to the database"""
-        site_names = db.get_all_sites()["data"]
+        site_names = db.get_all_sites()["data"][0]
         logging.info(site_names)
         for site_name in site_names:
             logging.info(site_name)

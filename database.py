@@ -196,7 +196,9 @@ def add_wavetable_to_db( site_name, run_time, table_output):
         ).first()
 
         if existing_wave_data:
-            return {"success": True, "message": "Duplicate wave data found", "data": existing_wave_data.formatted_table}
+            existing_wave_data.formatted_table = table_output
+            session.commit()
+            return {"success": True, "message": "Duplicate wave data found, site updated", "data": existing_wave_data.formatted_table}
 
         # Add new wave data entry
         new_wave_table = WaveData(run_time=run_time, formatted_table=table_output, site_id=site.site_id)
