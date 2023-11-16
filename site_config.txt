@@ -5,16 +5,20 @@
 
 BHP - Pyrenees, Pyrenees, 0.001-9, 9-40
 Boskalis - Scarborough 7 Days, Scarb_new, 0.001-9, 9-40
+Boskalis - Dampier 7 Days, Dampier_Po, 0.001-9, 9-40
 Chevron - Gorgon, Gorgon, 0.001-10, 10-40
 Chevron - Jansz, Jansz_PTS, 0.001-10, 10-40
 Chevron - Wheatstone LNG Plant, Ashburton_, 0.001-10, 10-40
 Citic Pacific - Cape Preston Area, Cape_prest, 0.001-9, 9-40
-INPEX Ichthys 7 days, Ichthys, 0.001-9, 9-40
+Dampier Salt - Cape Cuvier 7 days, Cuvier, 0.001-9, 9-40
+INPEX - Ichthys 7 days, Ichthys, 0.001-9, 9-40
 Jadestone Energy - Stag, Stag, 0.001-9, 9-40
 Jadestone Energy - Montara, Montara, 0.001-9, 9-40
 Pilbara Ports Authority - Ashburton, Ashburton_, 0.001-9, 9-40
 Pilbara Port Authority - Port Hedland, PH_Beacon1, 0.001-9, 9-40
 Pilbara Ports Authority - Dampier, Dampier_Po, 0.001-9, 9-40
+Petrofac - Northern Endeavour 7 days, Bayu_Undan, 0.001-9, 9-40
+Santos ABUW - Bayu-Undan, Bayu_Undan, 0.001-9, 9-40
 Santos - John Brookes 4 days, John_Brook, 0.001-9, 9-40
 Santos - Reindeer 4 days, Reindeer, 0.001-9, 9-40
 Santos - Varanus 4 days, Varanus, 0.001-9, 9-40
@@ -30,10 +34,9 @@ Woodside - North Rankin 10 days, Rankin, 0.001-9, 9-40
 Woodside - North Rankin 7 days, Rankin, 0.001-9, 9-40
 Woodside - Pluto 7 days, PLA, 0.001-9, 9-40
 Woodside - Pluto 10 days, PLA, 0.001-9, 9-40
-Woodside - Scarborough 7 days, Scarboroug, 0.001-9, 9-40
+Woodside - Scarborough 7 Days, Scarboroug, 0.001-9, 9-40
 Woodside - Stybarrow 10 Days, Stybarrow, 0.001-9, 9-40
 Noblige, Noblige, 0.001-9, 9-40
-Dampier Salt - Cape Cuvier 7 day, Cuvier, 0.001-9, 9-40
 
 # WRB-A, WRB-A, 0.001-9, 9-40
 # WRB-B, WRB-B, 0.001-9, 9-40

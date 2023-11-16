@@ -8,14 +8,15 @@ import cgi
 import json
 import pandas as pd
 import requests
-import io
+from io import StringIO
 
-URL = "http://wa-cws-op.bom.gov.au/web/forecastChecker/activeSites.cgi?include_vw_name=1"
+ACTIVE_STIES_URL = "http://wa-cws-op.bom.gov.au/web/forecastChecker/activeSites.cgi?include_vw_name=1"
+CONFIG_SITES_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_json"
 
 def load():
     """Load up a dataframe of sites from the ofcast active sites"""
-    s = requests.get(URL,verify=False).content
-    df = pd.read_csv(io.StringIO(s.decode('utf-8')))
+    s = requests.get(ACTIVE_STIES_URL,verify=False).content
+    df = pd.read_csv(StringIO(s.decode('utf-8')))
 
     #remove values that are not owned by a shift, ie: there is no "(D?)" in the name
     df = df[df['ofcastName'].str.contains("\(")]
@@ -50,6 +51,50 @@ def get_json_sites():
     
     return site_dict
 
+def compare_sites_and_config():
+    """Compare the results of the active sites and the config file."""
+    try:
+        # Fetch active sites
+        active_sites_df = load()
+        active_sites_df = active_sites_df[["name", "lat", "lon"]]
+        
+        # Fetch site configurations
+        config_sites_response = requests.get(CONFIG_SITES_URL, verify=False)
+        config_sites_df = pd.DataFrame(config_sites_response.json())
+        config_sites_df = config_sites_df.transpose()                               
+        config_sites_df = config_sites_df.reset_index()
+        config_sites_df = config_sites_df.rename(columns={"index": "name"})
+
+        # Compare active sites with site configurations
+        in_active_not_in_config = set(active_sites_df['name']) - set(config_sites_df['name'])
+        in_config_not_in_active = set(config_sites_df['name']) - set(active_sites_df['name'])
+
+        # Start HTML output
+        print("<html><body>")
+
+        # Print the tables side by side at the top with horizontal centering
+        print("<table style='margin-left: auto; margin-right: auto;'><tr>")
+        print("<td style='vertical-align: top; padding-right: 20px;'><h2>Active Sites</h2>")
+        print(active_sites_df.to_html(index=False))
+        print("</td><td style='vertical-align: top; padding-left: 20px;'><h2>Site Configurations</h2>")
+        print(config_sites_df.to_html(index=False))
+        print("</td></tr></table>")
+
+        # Print differences
+        print("<table style='margin-top: 20px; margin-left: auto; margin-right: auto;'><tr>")
+        print("<td style='vertical-align: top; padding-right: 20px;'><h3>In Active Sites but Not in Config</h3>")
+        print(pd.DataFrame(list(in_active_not_in_config), columns=['Site']).to_html(index=False))
+        print("</td><td style='vertical-align: top; padding-left: 20px;'><h3>In Config but Not in Active Sites</h3>")
+        print(pd.DataFrame(list(in_config_not_in_active), columns=['Site']).to_html(index=False))
+        print("</td></tr></table>")
+
+        # End HTML output
+        print("</body></html>")
+
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+
+
 def get_json_tables():
     """Return aswave tables in json"""
     file_name = "nc_table_names.txt"
@@ -72,6 +117,7 @@ def get_html_tables():
         site_dict[site['name']] = site['name'] + ': ' + str(site['lat']) + ',' + str(site['lon'])
         print('{}<br>'.format(site_dict[site['name']]))    
 
+    
 def main():
     # Parse the parameters
     form = cgi.FieldStorage()
@@ -94,6 +140,11 @@ def main():
         print("Content-Type: text/html")
         print()
         get_html_sites()
+    
+    elif "compare" in get.lower(): 
+        print("Content-Type: text/html")
+        print()
+        compare_sites_and_config()
     
     else: 
         print("Content-Type: text/html")

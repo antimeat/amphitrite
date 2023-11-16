@@ -1,4 +1,5 @@
 import database as db
+import models
 import os
 import argparse
 
@@ -26,7 +27,7 @@ def initialise_sites_from_config():
 def dump_sites_table():
     """Prints all records in the sites table."""
     session = db.get_session()
-    sites = session.query(db.Site).all()
+    sites = session.query(models.Site).all()
 
     for site in sites:
         print(f"Site ID: {site.site_id}, Name: {site.site_name}, Location: {site.table}, Partitions: {site.partitions}")
