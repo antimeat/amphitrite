@@ -27,20 +27,20 @@ def load_json():
     """Spit it all the site out in json"""
     df = load()
     df = df.sort_values(by='name')
-
+    
     return df.to_json(orient='records')
 
-def get_html_titles():
+def get_html_sites():
     """Return site titles with lat lon"""
     site_dict = {}
     json_data = load_json()
     all_info = json.loads(json_data)
-
+   
     for i,site in enumerate(all_info):
         site_dict[site['name']] = site['name'] + ': ' + str(site['lat']) + ',' + str(site['lon'])
         print('{}<br>'.format(site_dict[site['name']]))    
     
-def get_json_titles():
+def get_json_sites():
     """Return site titles in json"""
     site_dict = {}
     json_data = json.loads(load_json())
@@ -50,21 +50,55 @@ def get_json_titles():
     
     return site_dict
 
+def get_json_tables():
+    """Return aswave tables in json"""
+    file_name = "nc_table_names.txt"
+    df = pd.read_csv(file_name, names=["name", "lat", "lon"])
+    df = df.sort_values(by="name")
+    json = df.to_json(orient='records')
+    
+    return json
+
+def get_html_tables():
+    """Return site titles with lat lon"""
+    site_dict = {}
+    file_name = "nc_table_names.txt"
+    df = pd.read_csv(file_name, names=["name", "lat", "lon"])
+    df = df.sort_values(by="name")
+    
+    json_data = json.loads(df.to_json(orient="records"))
+    
+    for i,site in enumerate(json_data):
+        site_dict[site['name']] = site['name'] + ': ' + str(site['lat']) + ',' + str(site['lon'])
+        print('{}<br>'.format(site_dict[site['name']]))    
+
 def main():
     # Parse the parameters
     form = cgi.FieldStorage()
     get = form.getvalue("get", "html")
 
     # Check if site_name is 'list' to list all sites as links
-    if get == 'html':
-        print("Content-Type: text/html")
-        print()
-        print(get_html_titles())
-    else:
+    if "json_sites" in get.lower():
         # Set the HTTP header for JSON content
         print("Content-Type: application/json")
         print()
-        print(get_json_titles())
-        
+        print(get_json_sites())
+    
+    elif "json_tables" in get.lower():
+        # Set the HTTP header for JSON content
+        print("Content-Type: application/json")
+        print()
+        print(get_json_tables())
+    
+    elif "html_sites" in get.lower(): 
+        print("Content-Type: text/html")
+        print()
+        get_html_sites()
+    
+    else: 
+        print("Content-Type: text/html")
+        print()
+        get_html_tables()
+           
 if __name__ == "__main__":
     main()

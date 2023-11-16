@@ -11,7 +11,9 @@ Functions:
     mermaidSound()
 """
 import readSpectrum
+import xarray as xr
 import pandas as pd
+import numpy as np
 import glob, os
 import time
 import warnings
@@ -34,6 +36,33 @@ class Partitions(object):
         date_string = filename.split("/")[4].split("_")[2].split(".")[0]
         print(date_string)
         self.latest_run_time = datetime.datetime.strptime(date_string,"%Y%m%d%H")
+    
+    def generate_table_names(self):
+        """Generate a file of all the table names in the netcdf file"""
+        netcdf_name = self.filename
+        output_file = "./nc_table_names.txt"
+        table_names = self.table_names_from_netcdf(netcdf_name)
+        
+        with open(output_file, "w") as file:
+            for table in table_names:
+                file.write(table + "\n")
+            
+    def table_names_from_netcdf(self,file_name):
+        """Return all the table names from the netcdf file"""
+        ds = xr.open_dataset(file_name)
+        table_names = []
+        
+        #loop through each site
+        for site_num in ds.station.values:
+            site = ds.sel(station=site_num)[["station_name","latitude","longitude"]]
+            site_name = ''.join(site.station_name.values.astype(str))            
+            lat = np.round(float(site.latitude.values[0]),4)
+            lon = np.round(float(site.longitude.values[0]),4)
+
+            #format the output for name and lat,lon
+            table_names.append(f"{site_name}, {lat:.4f}, {lon:.4f}")
+
+        return table_names
     
     def get_latest_file(self):
         """Return current wavewatch file"""
@@ -242,3 +271,4 @@ class Partitions(object):
 if __name__ == "__main__":
     parts = Partitions()
     print(parts.get_latest_run_time())
+    parts.generate_table_names()
