@@ -1,4 +1,3 @@
-#!/cws/anaconda/envs/mlenv/bin/python -W ignore
 """
 Name:
     partition.py
@@ -16,6 +15,7 @@ import pandas as pd
 import glob, os
 import time
 import warnings
+import datetime
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
@@ -25,7 +25,16 @@ class Partitions(object):
     def __init__(self):
         self.dir = "/cws/data/wavewatch/"
         self.filename = self.get_latest_file()
-        
+        self.set_latest_run_time(self.filename)
+            
+    def get_latest_run_time(self):
+        return self.latest_run_time
+    
+    def set_latest_run_time(self,filename):
+        date_string = filename.split("/")[4].split("_")[2].split(".")[0]
+        print(date_string)
+        self.latest_run_time = datetime.datetime.strptime(date_string,"%Y%m%d%H")
+    
     def get_latest_file(self):
         """Return current wavewatch file"""
         extn = '/cws/data/wavewatch/IDY35050_G3_??????????.nc'
@@ -229,3 +238,7 @@ class Partitions(object):
         
         ws = self.multi_parts_test(*parts)
         return ws   
+    
+if __name__ == "__main__":
+    parts = Partitions()
+    print(parts.get_latest_run_time())

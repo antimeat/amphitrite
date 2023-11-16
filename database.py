@@ -1,73 +1,25 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Text, UniqueConstraint
+"""
+Name:
+    database.py
+Functions:
+    single_part(*parts)
+    multi_parts(*parts)
+    mermaidSound()
+"""
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.exc import IntegrityError
-
 import os
 import json
+from tabulate import tabulate
+import pandas as pd
 
-Base = declarative_base()
-
-class Site(Base):
-    __tablename__ = 'sites'
-    site_id = Column(Integer, primary_key=True)
-    site_name = Column(String, unique=True)  # Adding a unique constraint
-    table = Column(String)  
-    partitions = Column(Text)  # Storing partition data as a JSON string
-
-    def get_partitions(self):
-        """Return the partitions as a list of tuples."""
-        return json.loads(self.partitions)
-
-    def set_partitions(self, partition_list):
-        """Set the partitions from a list of tuples."""
-        self.partitions = json.dumps(partition_list)
-
-    def __str__(self):
-        """Return a simple string representation of the Site object."""
-        return f"Site(id={self.site_id}, name='{self.site_name}', table='{self.table}')"
-
-    def to_json(self):
-        """Return a JSON-like string representation of the Site object."""
-        return {
-            "site_name": self.site_name,
-            "table": self.table,
-            "partitions": self.get_partitions()
-        }
-
-class WaveData(Base):
-    __tablename__ = 'wave_data'
-    data_id = Column(Integer, primary_key=True)
-    run_time = Column(DateTime)
-    formatted_table = Column(Text)
-    site_id = Column(Integer, ForeignKey('sites.site_id'))
-
-    # Relationship to the Site table
-    site = relationship("Site", backref="wave_data")
-
-    # Unique constraint on run_time and site_id
-    __table_args__ = (UniqueConstraint('run_time', 'site_id', name='_run_time_site_id_uc'),)
-
-    def __str__(self):
-        """Return a simple string representation of the formatted_table."""
-        return self.formatted_table
-
-    def to_json(self):
-        """Return a JSON-like string representation of the WaveData object."""
-        wave_data_dict = {
-            "data_id": self.data_id,
-            "run_time": self.run_time.isoformat() if self.run_time else None,
-            "formatted_table": self.formatted_table,
-            "site_id": self.site_id
-        }
-        # Optionally include site details if needed
-        if self.site:
-            wave_data_dict["site_details"] = str(self.site)  # or self.site.to_json()
-
-        return wave_data_dict
+# Local imports
+import models
 
 # Database setup
 DATABASE_URL = "sqlite:///wave_data.db" 
+Base = declarative_base()
 
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
@@ -84,7 +36,7 @@ def add_site(site_name, location, partitions):
     """Add a new site to the database or update it if it already exists."""
     session = get_session()
     try:
-        existing_site = session.query(Site).filter(Site.site_name == site_name).one_or_none()
+        existing_site = session.query(models.Site).filter(models.Site.site_name == site_name).one_or_none()
         
         if existing_site:
             # Update existing site
@@ -93,7 +45,7 @@ def add_site(site_name, location, partitions):
             print(f"Updated site: '{site_name}'")
         else:
             # Add new site
-            new_site = Site(site_name=site_name, table=location)
+            new_site = models.Site(site_name=site_name, table=location)
             new_site.set_partitions(partitions)
             session.add(new_site)
             print(f"Added new site: '{site_name}'")
@@ -107,8 +59,8 @@ def site_runtime_exists(site_name, run_time):
     """return true if site and runtime is in the database"""
     session = get_session()
     try:
-        site = session.query(Site).filter(site_name=site_name).first()
-        wave_table = session.query(WaveData).filter(site_id=site.site_id, run_time=run_time).first()
+        site = session.query(models.Site).filter(site_name=site_name).first()
+        wave_table = session.query(models.WaveData).filter(site_id=site.site_id, run_time=run_time).first()
         if wave_table:
             return {"success": True, "message": f"{site.site_name} and {run_time} already exist"}
         else:
@@ -121,7 +73,7 @@ def get_all_sites():
     """return all sites"""
     session = get_session()
     try:
-        sites = session.query(Site).all()
+        sites = session.query(models.Site).all()
         site_names = [site.site_name for site in sites]
         tables = [site.table for site in sites]
         partitions = [site.get_partitions() for site in sites]
@@ -134,7 +86,7 @@ def add_site_to_db(site_name, location, partition_list):
     """Add a new site to the database."""
     session = get_session()
     try:
-        new_site = Site(site_name=site_name, location=location)
+        new_site = models.Site(site_name=site_name, location=location)
         new_site.set_partitions(partition_list)
         session.add(new_site)
         session.commit()
@@ -150,7 +102,7 @@ def update_site_to_db( site_name, table, partition_list):
     """Update a site's details in the database."""
     session = get_session()
     try:
-        site = session.query(Site).filter_by(site_name=site_name).first()
+        site = session.query(models.Site).filter_by(site_name=site_name).first()
         if site:
             site.table = table
             site.set_partitions(partition_list)
@@ -169,7 +121,7 @@ def get_site_partitions_from_db( site_name):
     """Retrieve the partitions for a given site."""
     session = get_session()
     try:
-        site = session.query(Site).filter_by(site_name=site_name).first()
+        site = session.query(models.Site).filter_by(site_name=site_name).first()
         if site:
             return {"success": True, "message": f"'{site_name} data found", "data": site.get_partitions()}
         else:
@@ -185,12 +137,12 @@ def add_wavetable_to_db( site_name, run_time, table_output):
     session = get_session()
     
     try:
-        site = session.query(Site).filter_by(site_name=site_name).first()
+        site = session.query(models.Site).filter_by(site_name=site_name).first()
         if not site:
             return {"success": False, "message": "Site not found", "data": None}
 
         # Check for existing wave data entry
-        existing_wave_data = session.query(WaveData).filter_by(
+        existing_wave_data = session.query(models.WaveData).filter_by(
             run_time=run_time, 
             site_id=site.site_id
         ).first()
@@ -201,7 +153,7 @@ def add_wavetable_to_db( site_name, run_time, table_output):
             return {"success": True, "message": "Duplicate wave data found, site updated", "data": existing_wave_data.formatted_table}
 
         # Add new wave data entry
-        new_wave_table = WaveData(run_time=run_time, formatted_table=table_output, site_id=site.site_id)
+        new_wave_table = models.WaveData(run_time=run_time, formatted_table=table_output, site_id=site.site_id)
         session.add(new_wave_table)
         session.commit()
         return {"success": True, "message": "Wave data added successfully", "data": new_wave_table.formatted_table}
@@ -217,15 +169,15 @@ def get_wavetable_from_db( site_name, run_time=None):
     """Return the wavetable data for a site at a given or most recent runtime."""
     session = get_session()
     try:
-        site = session.query(Site).filter_by(site_name=site_name).first()
+        site = session.query(models.Site).filter_by(site_name=site_name).first()
         if not site:
             return {"success": False, "message": "Site not found", "data": None}
 
-        query = session.query(WaveData).filter_by(site_id=site.site_id)
+        query = session.query(models.WaveData).filter_by(site_id=site.site_id)
         if run_time:
             query = query.filter_by(run_time=run_time)
         else:
-            query = query.order_by(WaveData.run_time.desc())
+            query = query.order_by(models.WaveData.run_time.desc())
 
         wave_table = query.first()
         if wave_table:
@@ -244,7 +196,7 @@ def update_site_to_db( site_name, table, partition_list):
     """Update a site's details in the database."""
     session = get_session()
     try:
-        site = session.query(Site).filter_by(site_name=site_name).first()
+        site = session.query(models.Site).filter_by(site_name=site_name).first()
         if site:
             site.table = table
             site.set_partitions(partition_list)
@@ -257,7 +209,78 @@ def update_site_to_db( site_name, table, partition_list):
         raise e
     finally:
         session.close()
+
+def delete_oldest_wave_data(max_size_gb=10):
+    """Delete the oldest WaveData entries if the database exceeds a certain size."""
+    db_size_gb = get_db_file_size()
+    
+    if db_size_gb <= max_size_gb:
+        return {"success": True, "message": "Database size is within limits"}
+
+    session = get_session()
+    
+    try:
+        while get_db_file_size() > max_size_gb:
+            oldest_data = session.query(models.WaveData).order_by(models.WaveData.run_time).first()
+            if not oldest_data:
+                break  # No more data to delete
+
+            session.delete(oldest_data)
+            session.commit()
         
+        return {"success": True, "message": "Old entries deleted to reduce database size"}
+
+    except Exception as e:
+        session.rollback()
+        return {"success": False, "message": str(e)}
+    finally:
+        session.close()
+
+def get_db_file_size():
+    """Get the size of the database file in gigabytes."""
+    # Assumes SQLite; adjust for other DBs
+    path = DATABASE_URL.split("///")[1]  
+    return os.path.getsize(path) / (1024 ** 3)  # Convert bytes to GB
+
+def get_all_run_times():
+    """Return a list of all run_time values from the wave_data table."""
+    session = get_session()
+    try:
+        # Query to get all run_time values from WaveData table
+        run_times = session.query(models.WaveData.run_time).all()
+        
+        # Extract run_time values from the query result
+        run_times_list = [run_time[0].strftime("%Y/%m/%d %H00") for run_time in run_times]
+        unique_run_times = set(run_times_list)
+
+        return {"success": True, "message": "Run times retrieved successfully", "data": list(unique_run_times)}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+    finally:
+        session.close()
+
+def console_output():
+    """Format the state of the database for console output"""       
+    #stie data from Sites
+    site_data = get_all_sites()["data"]
+    sites = site_data[0]
+    tables = site_data[1]
+    partitions = site_data[2]
+
+    df_sites = pd.DataFrame({
+        "sites": sites,
+        "table": tables,
+        "partitions": partitions
+    })
+
+    sites_table_output = tabulate(df_sites,headers="keys",tablefmt="psql", showindex=False)
+    print(sites_table_output)
+
+    #run_times from WaveData
+    run_times = get_all_run_times()["data"]
+    df_wave_data = pd.DataFrame({"run_times":run_times})
+    run_time_table_output = tabulate(df_wave_data,headers="keys",tablefmt="psql", showindex=False)
+    print(run_time_table_output)
+
 if __name__ == "__main__":
-    data = get_all_sites()
-    print(data)
+    console_output()

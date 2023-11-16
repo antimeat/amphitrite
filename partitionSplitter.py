@@ -21,15 +21,26 @@ import logging
 
 #package imports
 import database as db
+import models
+
+BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
+
+# Configure logging
+LOG_FILENAME = os.path.join(BASE_DIR,"logfile.log")
+logging.basicConfig(
+    filename=LOG_FILENAME, 
+    level=logging.INFO,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
 
 class PartitionSplitter(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
 
     def __init__(self):
         self.partition = partition.Partitions()
-        self.dir_path = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
-        self.config_file = os.path.join(self.dir_path,'site_config.txt')
+        self.config_file = os.path.join(BASE_DIR,"site_config.txt")
         self.site_tables = self.load_config_file(self.config_file)
+        self.latest_run_time = self.partition.get_latest_run_time()
         
     def get_site_config(self,site_name):
         """Get the table config related to the siteName
@@ -45,13 +56,12 @@ class PartitionSplitter(object):
         """Get the table config related to the site_name from the database"""
         session = db.get_session()
         try:
-            site = session.query(db.Site).filter_by(site_name=site_name).first()
+            site = session.query(models.Site).filter_by(site_name=site_name).first()
             if site:
                 return {"success": True, "message": f"'{site_name} data found", "data": site.to_json()}
             else:
                 return {"success": False, "message": f"Site with name '{site_name}' not found"}
         except Exception as e:
-            # Log the exception as needed
             return {"success": False, "message": str(e)}
         finally:
             session.close()
@@ -309,9 +319,9 @@ class PartitionSplitter(object):
     def generate_all_sites_to_db(self):
         """Generate the partition splits for all sites and save to the database"""
         site_names = db.get_all_sites()["data"][0]
-        logging.info(site_names)
+        logging.info(f"Model run_time: {self.latest_run_time}")
+        logging.info(f"Site list: {', '.join(site_names)}")
         for site_name in site_names:
-            logging.info(site_name)
             try:
                 self.generate_site_to_db(site_name=site_name)
             except:
@@ -325,7 +335,7 @@ class PartitionSplitter(object):
             
             #exit stage left if no data
             if not table_config["success"]:
-                print(table_config["message"])
+                logging.warning(table_config["message"])
                 return
             # all the site parms from the database
             site_name = table_config["data"]["site_name"]    
@@ -340,7 +350,7 @@ class PartitionSplitter(object):
             
             #update the database and printout results
             wave_table = db.add_wavetable_to_db(site_name, run_time, table_output)
-            logging.info(f"successfly saved {site_name} to database")
+            logging.info(f"Saved {site_name} to database")
                 
             return wave_table
         
