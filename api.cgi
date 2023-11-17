@@ -15,13 +15,7 @@ BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
 BASE_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite"
 
 def load_config_file(config_file):
-        """
-        Get the table name and partition ranges related to the siteName
-        Parameters:
-            siteName: ofcast site name
-        Returns:
-            a dictionary with the table name and partition ranges
-        """
+        """Read in the sites config file"""
         site_tables = {}
         with open(config_file, 'r') as file:
             for line in file:
@@ -41,6 +35,22 @@ def load_config_file(config_file):
                 site_tables[site] = {"table": table, "parts": split_ranges}
 
         return site_tables
+
+def load_exclusion_file(config_file):
+    """Load the exclusion_sites.txt and return json"""
+    sites = {}
+    with open(config_file, 'r') as file:
+        for line in file:
+            # Strip leading and trailing spaces
+            stripped_line = line.strip()
+
+            # Skip comment lines and empty lines
+            if stripped_line.startswith('#') or not stripped_line:
+                continue
+
+            sites[stripped_line] = {"name": stripped_line}
+
+    return sites
 
 def list_sites_as_html():
     site_data = db.get_all_sites()["data"]
@@ -79,6 +89,13 @@ def list_sites_as_json():
     
     return json.dumps(json_str)
 
+def list_exclusion_as_json():
+    """Return exclusion sites in json"""
+    file_name = os.path.join(BASE_DIR,"exclusion_list.txt")
+    json_str = load_exclusion_file(file_name)
+    
+    return json.dumps(json_str)
+
 def main():
     # Parse the parameters
     form = cgi.FieldStorage()
@@ -89,22 +106,32 @@ def main():
         print("Content-Type: text/html")
         print()
         print(list_sites_as_html())
+    
     elif get == 'list_json':
         print("Content-Type: application/json")
         print()
         print(list_sites_as_json())    
-    else:
+    
+    elif get == 'exclusion':
+        print("Content-Type: application/json")
+        print()
+        print(list_exclusion_as_json())    
+    
+    elif get == "site":
+        site_name = form.getvalue('site_name', "Woodside - Pluto 7 days") 
+        run_time = form.getvalue('run_time', None)
+        
+        # Fetch wavetable data from the database
+        result = db.get_wavetable_from_db(site_name, run_time) if run_time else db.get_wavetable_from_db(site_name)
+        
         # Set the HTTP header for JSON content
         print("Content-Type: application/json")
         print()
+        print(result["data"])
+    else:
+        print("Content-Type: text/html")
+        print()
         print(list_sites_as_html())
         
-        site_name = form.getvalue('site_name', "Woodside - Pluto 7 days") 
-        run_time = form.getvalue('run_time', None)
-        # Fetch wavetable data from the database
-        result = db.get_wavetable_from_db(site_name, run_time) if run_time else db.get_wavetable_from_db(site_name)
-        # Print the result as JSON
-        print(result["data"])
-
 if __name__ == "__main__":
     main()

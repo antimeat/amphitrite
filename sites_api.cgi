@@ -12,6 +12,7 @@ from io import StringIO
 
 ACTIVE_STIES_URL = "http://wa-cws-op.bom.gov.au/web/forecastChecker/activeSites.cgi?include_vw_name=1"
 CONFIG_SITES_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_json"
+EXCLUSION_SITES_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=exclusion"
 
 def load():
     """Load up a dataframe of sites from the ofcast active sites"""
@@ -51,6 +52,9 @@ def get_json_sites():
     
     return site_dict
 
+import requests
+import pandas as pd
+
 def compare_sites_and_config():
     """Compare the results of the active sites and the config file."""
     try:
@@ -65,35 +69,101 @@ def compare_sites_and_config():
         config_sites_df = config_sites_df.reset_index()
         config_sites_df = config_sites_df.rename(columns={"index": "name"})
 
+        # Fetch exclusion sites
+        exclusion_sites_response = requests.get(EXCLUSION_SITES_URL, verify=False)
+        exclusion_sites_df = pd.DataFrame(exclusion_sites_response.json())
+        exclusion_sites_df = exclusion_sites_df.transpose()                               
+        exclusion_sites_df = exclusion_sites_df.reset_index(drop=True)
+        
         # Compare active sites with site configurations
         in_active_not_in_config = set(active_sites_df['name']) - set(config_sites_df['name'])
         in_config_not_in_active = set(config_sites_df['name']) - set(active_sites_df['name'])
+        in_active_not_excluded = in_active_not_in_config - set(exclusion_sites_df['name'])
+        
+        # CSS for centering table headers and highlighting rows
+        styles = "<style>th { text-align: center; } .highlight { background-color: #ffff99; }</style>"
 
         # Start HTML output
-        print("<html><body>")
+        print("<html><head>")
+        print(styles)  # Include the CSS style in the head
+        print("</head><body>")
 
         # Print the tables side by side at the top with horizontal centering
-        print("<table style='margin-left: auto; margin-right: auto;'><tr>")
-        print("<td style='vertical-align: top; padding-right: 20px;'><h2>Active Sites</h2>")
+        print("<table style='margin-left: auto; margin-right: auto;'>")
+
+        # Active Sites Table
+        print("<tr>")
+        print("<td style='vertical-align: top; padding-right: 20px;'><h2 style='text-align:center'>Active Sites</h2>")
         print(active_sites_df.to_html(index=False))
-        print("</td><td style='vertical-align: top; padding-left: 20px;'><h2>Site Configurations</h2>")
+        print("</td>")
+        
+        # Site Configurations Table
+        print("<td style='vertical-align: top; padding-left: 20px;'><h2 style='text-align:center'>Site Configurations</h2>")
         print(config_sites_df.to_html(index=False))
-        print("</td></tr></table>")
+        print("</td>")
 
-        # Print differences
-        print("<table style='margin-top: 20px; margin-left: auto; margin-right: auto;'><tr>")
-        print("<td style='vertical-align: top; padding-right: 20px;'><h3>In Active Sites but Not in Config</h3>")
-        print(pd.DataFrame(list(in_active_not_in_config), columns=['Site']).to_html(index=False))
-        print("</td><td style='vertical-align: top; padding-left: 20px;'><h3>In Config but Not in Active Sites</h3>")
-        print(pd.DataFrame(list(in_config_not_in_active), columns=['Site']).to_html(index=False))
-        print("</td></tr></table>")
+        # Nested table for differences with highlights
+        print("<td style='vertical-align: top; padding-left: 20px;'>")
+        print("<h2 style='text-align:center'>&nbsp;</h2>")
+        print("<table>")
 
-        # End HTML output
+        # Convert DataFrame to HTML
+        # in_active_not_in_config_df = pd.DataFrame(list(in_active_not_in_config), columns=['Site'])
+        # table_html = in_active_not_in_config_df.to_html(index=False)
+
+        # # Post-process HTML to add highlighting
+        # for site in in_active_not_in_config:
+        #     if site not in exclusion_sites_df["name"].values:
+        #         # Replace exact match of the row with highlighted version
+        #         normal_row = f'<tr>\n      <td>{site}</td>\n    </tr>'
+        #         highlighted_row = f'<tr class="highlight">\n      <td>{site}</td>\n    </tr>'
+        #         table_html = table_html.replace(normal_row, highlighted_row)
+
+        # Convert DataFrame to HTML
+        in_active_not_excluded_df = pd.DataFrame(list(in_active_not_excluded), columns=['Site'])
+        table_html = in_active_not_excluded_df.to_html(index=False)
+
+        # Post-process HTML to add highlighting
+        table_empty = len(in_active_not_excluded_df.index.values) < 1
+        if table_empty:
+            # 'In Active Sites but Not in Config' Table with highlights
+            print("<tr><td style='vertical-align: top; padding-left: 20px;'><h3 style='text-align:center'>")
+            normal_th = f"<th>Site</th>"
+            highlighted_th = f"<th style='background: lightgreen;'/>Site config and exclusions up to date!</th>"
+            table_html = table_html.replace(normal_th, highlighted_th)
+            print(table_html)
+            print("</td></tr>")
+
+        else:
+            for site in in_active_not_excluded:
+                if site not in exclusion_sites_df["name"].values:
+                    # Replace exact match of the row with highlighted version
+                    normal_row = f'<tr>\n      <td>{site}</td>\n    </tr>'
+                    highlighted_row = f'<tr class="highlight">\n      <td>{site}</td>\n    </tr>'
+                    table_html = table_html.replace(normal_row, highlighted_row)
+                    
+                    # 'In Active Sites but Not in Config' Table with highlights
+                    print("<tr><td style='vertical-align: top; padding-left: 20px;'><h3 style='text-align:center'>Active Sites Not excluded</h3>")
+                    print(table_html)
+                    print("</td></tr>")
+
+
+        # 'In Config but Not in Active Sites' Table
+        print("<tr><td style='vertical-align:top; padding-top: 20px; padding-left: 20px;'><h3 style='text-align:center'>Excluded</h3>")
+        # print(pd.DataFrame(list(in_config_not_in_active), columns=['Site']).to_html(index=False))
+        print(exclusion_sites_df.to_html(index=False))
+        print("</td></tr>")
+
+        print("</table>")
+        print("</td>")
+        
+        print("</tr>")
+        print("</table>")
+
         print("</body></html>")
 
     except requests.RequestException as e:
         print(f"Request failed: {e}")
-
 
 def get_json_tables():
     """Return aswave tables in json"""
@@ -116,7 +186,6 @@ def get_html_tables():
     for i,site in enumerate(json_data):
         site_dict[site['name']] = site['name'] + ': ' + str(site['lat']) + ',' + str(site['lon'])
         print('{}<br>'.format(site_dict[site['name']]))    
-
     
 def main():
     # Parse the parameters

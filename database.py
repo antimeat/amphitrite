@@ -98,7 +98,7 @@ def add_site_to_db(site_name, location, partition_list):
     finally:
         session.close()
 
-def update_site_to_db( site_name, table, partition_list):
+def update_site_to_db(site_name, table, partition_list):
     """Update a site's details in the database."""
     session = get_session()
     try:
@@ -117,7 +117,7 @@ def update_site_to_db( site_name, table, partition_list):
     finally:
         session.close()
 
-def get_site_partitions_from_db( site_name):
+def get_site_partitions_from_db(site_name):
     """Retrieve the partitions for a given site."""
     session = get_session()
     try:
@@ -132,7 +132,7 @@ def get_site_partitions_from_db( site_name):
     finally:
         session.close()
 
-def add_wavetable_to_db( site_name, run_time, table_output):
+def add_wavetable_to_db(site_name, run_time, table_output):
     """Add wave data to the database or return existing data if duplicate."""
     session = get_session()
     
@@ -165,14 +165,17 @@ def add_wavetable_to_db( site_name, run_time, table_output):
     finally:
         session.close()
 
-def get_wavetable_from_db( site_name, run_time=None):
+def get_wavetable_from_db(site_name, run_time=None):
     """Return the wavetable data for a site at a given or most recent runtime."""
     session = get_session()
     try:
         site = session.query(models.Site).filter_by(site_name=site_name).first()
+        #lets see if there is a table_name rather than a site_name that exists :-)
         if not site:
-            return {"success": False, "message": "Site not found", "data": None}
-
+            site = session.query(models.Site).filter_by(table=site_name).first()
+            if not site:
+                return {"success": False, "message": "Site/table not found", "data": None}                
+            
         query = session.query(models.WaveData).filter_by(site_id=site.site_id)
         if run_time:
             query = query.filter_by(run_time=run_time)
