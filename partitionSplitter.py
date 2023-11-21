@@ -27,11 +27,19 @@ BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
 
 # Configure logging
 LOG_FILENAME = os.path.join(BASE_DIR,"logfile.log")
-logging.basicConfig(
-    filename=LOG_FILENAME, 
-    level=logging.INFO,
-    format='%(asctime)s:%(levelname)s:%(message)s'
-)
+
+# Configure logging
+try:
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    logging.basicConfig(
+        filename=LOG_FILENAME, 
+        level=logging.INFO,
+        format='%(asctime)s:%(levelname)s:%(message)s'
+    )
+    logging.info("Logging initialized successfully.")
+except Exception as e:
+    print(f"Logging setup failed: {e}")
 
 class PartitionSplitter(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
@@ -296,7 +304,7 @@ class PartitionSplitter(object):
         #remove the location for the purposes of api output
         df.drop("location",axis=1,inplace=True)        
         df.drop("run_time",axis=1,inplace=True)        
-        fields = ",".join(df.columns)
+        fields = ", ".join(df.columns)
         
         # Creating header
         header = "### AUSWAVE Partition Forecast ###\n"
@@ -304,7 +312,7 @@ class PartitionSplitter(object):
         header += f"# Table:  {table}\n"
         header += f"# StartTime: {start_timestamp}\n"
         header += f"# StartUTC:  {start_utc}\n"
-        header += f"# Partitions:  {','.join(str(part) for part in parts)}\n"
+        header += f"# Partitions:  {', '.join(str(part) for part in parts)}\n"
         header += f"# Fields:    {fields}\n"
         header += "###\n"
         
@@ -361,7 +369,7 @@ class PartitionSplitter(object):
 def main():
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--site",dest="site_name",nargs="?", default="Woodside - Pluto 7 days",help="the forecast site name from Ofcast",required=False)
+    parser.add_argument("--site",dest="site_name",nargs="?", default="all",help="the forecast site name from Ofcast",required=False)
     args = parser.parse_args()
     
     toolbox = PartitionSplitter()
@@ -372,6 +380,9 @@ def main():
         wave_table = toolbox.generate_site_to_db(site_name=args.site_name)
         table = wave_table["data"]
         print(table)
+    
+    #tidy up the old records
+    db.cleanup_old_run_times()
             
 if __name__ == '__main__':
     main()

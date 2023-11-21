@@ -19,7 +19,18 @@ EXCLUSION_SITES_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/
 BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
 LOG_FILE = os.path.join(BASE_DIR,'sites_api.log')
 
-logging.basicConfig(filename=LOG_FILE, level=logging.ERROR)
+try:
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    logging.basicConfig(
+        filename=LOG_FILE, 
+        level=logging.ERROR,
+        format='%(asctime)s:%(levelname)s:%(message)s'
+    )
+    logging.info("Logging initialized successfully.")
+except Exception as e:
+    print(f"Logging setup failed: {e}")
+
 
 def handle_error(status_code, message):
     """Handle errors by logging and sending an appropriate response."""
@@ -110,6 +121,7 @@ def compare_sites_and_config():
         # Fetch active sites
         active_sites_df = load()
         active_sites_df = active_sites_df[["name", "lat", "lon"]]
+        active_sites_df = active_sites_df.sort_values(by="name")
         
         # Fetch site configurations
         config_sites_response = requests.get(CONFIG_SITES_URL, verify=False)
@@ -117,12 +129,14 @@ def compare_sites_and_config():
         config_sites_df = config_sites_df.transpose()                               
         config_sites_df = config_sites_df.reset_index()
         config_sites_df = config_sites_df.rename(columns={"index": "name"})
+        config_sites_df = config_sites_df.sort_values(by="name")
 
         # Fetch exclusion sites
         exclusion_sites_response = requests.get(EXCLUSION_SITES_URL, verify=False)
         exclusion_sites_df = pd.DataFrame(exclusion_sites_response.json())
         exclusion_sites_df = exclusion_sites_df.transpose()                               
         exclusion_sites_df = exclusion_sites_df.reset_index(drop=True)
+        exclusion_sites_df = exclusion_sites_df.sort_values(by="name")
         
         # Compare active sites with site configurations
         in_active_not_in_config = set(active_sites_df['name']) - set(config_sites_df['name'])

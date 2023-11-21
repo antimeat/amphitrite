@@ -1,3 +1,41 @@
+INFO:root:Model run_time: 2023-11-20 12:00:00
+INFO:root:Site list: BHP - Pyrenees, Chevron - Gorgon, Chevron - Jansz, Chevron - Wheatstone LNG Plant, Citic Pacific - Cape Preston Area, INPEX Ichthys 7 days, Jadestone Energy - Stag, Jadestone Energy - Montara, Santos - John Brookes 4 days, Santos - Reindeer 4 days, Santos - Varanus 4 days, Santos - Spartan-2 4 days, Santos - MS1Standby 4 days, Santos - Frigate-1 4 days, Vermilion - Wandoo, Woodside - Balnaves 7 days, Woodside - Mermaid Sound 7 days, Woodside - Enfield and Vincent 10 days, Woodside - North Rankin 10 days, Woodside - Pluto 10 days, Woodside - Enfield and Vincent 7 days, Woodside - North Rankin 7 days, Woodside - Pluto 7 days, Woodside - Scarborough 7 days, Noblige, Dampier Salt - Cape Cuvier 7 day, Boskalis - Scarborough 7 Days, Pilbara Ports Authority - Ashburton, Pilbara Port Authority - Port Hedland, Pilbara Ports Authority - Dampier, Boskalis - Dampier 7 Days, Dampier Salt - Cape Cuvier 7 days, INPEX - Ichthys 7 days, Petrofac - Northern Endeavour 7 days, Santos ABUW - Bayu-Undan, Woodside - Dampier Port dps1 10 days, Woodside - Scarborough 7 Days, Woodside - Stybarrow 10 Days
+INFO:root:Saved BHP - Pyrenees to database
+INFO:root:Saved Chevron - Gorgon to database
+INFO:root:Saved Chevron - Jansz to database
+INFO:root:Saved Chevron - Wheatstone LNG Plant to database
+INFO:root:Saved Citic Pacific - Cape Preston Area to database
+INFO:root:Saved INPEX Ichthys 7 days to database
+INFO:root:Saved Jadestone Energy - Stag to database
+INFO:root:Saved Jadestone Energy - Montara to database
+INFO:root:Saved Santos - John Brookes 4 days to database
+INFO:root:Saved Santos - Reindeer 4 days to database
+INFO:root:Saved Santos - Varanus 4 days to database
+INFO:root:Saved Santos - Spartan-2 4 days to database
+INFO:root:Saved Santos - MS1Standby 4 days to database
+INFO:root:Saved Santos - Frigate-1 4 days to database
+INFO:root:Saved Vermilion - Wandoo to database
+INFO:root:Saved Woodside - Balnaves 7 days to database
+INFO:root:Saved Woodside - Mermaid Sound 7 days to database
+INFO:root:Saved Woodside - Enfield and Vincent 10 days to database
 INFO:root:Saved Woodside - North Rankin 10 days to database
-2023111912
-None
+INFO:root:Saved Woodside - Pluto 10 days to database
+INFO:root:Saved Woodside - Enfield and Vincent 7 days to database
+INFO:root:Saved Woodside - North Rankin 7 days to database
+INFO:root:Saved Woodside - Pluto 7 days to database
+INFO:root:Saved Woodside - Scarborough 7 days to database
+INFO:root:Saved Noblige to database
+INFO:root:Saved Dampier Salt - Cape Cuvier 7 day to database
+INFO:root:Saved Boskalis - Scarborough 7 Days to database
+INFO:root:Saved Pilbara Ports Authority - Ashburton to database
+INFO:root:Saved Pilbara Port Authority - Port Hedland to database
+INFO:root:Saved Pilbara Ports Authority - Dampier to database
+INFO:root:Saved Boskalis - Dampier 7 Days to database
+INFO:root:Saved Dampier Salt - Cape Cuvier 7 days to database
+INFO:root:Saved INPEX - Ichthys 7 days to database
+INFO:root:Saved Petrofac - Northern Endeavour 7 days to database
+INFO:root:Saved Santos ABUW - Bayu-Undan to database
+INFO:root:Saved Woodside - Dampier Port dps1 10 days to database
+INFO:root:Saved Woodside - Scarborough 7 Days to database
+INFO:root:Saved Woodside - Stybarrow 10 Days to database
+2023112012

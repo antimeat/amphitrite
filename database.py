@@ -14,6 +14,7 @@ import json
 from tabulate import tabulate
 import pandas as pd
 import argparse
+import datetime
 
 # Local imports
 import models
@@ -179,7 +180,8 @@ def get_wavetable_from_db(site_name, run_time=None):
             
         query = session.query(models.WaveData).filter_by(site_id=site.site_id)
         if run_time:
-            query = query.filter_by(run_time=run_time)
+            run_time_dt = datetime.datetime.strptime(run_time,"%Y%m%d%H")
+            query = query.filter_by(run_time=run_time_dt)
         else:
             query = query.order_by(models.WaveData.run_time.desc())
 
@@ -312,6 +314,28 @@ def api_output():
     
     return sites_table_output, run_time_table_output
 
+def cleanup_old_run_times(days=10):
+    """Delete WaveData records older than a specified number of days."""
+    session = get_session()
+    try:
+        # Calculate the cutoff date
+        cutoff_date = datetime.datetime.now() - datetime.timedelta(days=days)
+
+        # Query and delete records older than the cutoff date
+        old_records = session.query(models.WaveData).filter(models.WaveData.run_time < cutoff_date).all()
+        for record in old_records:
+            session.delete(record)
+
+        session.commit()
+        print(f"Deleted {len(old_records)} old records.")
+
+    except Exception as e:
+        session.rollback()
+        print(f"Error during cleanup: {e}")
+
+    finally:
+        session.close()
+
 if __name__ == "__main__":
     # Create the parser
     parser = argparse.ArgumentParser(description='Process some integers.')
@@ -327,3 +351,6 @@ if __name__ == "__main__":
         api_output()
     else:
         console_output()
+    
+    #tidy up the old records
+    cleanup_old_run_times()
