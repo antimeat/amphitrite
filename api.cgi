@@ -10,12 +10,27 @@ import database as db
 import os
 import pandas as pd
 import json
+import sys
+import logging
 
 BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
 BASE_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite"
+LOG_FILE = os.path.join(BASE_DIR,'api.log')
+
+logging.basicConfig(filename=LOG_FILE, level=logging.ERROR)
+
+def handle_error(status_code, message):
+    """Handle errors by logging and sending an appropriate response."""
+    logging.error(message)
+    print(f"Status: {status_code}")
+    print("Content-Type: application/json")
+    print()
+    print(json.dumps({"success": False, "message": message}))
+    sys.exit()
 
 def load_config_file(config_file):
-        """Read in the sites config file"""
+    """Read in the sites config file"""
+    try:
         site_tables = {}
         with open(config_file, 'r') as file:
             for line in file:
@@ -36,65 +51,120 @@ def load_config_file(config_file):
 
         return site_tables
 
+    except Exception as e:
+        handle_error(500, f"Internal Server Error: {e}")
+
 def load_exclusion_file(config_file):
     """Load the exclusion_sites.txt and return json"""
-    sites = {}
-    with open(config_file, 'r') as file:
-        for line in file:
-            # Strip leading and trailing spaces
-            stripped_line = line.strip()
+    try:
+        sites = {}
+        with open(config_file, 'r') as file:
+            for line in file:
+                # Strip leading and trailing spaces
+                stripped_line = line.strip()
 
-            # Skip comment lines and empty lines
-            if stripped_line.startswith('#') or not stripped_line:
-                continue
+                # Skip comment lines and empty lines
+                if stripped_line.startswith('#') or not stripped_line:
+                    continue
 
-            sites[stripped_line] = {"name": stripped_line}
+                sites[stripped_line] = {"name": stripped_line}
 
-    return sites
+        return sites
+
+    except Exception as e:
+        handle_error(500, f"Internal Server Error: {e}")
+
+def database_check():
+    """Display sites and run_times as columns in an HTML table"""
+    try:
+        sites_str, run_times_str = db.api_output()
+
+        # Assuming the strings are comma-separated, split them into lists
+        sites = sites_str.split(',')
+        run_times = run_times_str.split(',')
+
+        table_style = """
+            <style>
+                table { 
+                    border-collapse: collapse; 
+                    width: 80%; 
+                    margin: 20px auto; 
+                }
+                th, td { 
+                    border: 1px solid black; 
+                    padding-right: 20px;
+                    padding-left: 20px;
+                    vertical-align: top;
+                    text-align: top; 
+                }
+                tr:nth-child(even) { 
+                    background-color: #f2f2f2; 
+                }
+            </style>
+        """
+        
+        site_rows = ''.join([f"<tr><td>{site}</td></tr>" for site in sites])
+        run_time_rows = ''.join([f"<tr><td>{run_time}</td></tr>" for run_time in run_times])
+
+        html_table = f"{table_style}<table><tr><td>{sites_str}</td><td>{run_times_str}</td></tr></table>"
+        print(html_table)
+
+    except Exception as e:
+        handle_error(500, f"Internal Server Error: {e}")
 
 def list_sites_as_html():
-    site_data = db.get_all_sites()["data"]
-    site_names = site_data[0]
-    tables = site_data[1]
-    partitions = site_data[2]
-    table_style = """
-        <style>
-            table { 
-                border-collapse: collapse; 
-                width: 50%; 
-                margin: 20px auto; 
-            }
-            th, td { 
-                border: 1px solid black; 
-                padding: 8px; 
-                text-align: left; 
-            }
-            tr:nth-child(even) { 
-                background-color: #f2f2f2; 
-            }
-            h2 {
-                text-align: center;
-            }
-        </style>
-    """
-    headers = "<tr><th>Forecast site</th><th>Auswave table</th><th>Partitions</th></tr>"
+    """Print out all the sites and links to tables from the database via html"""
+    try:
+        site_data = db.get_all_sites()["data"]
+        site_names = site_data[0]
+        tables = site_data[1]
+        partitions = site_data[2]
+        table_style = """
+            <style>
+                table { 
+                    border-collapse: collapse; 
+                    width: 50%; 
+                    margin: 20px auto; 
+                }
+                th, td { 
+                    border: 1px solid black; 
+                    padding: 8px; 
+                    text-align: left; 
+                }
+                tr:nth-child(even) { 
+                    background-color: #f2f2f2; 
+                }
+                h2 {
+                    text-align: center;
+                }
+            </style>
+        """
+        headers = "<tr><th>Forecast site</th><th>Auswave table</th><th>Partitions</th></tr>"
 
-    html_table_rows = "".join([f"<tr><td><a href='api.cgi?get=site&site_name={site_names[i]}' target='_blank'>{site_names[i]}</a></td><td>{tables[i]}</td><td>{', '.join(map(str, partitions[i]))}</td></tr>" for i in range(len(site_names))])
-    return f"{table_style}<h2>Partitioned Swell Tables</h2><table>{headers}{html_table_rows}</table>"
+        html_table_rows = "".join([f"<tr><td><a href='api.cgi?get=site&site_name={site_names[i]}' target='_blank'>{site_names[i]}</a></td><td>{tables[i]}</td><td>{', '.join(map(str, partitions[i]))}</td></tr>" for i in range(len(site_names))])
+        return f"{table_style}<h2>Partitioned Swell Tables</h2><table>{headers}{html_table_rows}</table>"
+    except Exception as e:
+        handle_error(500, f"Internal Server Error: {e}")
 
 def list_sites_as_json():
     """Return aswave tables in json"""
-    file_name = os.path.join(BASE_DIR,"site_config.txt")
-    json_str = load_config_file(file_name)
-    
-    return json.dumps(json_str)
+    try:
+        file_name = os.path.join(BASE_DIR,"site_config.txt")
+        json_str = load_config_file(file_name)
+        
+        return json.dumps(json_str)
+    except Exception as e:
+        handle_error(500, f"Internal Server Error: {e}")
 
 def list_exclusion_as_json():
     """Return exclusion sites in json"""
-    file_name = os.path.join(BASE_DIR,"exclusion_list.txt")
-    json_str = load_exclusion_file(file_name)
-    
-    return json.dumps(json_str)
+    try:
+        file_name = os.path.join(BASE_DIR,"exclusion_list.txt")
+        json_str = load_exclusion_file(file_name)
+        
+        return json.dumps(json_str)
+    except Exception as e:
+        handle_error(500, f"Internal Server Error: {e}")
 
 def main():
     # Parse the parameters
@@ -106,6 +176,11 @@ def main():
         print("Content-Type: text/html")
         print()
         print(list_sites_as_html())
+    
+    elif get == 'database':
+        print("Content-Type: text/html")
+        print()
+        database_check()
     
     elif get == 'list_json':
         print("Content-Type: application/json")

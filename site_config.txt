@@ -2,6 +2,20 @@
 # Format: Site Name, Table Name, Split Range 1, Split Range 2
 # Example of a line: BHP - Pyrenees, Pyranees, 0.001-9, 9-40
 # Please follow the format strictly while editing
+# WRB-A, WRB-A, 0.001-9, 9-40
+# WRB-B, WRB-B, 0.001-9, 9-40
+# CheJetty, CheJetty, 0.001-9, 9-40
+# Mermaid-Sn, Mermaid_snd, 0.001-9, 9-40
+# Navaid9, Navaid9, 0.001-9, 9-40
+# Eagle-1, Eagle-1, 0.001-9, 9-40
+# Santos - Frigate-1 4 days, Frigate-1, 0.001-9, 9-40
+# Mermaid-St, Mermaid-St, 0.001-9, 9-40
+# Valaris, Valaris, 0.001-9, 9-40
+# Chevron - Wheatstone LNG Plant AFS, Wheatstone, 0.001-9, 9-40
+# Chevron - Wheatstone Platform AFS, PLA, 0.001-9, 9-40
+# Chevron Barrow Island AFS, WRB-B, 0.001-9, 9-40
+# Chevron Barrow Island AFS ML, WRB-B, 0.001-9, 9-40
+# Santos - Van Gogh 4 days, Van-Gogh, 0.001-9, 9-40
 
 BHP - Pyrenees, Pyrenees, 0.001-9, 9-40
 Boskalis - Scarborough 7 Days, Scarb_new, 0.001-9, 9-40
@@ -37,18 +51,3 @@ Woodside - Pluto 10 days, PLA, 0.001-9, 9-40
 Woodside - Scarborough 7 Days, Scarboroug, 0.001-9, 9-40
 Woodside - Stybarrow 10 Days, Stybarrow, 0.001-9, 9-40
 Noblige, Noblige, 0.001-9, 9-40
-
-# WRB-A, WRB-A, 0.001-9, 9-40
-# WRB-B, WRB-B, 0.001-9, 9-40
-# CheJetty, CheJetty, 0.001-9, 9-40
-# Mermaid-Sn, Mermaid_snd, 0.001-9, 9-40
-# Navaid9, Navaid9, 0.001-9, 9-40
-# Eagle-1, Eagle-1, 0.001-9, 9-40
-# Santos - Frigate-1 4 days, Frigate-1, 0.001-9, 9-40
-# Mermaid-St, Mermaid-St, 0.001-9, 9-40
-# Valaris, Valaris, 0.001-9, 9-40
-# Chevron - Wheatstone LNG Plant AFS, Wheatstone, 0.001-9, 9-40
-# Chevron - Wheatstone Platform AFS, PLA, 0.001-9, 9-40
-# Chevron Barrow Island AFS, WRB-B, 0.001-9, 9-40
-# Chevron Barrow Island AFS ML, WRB-B, 0.001-9, 9-40
-# Santos - Van Gogh 4 days, Van-Gogh, 0.001-9, 9-40

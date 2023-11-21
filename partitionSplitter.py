@@ -9,8 +9,8 @@ Classes:
 Functions:    
 """
 import os
-# os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/'
-#os.environ[ 'CONDA_DEFAULT_ENV' ] = 'mlenv'
+os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
+# os.environ[ 'CONDA_DEFAULT_ENV' ] = 'mlenv'
 
 # import swellSmusher
 import partition
@@ -361,7 +361,7 @@ class PartitionSplitter(object):
 def main():
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--site",dest="site_name",nargs="?", default="Woodside - North Rankin 10 days",help="the forecast site name from Ofcast",required=False)
+    parser.add_argument("--site",dest="site_name",nargs="?", default="Woodside - Pluto 7 days",help="the forecast site name from Ofcast",required=False)
     args = parser.parse_args()
     
     toolbox = PartitionSplitter()

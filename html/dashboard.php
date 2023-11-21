@@ -48,8 +48,7 @@
 		<script>
 
 			$(document).on('ready', function() {
-                document.onkeypress = null
-                changeLink('welcome');	
+            	changeLink('welcome');	
 			});	
 						
 			function changeLink(input) {
@@ -70,8 +69,8 @@
 				    fileName = 'database_check.php';
 					$("#imageContainer").load(fileName);
 				}
-				else if (input == 'activate_run') {
-				    fileName = 'activate_run.php';
+				else if (input == 'activate') {
+				    fileName = 'activate_wrapper.php';
 					$("#imageContainer").load(fileName);
 				}
 				else if (input == 'edit-config') {

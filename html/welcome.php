@@ -22,7 +22,7 @@
             
             .welcome {
                 position: absolute;
-                top: 800px;                
+                top: 650px;                
                 opacity: 1;
             }
             
@@ -31,38 +31,44 @@
 
     </head>
     
-    <?php
-        $fp = fopen($fileName, "r");
-        $content = fread($fp, filesize($fileName));
-        $lines = explode("::", $content);
-        $date = $lines[0];
-        fclose($fp);        
-    ?>
-    
     <body>
         
         <div class="container-fluid">
             <div style="position: relative; top: 100px">
                 
-                    <h1 style="text-align: left;"><i><p style="text-align: right;"> <font color="lightgrey" size="4"><?php echo('Sites list last updated: ' . $date) ?></font></p>Welcome</i></h1>
-                    <hr><br><br>
-                        <img src="http://www.bom.gov.au/difacs/IDX0894.gif" class="mslp" style="display: block; margin-right: auto;  margin-right: auto;  width: 55%;"></img>
+                    <h1 style="text-align: left;"><i><p style="text-align: right;"></font></p>Welcome</i></h1>
+                    <hr><br>
+                        <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/img/neptune_amphitrite.jpg" class="mslp" style="display: block; margin-right: auto;  margin-right: auto;  width: 30%;"></img>
                         <!-- <img src="http://www.bom.gov.au/iwk/images/small-artwork.png" class="indigenous"  style="display: block; margin-right: auto;  margin-right: auto;  width: 55%;"/img> -->
                     <h2> 
-                        <div class="welcome">
-                            <H2> Acknowledgment of Country </H2>
-                            <h5><i>The Bureau of Meteorology acknowledges the Traditional Owners and Custodians of Country throughout Australia and acknowledges their continuing connection to land, sea and community. We recognise the continuation of cultural and weather knowledge practices of Aboriginal and Torres Strait Islander peoples. We pay our respects to the people and their Elders past and present.</i></h5>
+                    <div class="welcome">
+                            <h2><i> Amphitrite was Queen of Atlantis, wife to Nepture, and the patron of wave partitions! </i></h2>
                             <br>
-                            <!--
-                            <?php 
-                                foreach($welcome as $note) {
-                                    if (ctype_space($note) == false) {
-                                        echo($note."<br>");
-                                    }
-                                }
-                            ?>
-                            -->
-                        </div>
+                            <h5>
+                                <ol>
+                                    <li>Config check
+                                    <ul>
+                                        <li>check our configuration file is in line with Active sites in Ofcast</li>
+                                    </ul>  
+                                    </li>
+                                    <li>Sites list
+                                    <ul>
+                                        <li>the current list of database site partitions using the latest available time for that site </li>
+                                    </ul>  
+                                    <li>Database check
+                                    <ul>
+                                        <li>Print out the state of the database with saved sites and the available run_times </li>
+                                    </ul>
+                                    </li>
+                                    <li>Activate run
+                                    <ul>
+                                        <li>manually generate the wave partions based on Active Ofcast sites that are in the configuration file </li>
+                                    </ul>  
+                                    </li>
+                                </ol>    
+                            </h5>
+                            <br>                            
+                        </div>                        
                         
                     </h2>
                 </div>         

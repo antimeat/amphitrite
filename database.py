@@ -13,6 +13,7 @@ import os
 import json
 from tabulate import tabulate
 import pandas as pd
+import argparse
 
 # Local imports
 import models
@@ -285,5 +286,44 @@ def console_output():
     run_time_table_output = tabulate(df_wave_data,headers="keys",tablefmt="psql", showindex=False)
     print(run_time_table_output)
 
+def api_output():
+    """Format the state of the database for api output"""       
+    #stie data from Sites
+    site_data = get_all_sites()["data"]
+    sites = site_data[0]
+    tables = site_data[1]
+    partitions = site_data[2]
+
+    df_sites = pd.DataFrame({
+        "sites": sites,
+        "table": tables,
+        "partitions": partitions
+    })
+
+    df_sites_sorted = df_sites.sort_values(by='sites')
+    sites_table_output = tabulate(df_sites_sorted,headers="keys",tablefmt="html", showindex=False)
+    
+    #run_times from WaveData
+    run_times = get_all_run_times()["data"]
+    df_wave_data = pd.DataFrame({"run_times":run_times})
+    df_wave_data_sorted = df_wave_data.sort_values(by="run_times", ascending=False)
+
+    run_time_table_output = tabulate(df_wave_data_sorted,headers="keys",tablefmt="html", showindex=False)
+    
+    return sites_table_output, run_time_table_output
+
 if __name__ == "__main__":
-    console_output()
+    # Create the parser
+    parser = argparse.ArgumentParser(description='Process some integers.')
+
+    # Add arguments
+    parser.add_argument('--api', action='store_true', help='Output for API')
+    parser.add_argument('--console', action='store_true', help='Output for console')
+
+    # Parse arguments
+    args = parser.parse_args()
+
+    if args.api:
+        api_output()
+    else:
+        console_output()

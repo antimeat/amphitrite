@@ -78,7 +78,6 @@
                         <textarea class="form-control" name="sites" id="sites" cols="10" rows="30"><?php echo htmlspecialchars($sitesDisplay); ?></textarea>
                     </div>
                     <!-- Hidden div for comments -->
-                    <!-- Hidden div for comments -->
                     <textarea style="display: none;" name="comments" id="comments"><?php echo htmlspecialchars($commentsDisplay); ?></textarea>
                 </div>
                 

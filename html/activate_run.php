@@ -1,78 +1,89 @@
 <html>
 
-<?php include('configs.php');?>
+    <?php include('configs.php');?>
 
-<head>
-    <title><?php echo $title; ?></title>
-    
-    <style type="text/css">
-        .container-fluid {
-            text-align: center;
-        }
-
-        .centered-content {
-            margin: auto;
-            margin-top: 50px;
-            display: inline-block;
-            text-align: left;
-        }
-        fieldset {
-	        text-align: left;
-	        display: inline-block;
-	        vertical-align: middle;
-        }
-        input[type="radio"] {
-	        vertical-align: left;
-	        horizontal-align: left;
-	        padding: 5px;
-	        margin-left:10px;		
-	        margin: 5px;	
-	        margin-top: 50px;
-        }
-
-    </style>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            document.onkeypress = null
-        });            
-    </script>
+    <head>
+        <title><?php echo $title; ?></title>
         
-</head>
+        <style type="text/css">
+            fieldset {
+                text-align: left;
+                display: inline-block;
+                vertical-align: middle;
+            }
+            input[type="radio"] {
+                vertical-align: left;
+                horizontal-align: left;
+                padding: 5px;
+                margin-left:10px;		
+                margin: 5px;	
+                margin-top: 50px;
+            }
 
-<body>
-    <div class="container-fluid">
-        <div style="position: relative; top: 100px">
-            <div style="width: 1500px; margin: 4px">  
-        
-                <h1 style="text-align: left;"><i>Activate a manual run:</i></h1>
-                <hr>
-                            
-                <form action='run_script.php' method="POST" onsubmit="showLoader()">
-                    <div id="loading" style="display: none">
-                        <!-- Loading Image -->
-                    </div>
+        </style>
+
+         <!-- Replace the slim build with the full version of jQuery -->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> -->
+
+        <!-- Bootstrap 4 CSS CDN -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">    
+
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <div style="position: relative; top: 100px;">
+                <div style="width: 1200px; margin: 4px;">  
             
-                    <fieldset class="centered-content">    
-                        <table>
-                            <tr>
-                                <td><label for="force"><b>Hit it!:</b></label></td>
-                                <td style='padding-left:20px;padding-bottom:10px;'><input type="submit" id="force" name="force"/> </td>                   
-                            </tr>
-                        </table>            
-                    </fieldset>
-                </form>
+                    <h1 style="text-align: left;"><i>Activate a manual run:</i></h1>
+                    <hr>
+                    <br>            
+                    <form action='run_script.php' method="POST" onsubmit="showLoader()">
+                        <div id = "loading" style = "display: none;">
+                            <div>
+                                <img src = "http://wa-vw-er.bom.gov.au/webapps/er_ml_projects/davink/amphitrite/html/img/loading_icon.gif" width = 150 height = 100 />
+                            </div>
+                        </div>
+                        <fieldset  class="fieldset" id="table" >    
+                            <table>
+                                <tr>
+                                    <td><label for="sites"><b>Active sites:</b></label></td>
+                                    <td style='padding-left:20px;padding-bottom:10px;'>
+                                        <select id="sites" name="sites">
+                                            <option value="all">All Sites</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="force"><b>Hit it!:</b></label></td>
+                                    <td style='padding-left:20px;padding-bottom:10px;'><input type="submit" id="force" name="force"/> </td>                   
+                                </tr>
+                            </table>            
+                        </fieldset>                    
+                    </form>
+
+                </div>
             </div>
         </div>
-    </div>
-</body>
-<script>
-    function showLoader() {
-        document.getElementById("loading").style.display = "block";
-        document.getElementById("table").style.display = "none";        
-    }
-</script>
+        <script>
+            function showLoader() {
+                document.getElementById("loading").style.display = "block";
+                document.getElementById("table").style.display = "none";        
+            }
+
+            $(document).ready(function() {
+                $.getJSON("http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=active_sites", function(data) {
+                    var sitesDropdown = $("#sites");
+                    $.each(data, function(index, siteName) {
+                        console.log(siteName);
+                        sitesDropdown.append($('<option></option>').attr('value', siteName).text(siteName));
+                    });
+                });
+            });
+        </script>
+    </body>
+    
 
 </html>
 
