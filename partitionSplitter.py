@@ -64,7 +64,7 @@ class PartitionSplitter(object):
         """Get the table config related to the site_name from the database"""
         session = db.get_session()
         try:
-            site = session.query(models.Site).filter_by(models.Site.site_name == site_name).first()
+            site = session.query(models.Site).filter(models.Site.site_name == site_name).first()
             if site:
                 return {"success": True, "message": f"'{site_name} data found", "data": site.to_json()}
             else:
