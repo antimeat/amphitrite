@@ -6,7 +6,7 @@ Functions:
     multi_parts(*parts)
     mermaidSound()
 """
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import os
@@ -61,8 +61,8 @@ def site_runtime_exists(site_name, run_time):
     """return true if site and runtime is in the database"""
     session = get_session()
     try:
-        site = session.query(models.Site).filter(site_name=site_name).first()
-        wave_table = session.query(models.WaveData).filter(site_id=site.site_id, run_time=run_time).first()
+        site = session.query(models.Site).filter(models.Sites.site_name == site_name).first()
+        wave_table = session.query(models.WaveData).filter(models.Sites.site_id == site.site_id, run_time == run_time).first()
         if wave_table:
             return {"success": True, "message": f"{site.site_name} and {run_time} already exist"}
         else:
@@ -84,6 +84,21 @@ def get_all_sites():
     except Exception as e:
         return {"success": False, "message": str(e)}
     
+def get_all_wave_data():
+    """return all wave data"""
+    session = get_session()
+    try:
+        sites = session.query(models.Site).all()
+        site_names = [site.site_name for site in sites]
+        tables = [site.table for site in sites]
+        partitions = [site.get_partitions() for site in sites]
+        run_times = [session.query(models.WaveData.run_time).filter(models.WaveData.site_id == site.site_id).order_by(desc(models.WaveData.run_time)).first() for site in sites]
+        print([str(rt) for rt in run_times])
+        # run_times = [rt.strftime("%Y/%m/%d %H") if rt is not None else None for rt in run_times]        
+        return {"success": True, "message": "All wave data returned", "data":[site_names,tables,partitions,run_times]}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
 def add_site_to_db(site_name, location, partition_list):
     """Add a new site to the database."""
     session = get_session()
@@ -256,7 +271,7 @@ def get_all_run_times():
         run_times = session.query(models.WaveData.run_time).all()
         
         # Extract run_time values from the query result
-        run_times_list = [run_time[0].strftime("%Y/%m/%d %H00") for run_time in run_times]
+        run_times_list = [run_time[0].strftime("%Y/%m/%d %H") for run_time in run_times]
         unique_run_times = set(run_times_list)
 
         return {"success": True, "message": "Run times retrieved successfully", "data": list(unique_run_times)}
@@ -295,17 +310,16 @@ def api_output():
     sites = site_data[0]
     tables = site_data[1]
     partitions = site_data[2]
-
+    
     df_sites = pd.DataFrame({
         "sites": sites,
         "table": tables,
-        "partitions": partitions
+        "partitions": partitions,
     })
 
     df_sites_sorted = df_sites.sort_values(by='sites')
     sites_table_output = tabulate(df_sites_sorted,headers="keys",tablefmt="html", showindex=False)
     
-    #run_times from WaveData
     run_times = get_all_run_times()["data"]
     df_wave_data = pd.DataFrame({"run_times":run_times})
     df_wave_data_sorted = df_wave_data.sort_values(by="run_times", ascending=False)
@@ -313,7 +327,7 @@ def api_output():
     run_time_table_output = tabulate(df_wave_data_sorted,headers="keys",tablefmt="html", showindex=False)
     
     return sites_table_output, run_time_table_output
-
+    
 def cleanup_old_run_times(days=10):
     """Delete WaveData records older than a specified number of days."""
     session = get_session()

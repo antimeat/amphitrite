@@ -89,10 +89,6 @@ def database_check():
     try:
         sites_str, run_times_str = db.api_output()
 
-        # Assuming the strings are comma-separated, split them into lists
-        sites = sites_str.split(',')
-        run_times = run_times_str.split(',')
-
         table_style = """
             <style>
                 table { 
@@ -113,9 +109,6 @@ def database_check():
             </style>
         """
         
-        site_rows = ''.join([f"<tr><td>{site}</td></tr>" for site in sites])
-        run_time_rows = ''.join([f"<tr><td>{run_time}</td></tr>" for run_time in run_times])
-
         html_table = f"{table_style}<table><tr><td>{sites_str}</td><td>{run_times_str}</td></tr></table>"
         print(html_table)
 

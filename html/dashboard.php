@@ -73,6 +73,10 @@
 				    fileName = 'activate_wrapper.php';
 					$("#imageContainer").load(fileName);
 				}
+				else if (input == 'logging') {
+				    fileName = 'logging.php';
+					$("#imageContainer").load(fileName);
+				}
 				else if (input == 'edit-config') {
 				    fileName = 'edit-config.php';
 					$("#imageContainer").load(fileName);
