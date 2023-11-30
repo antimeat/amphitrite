@@ -75,7 +75,7 @@ def get_all_sites():
     """return all sites"""
     session = get_session()
     try:
-        sites = session.query(models.Site).all()
+        sites = session.query(models.Site).order_by(models.Site.site_name).all()
         site_names = [site.site_name for site in sites]
         tables = [site.table for site in sites]
         partitions = [site.get_partitions() for site in sites]

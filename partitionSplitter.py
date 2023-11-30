@@ -316,9 +316,14 @@ class PartitionSplitter(object):
         header += f"# Fields:    {fields}\n"
         header += "###\n"
         
+        #insert commas and remove the last comma
+        formatted_df = df.astype(str)
+        formatted_df = formatted_df.apply(lambda x: x + ", ", axis=1)
+        formatted_df.iloc[:,-1] = formatted_df.iloc[:,-1].str.rstrip(", ")
+        
         # Creating table body
-        table_body = tabulate(df, headers=[], tablefmt='plain', showindex=False)
-
+        table_body = tabulate(formatted_df, headers=[], tablefmt='plain', showindex=False)
+    
         # Concatenating the header, table body, and footer
         final_output = header + table_body
 
@@ -378,8 +383,13 @@ def main():
         toolbox.generate_all_sites_to_db()
     else:
         wave_table = toolbox.generate_site_to_db(site_name=args.site_name)
-        table = wave_table["data"]
-        print(table)
+
+        # Check if wave_table is not None
+        if wave_table is not None and "data" in wave_table:
+            table = wave_table["data"]
+            print(table)
+        else:
+            print(f"No data available for site '{args.site_name}'.")
     
     #tidy up the old records
     db.cleanup_old_run_times()
