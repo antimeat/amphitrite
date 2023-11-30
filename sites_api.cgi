@@ -193,11 +193,11 @@ def compare_sites_and_config():
                     highlighted_row = f'<tr class="highlight">\n      <td>{site}</td>\n    </tr>'
                     table_html = table_html.replace(normal_row, highlighted_row)
                     
-                    # 'In Active Sites but Not in Config' Table with highlights
-                    print("<tr><td style='vertical-align: top; padding-left: 20px;'><h3 style='text-align:center'>Active Sites Not excluded</h3>")
-                    print(table_html)
-                    print("</td></tr>")
-
+            # 'In Active Sites but Not in Config' Table with highlights
+            print("<tr><td style='vertical-align: top; padding-left: 20px;'><h3 style='text-align:center'>Active Sites Not excluded</h3>")
+            print(table_html)
+            print("</td></tr>")
+        
 
         # 'In Config but Not in Active Sites' Table
         print("<tr><td style='vertical-align:top; padding-top: 20px; padding-left: 20px;'><h3 style='text-align:center'>Excluded from Active Sites</h3>")

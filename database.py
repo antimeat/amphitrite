@@ -7,7 +7,7 @@ Functions:
     mermaidSound()
 """
 from sqlalchemy import create_engine, desc
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 import os
 import json
@@ -24,7 +24,7 @@ DATABASE_URL = "sqlite:///wave_data.db"
 Base = declarative_base()
 
 engine = create_engine(DATABASE_URL)
-Session = sessionmaker(bind=engine)
+Session = scoped_session(sessionmaker(bind=engine))
 
 def init_db():
     """Initialize the database, create tables."""
@@ -57,6 +57,10 @@ def add_site(site_name, location, partitions):
         print(f"Error processing site '{site_name}': {e}")
         session.rollback()
     
+    finally:
+        session.close()
+        Session.remove() 
+        
 def site_runtime_exists(site_name, run_time):
     """return true if site and runtime is in the database"""
     session = get_session()
@@ -71,6 +75,10 @@ def site_runtime_exists(site_name, run_time):
     except Exception as e:
         return {"success": False, "message": str(e)}
     
+    finally:
+        session.close()
+        Session.remove() 
+        
 def get_all_sites():
     """return all sites"""
     session = get_session()
@@ -84,6 +92,10 @@ def get_all_sites():
     except Exception as e:
         return {"success": False, "message": str(e)}
     
+    finally:
+        session.close()
+        Session.remove() 
+        
 def get_all_wave_data():
     """return all wave data"""
     session = get_session()
@@ -98,6 +110,10 @@ def get_all_wave_data():
     except Exception as e:
         return {"success": False, "message": str(e)}
 
+    finally:
+        session.close()
+        Session.remove() 
+        
 def add_site_to_db(site_name, location, partition_list):
     """Add a new site to the database."""
     session = get_session()
@@ -113,7 +129,8 @@ def add_site_to_db(site_name, location, partition_list):
         return {"success": False, "message": str(e)}
     finally:
         session.close()
-
+        Session.remove() 
+        
 def update_site_to_db(site_name, table, partition_list):
     """Update a site's details in the database."""
     session = get_session()
@@ -132,7 +149,8 @@ def update_site_to_db(site_name, table, partition_list):
         return {"success": False, "message": str(e)}
     finally:
         session.close()
-
+        Session.remove() 
+        
 def get_site_partitions_from_db(site_name):
     """Retrieve the partitions for a given site."""
     session = get_session()
@@ -147,7 +165,8 @@ def get_site_partitions_from_db(site_name):
         return {"success": False, "message": str(e)}
     finally:
         session.close()
-
+        Session.remove() 
+        
 def add_wavetable_to_db(site_name, run_time, table_output):
     """Add wave data to the database or return existing data if duplicate."""
     session = get_session()
@@ -180,6 +199,7 @@ def add_wavetable_to_db(site_name, run_time, table_output):
         return {"success": False, "message": str(e), "data": None}
     finally:
         session.close()
+        Session.remove() 
 
 def get_wavetable_from_db(site_name, run_time=None):
     """Return the wavetable data for a site at a given or most recent runtime."""
@@ -213,6 +233,7 @@ def get_wavetable_from_db(site_name, run_time=None):
         return {"success": False, "message": str(e), "data": str(e)}
     finally:
         session.close()
+        Session.remove() 
 
 def update_site_to_db( site_name, table, partition_list):
     """Update a site's details in the database."""
@@ -231,6 +252,7 @@ def update_site_to_db( site_name, table, partition_list):
         raise e
     finally:
         session.close()
+        Session.remove() 
 
 def delete_oldest_wave_data(max_size_gb=10):
     """Delete the oldest WaveData entries if the database exceeds a certain size."""
@@ -257,6 +279,7 @@ def delete_oldest_wave_data(max_size_gb=10):
         return {"success": False, "message": str(e)}
     finally:
         session.close()
+        Session.remove() 
 
 def get_db_file_size():
     """Get the size of the database file in gigabytes."""
@@ -280,6 +303,7 @@ def get_all_run_times():
         return {"success": False, "message": str(e)}
     finally:
         session.close()
+        Session.remove() 
 
 def console_output():
     """Format the state of the database for console output"""       
@@ -350,6 +374,7 @@ def cleanup_old_run_times(days=10):
 
     finally:
         session.close()
+        Session.remove() 
 
 if __name__ == "__main__":
     # Create the parser
