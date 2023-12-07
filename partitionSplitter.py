@@ -126,7 +126,7 @@ class PartitionSplitter(object):
                      
         #clean up some column names to match Ofcast expectations
         #df["location"] = df["location"].apply(lambda x: x.decode('utf-8'))
-        df.rename(columns={"wdir":"wnd_dir","wspd":"wnd_spd","hs":"total_ht","time":"time_utc"},inplace=True)
+        df.rename(columns={"wdir":"wind_dir","wspd":"wind_spd","hs":"total_ht","time":"time_utc"},inplace=True)
         for n in unique_swell_nums:
             df.rename(columns={"{}_hs".format(n):"{}_ht".format(n),"{}_tm01".format(n):"{}_pd".format(n),"{}_dm".format(n):"{}_dirn".format(n)},inplace=True)
         
@@ -137,7 +137,7 @@ class PartitionSplitter(object):
         df["time_local"] = index.to_pydatetime()
         
         #reduced column list
-        cols = ["total_ht","wnd_dir","wnd_spd"]
+        cols = ["total_ht","wind_dir","wind_spd"]
         for n in unique_swell_nums:
             cols.extend(["{}_ht".format(n),"{}_pd".format(n),"{}_dirn".format(n)])
             
@@ -204,7 +204,7 @@ class PartitionSplitter(object):
         df.set_index(pd.DatetimeIndex(df["time"], tz='utc'), inplace=True)
         df["run_time"] =  df.index[0].tz_localize(None)   
         df["time_local"] = df.index.tz_convert('Australia/Perth').tz_localize(None)
-                
+        
         # Group by 'location' and use cumcount to count each group
         df['fcst_hrs'] = df.groupby('station_name').cumcount()
         df['fcst_hrs'] = df['fcst_hrs'].astype(str).str.zfill(3)
@@ -215,8 +215,8 @@ class PartitionSplitter(object):
             "fcst_hrs": "time[hrs]",
             "time": "time[UTC]",
             "time_local": "time[WST]",
-            "wdir": "wnd_dir[degrees]",
-            "wspd": "wnd_spd[kn]",
+            "wdir": "wind_dir[degrees]",
+            "wspd": "wind_spd[kn]",
             "hs": "seasw_ht[m]",
             "dp": "seasw_dir[degree]",
             "tp": "seasw_pd[s]",            
@@ -300,6 +300,10 @@ class PartitionSplitter(object):
         start_datetime = df["time[UTC]"].iloc[0]
         start_timestamp = int(start_datetime.timestamp())
         start_utc = start_datetime.strftime("%Y%m%d %H%M")
+        
+        #truncate the seconds 
+        df["time[WST]"] = df["time[WST]"].apply(lambda x: x.strftime("%Y-%m-%d %H:%M"))
+        df["time[UTC]"] = df["time[UTC]"].apply(lambda x: x.strftime("%Y-%m-%d %H:%M"))
         
         #remove the location for the purposes of api output
         df.drop("location",axis=1,inplace=True)        
