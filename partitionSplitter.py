@@ -10,6 +10,8 @@ Functions:
 """
 import os
 os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
+os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
+
 # os.environ[ 'CONDA_DEFAULT_ENV' ] = 'mlenv'
 
 # import swellSmusher
@@ -50,6 +52,11 @@ class PartitionSplitter(object):
         self.site_tables = self.load_config_file(self.config_file)
         self.latest_run_time = self.partition.get_latest_run_time()
         
+    def transform_site_name(site_name):
+        """Reformat the site name to api friendly"""
+        site_name = site_name.replace(" - ","-").replace(" ","_")
+        return site_name
+    
     def get_site_config(self,site_name):
         """Get the table config related to the siteName
         Paramaters:
@@ -100,7 +107,6 @@ class PartitionSplitter(object):
                 split_ranges = [tuple(map(float, part.split('-'))) for part in parts[2:]]
 
                 site_tables[site] = {"table": table, "parts": split_ranges}
-
         
         return site_tables
        
@@ -147,7 +153,7 @@ class PartitionSplitter(object):
         df = df.apply(lambda x: x.round().astype(int) if "dir" in x.name else x)
         df = df.apply(lambda x: x.round(2) if "ht" in x.name else x)
         #df = df.apply(lambda x: x.round().astype(int) if "pd" in x.name else x)       
-        df = df.apply(lambda x: x.round() if "pd" in x.name else x)       
+        df = df.apply(lambda x: x.round(1) if "pd" in x.name else x)       
         
         return df[cols]
     
@@ -245,12 +251,17 @@ class PartitionSplitter(object):
         col_mapping.update(swell_prefix_mapping)
         df.rename(columns=col_mapping, inplace=True)
         
-        # Rounding logic applied to columns based on their dtype
-        df = df.apply(lambda x: x.round(2) if 'ht' in x.name else x)
-        df = df.apply(lambda x: x.round().astype('Int64') if 'dir' in x.name else x)
-        df = df.apply(lambda x: x.round().astype('Int64') if 'spd' in x.name else x)
-        df = df.apply(lambda x: x.round().astype('Int64') if 'pd' in x.name else x)
-        
+        # rounding logic
+        try:
+            df = df.apply(lambda x: x.round(2) if 'ht' in x.name else x)
+            df = df.apply(lambda x: x.round().astype('Int64') if '_dir' in x.name else x)
+            df = df.apply(lambda x: x.round().astype('Int64') if '_spd' in x.name else x)
+            df = df.apply(lambda x: x.round().astype('Int64') if '_pd' in x.name else x)            
+            
+        except Exception as e:
+            logging.info(f"Problems rounding values: {str(e)}")
+            return None
+
         cols = col_mapping.values()
         
         df = df[cols]
@@ -281,7 +292,7 @@ class PartitionSplitter(object):
          """
         ws = self.partition.multi_parts(*parts)
         df = self.get_api_site(ws,site)
-
+        
         return df
     
     def format_df(self,df, location, *parts):

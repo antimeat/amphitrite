@@ -41,7 +41,7 @@ Santos - MS1Standby 4 days, MS-1_Stand, 0.001-9, 9-40
 Vermilion - Wandoo, Wando, 0.001-9, 9-40
 Woodside - Dampier Port dps1 10 days, Dampier_Po, 0.001-9, 9-40
 Woodside - Balnaves 7 days, Balnaves, 0.001-9, 9-40
-Woodside - Mermaid Sound 7 days, Mermaid_sn, 0.001-9, 9-40
+Woodside - Mermaid Sound 7 days, Mermaid_sn, 0.001-7, 7-13, 13-18, 16.5-40
 Woodside - Enfield and Vincent 7 days, Enfield, 0.001-9, 9-40
 Woodside - Enfield and Vincent 10 days, Enfield, 0.001-9, 9-40
 Woodside - North Rankin 10 days, Rankin, 0.001-9, 9-40
@@ -50,4 +50,6 @@ Woodside - Pluto 7 days, PLA, 0.001-9, 9-40
 Woodside - Pluto 10 days, PLA, 0.001-9, 9-40
 Woodside - Scarborough 7 Days, Scarboroug, 0.001-9, 9-40
 Woodside - Stybarrow 10 Days, Stybarrow, 0.001-9, 9-40
-Noblige, Noblige, 0.001-9, 9-40
+Woodside - Pyrenees, Pyrenees, 0.001-9, 9-40
+Woodside - Scarborough 10 Days, Scarb_new, 0.001-9, 9-40
+Woodside - Dampier Port DPS1 10 days, Dampier_Po, 0.001-9, 9-40

@@ -271,4 +271,5 @@ class Partitions(object):
 if __name__ == "__main__":
     parts = Partitions()
     print(parts.get_latest_run_time())
-    parts.generate_table_names()
+    table_names = parts.generate_table_names()
+    print(table_names)
