@@ -331,7 +331,7 @@ class PartitionSplitter(object):
     
         return df
     
-    def get_autoseas(self,site_name):
+    def get_autoseas(self,site_name,calc="new"):
         """Return autoseas data from GFE
         Parameters:
             siteName (string): site name that matches a listed site
@@ -352,7 +352,7 @@ class PartitionSplitter(object):
             debug = False,
             returnDir = False,
             returnPdDir = True,
-            calcType = "new",
+            calcType = calc,
             averageFetch = True,
             varyDecreaseFactors = False,
         )
@@ -368,43 +368,58 @@ class PartitionSplitter(object):
         merged_df = df_wind.join(autoseas_seas_df)
         merged_df.drop("diff",axis=1,inplace=True)
         
+        print(merged_df.tail())
         return merged_df
     
-    def smush_seas(self,site_name):
+    def smush_seas(self,site_name,calc):
         """Smush the seas together with the partitioned data
         Parameters:
             site_name (string): site name that matches a listed site
-            df_parts (DataFrame): dataframe of the 
         Returns:
             df_smushed (DataFrame): dataframe of smushed seas
         """
-        # get the partitioned table data
-        partition = db.get_site_partitions_from_db(site_name)["data"][0][1]
+        # get the partitions from database
+        partitions = db.get_site_partitions_from_db(site_name)["data"]
+        sea_partition = partitions[0][1]
+        num_swells = len(partitions)  
+        
+        # base columns, seas columns and swells, generate swell columns dynamically from num_swells
+        base_col_names = ["time[hrs]","time[UTC]","time[WST]","wind_dir[degrees]","wind_spd[kn]","seasw_ht[m]","seasw_dir[degree]","seasw_pd[s]"]
+        sea_col_names = ["sea_ht[m]","sea_dir[degree]","sea_pd[s]"]
+        swell_col_names = [f"sw{i}_{suffix}" for i in range(1, num_swells) for suffix in ("ht[m]","dir[degree]","pd[s]")]
+        col_names = base_col_names + sea_col_names + swell_col_names
+        
+        #get the data from database
         table = db.get_wavetable_from_db(site_name)["data"]
-        col_names = ["time[hrs]", "time[UTC]", "time[WST]", "wind_dir[degrees]", "wind_spd[kn]", "seasw_ht[m]", "seasw_dir[degree]", "seasw_pd[s]", "swell_1_ht", "swell_1_dir", "swell_1_pd"]
-        df_table = pd.read_csv(StringIO(table), comment="#", names=col_names, usecols=range(len(col_names)), header=None)
-    
-        # select seas data
-        df_table_seas = df_table[["time[UTC]", "swell_1_ht", "swell_1_dir", "swell_1_pd"]].copy()
+        df_table_all = pd.read_csv(StringIO(table), comment="#", names=col_names, header=None)
+        
+        # select just seas data
+        df_table_seas = df_table_all[["time[UTC]", "sea_ht[m]", "sea_dir[degree]", "sea_pd[s]"]].copy()
         df_table_seas["time[UTC]"] = pd.to_datetime(df_table_seas["time[UTC]"])
         df_table_seas.set_index("time[UTC]", inplace=True)
         
+        # rename for smushing purposes
+        df_table_seas.rename({
+            "sea_ht[m]": "swell_1_ht",
+            "sea_dir[degree]": "swell_1_dir",
+            "sea_pd[s]": "swell_1_pd"
+        }, axis=1, inplace=True)
+        
         # generate the autoseas data
-        df_autoseas = self.get_autoseas(site_name)
+        df_autoseas = self.get_autoseas(site_name,calc)
         df_autoseas = df_autoseas.rename_axis("time[UTC]", axis="index")
         df_autoseas.index = pd.to_datetime(df_autoseas.index)
-    
+        
+        # lets get together
+        df_merged = df_table_seas.merge(df_autoseas, left_index=True, right_index=True, how='left')
+        
         # smush
-        df_merged = df_table_seas.merge(df_autoseas, left_index=True, right_index=True, how='inner')
-        
-        print(df_table_seas)
-        print(df_autoseas)
-        print(df_merged)
-        
-        simplified = smusher.SimpleSwell(siteName=self.transform_site_name(site_name), periodSplit=partition)
-        df_smushed = simplified.calculate_simpleSwell(df_merged,seas=True)
-        df_smushed = simplified.finalFormatting(df_smushed)
+        smush = smusher.SwellSmusher(siteName=self.transform_site_name(site_name), periodSplit=sea_partition)
+        df_smushed = smush.calculate_simpleSwell(df_merged,seas=True)
+        df_smushed = smush.finalFormatting(df_smushed)
 
+        #re-merge the swells back-in
+        
         return df_smushed        
     
     def get_site_partitions_df(self,site,*parts):
@@ -515,9 +530,10 @@ def main():
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--site",dest="site_name",nargs="?", default="all",help="the forecast site name from Ofcast",required=False)
+    parser.add_argument("--calc",dest="calc",nargs="?", default="new",help="the calculation used by Autoseas",required=False)
     args = parser.parse_args()
     site_name=args.site_name
-    
+    calc = args.calc
     toolbox = PartitionSplitter()
     
     table_config = toolbox.get_site_config_db(site_name)
@@ -529,9 +545,11 @@ def main():
     # all the site parms from the database
     site_name = table_config["data"]["site_name"]    
         
-    df_smushed = toolbox.smush_seas(args.site_name)
+    df_smushed = toolbox.smush_seas(args.site_name,calc)
     
     print(df_smushed.head(50))
+    print(df_smushed.tail(50))
+    
             
 if __name__ == '__main__':
     main()

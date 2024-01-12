@@ -3,7 +3,7 @@
 import pandas as pd
 import numpy as np
 
-class SimpleSwell(object):
+class SwellSmusher():
     '''
     Class for simplifying swells
     '''
@@ -86,7 +86,6 @@ class SimpleSwell(object):
         
         # get all the period columns and set the number of swells
         pd_val_cols = [col for col in df.columns if '_pd_val' in col]
-        print(pd_val_cols)
         
         #rename seas to swell_n+1 where n is the last swell 
         if seas:
@@ -219,7 +218,6 @@ class SimpleSwell(object):
                 
         #split out the period ranges to a mean value
         df = self.simplify_periods(ofcast_df)
-        print(df)
         
         #mask on the seas/swells
         df = self.get_maskedSwells(df,ofcast_df,seas)
@@ -269,11 +267,11 @@ class SimpleSwell(object):
         through in an extra column with all the energy combined
         '''
         df = df.copy()
-        df = df[["peak_ht", "peak_dir", "peak_pd"]]
         df.rename(columns={"peak_ht":"seas_ht[m]","peak_dir":"seas_dir[degrees]","peak_pd":"seas_pd[s]"},inplace=True)
+        df = df[["seas_ht[m]","seas_dir[degrees]","seas_pd[s]"]]
         
         return df
                         
 if __name__ == '__main__':
     
-    simplified = SimpleSwell()
+    simplified = SwellSmusher()

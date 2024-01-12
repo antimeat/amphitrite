@@ -9,10 +9,11 @@ import os
 import pandas as pd
 import scipy.signal
 import numpy as np
+import re
 
 import data
 
-DIR_PATH = "/cws/op/webapps/er_ml_projects/davink/amphitrite/autoseas/gfe/"
+DIR_PATH = "/net/wa-aifs-local/srv/local/web/ofcastData/gfe_data/point_data/"
 FILE_PATH = DIR_PATH + "latest_{}.csv"
 
 
@@ -117,6 +118,16 @@ def special_sauce(df,**kwargs):
 
     return df
 
+def shorten_site_name(site_name):
+    """Get rid of any trailing numbers of days in the site name"""
+    match = re.search(r'\d+', site_name)
+    name = site_name
+    if match:
+        start_index = match.start()
+        return name[:start_index].rstrip()  # rstrip() removes trailing whitespace
+    else:
+        return name  # Return original name if no number found
+
 
 def load_file(site, issue):
     """
@@ -131,9 +142,14 @@ def load_file(site, issue):
     """
     fp = FILE_PATH.format(issue)
     
+    # shorten our site names
+    site = shorten_site_name(site)
+    
     try:
         df = pd.read_csv(fp)
-        df = df[df['name'] == site].copy()
+        df['name'] = df['name'].apply(lambda x: shorten_site_name(x))
+        df = df[df["name"] == site].copy()
+        
         df['time'] = pd.to_datetime(df['time'], format='%Y-%m-%d %H:%M:%S')
     
     except IOError:
@@ -178,7 +194,7 @@ def load(site, issue):
 
 if __name__ == "__main__":
 
-    site = 'Woodside - Stybarrow 10 Days'
+    site = 'Woodside - North Rankin 2 days'
     issue = 'op + smoothed'
     df = load(site,issue)
 

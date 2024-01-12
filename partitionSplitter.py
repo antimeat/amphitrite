@@ -52,7 +52,11 @@ class PartitionSplitter(object):
         self.site_tables = self.load_config_file(self.config_file)
         self.latest_run_time = self.partition.get_latest_run_time()
         
-    def transform_site_name(site_name):
+    def mps_to_kts(self,windSpd):
+        windSpd_kts = windSpd * 1.94384  # Convert from knots to m/s
+        return windSpd_kts
+
+    def transform_site_name(self,site_name):
         """Reformat the site name to api friendly"""
         site_name = site_name.replace(" - ","-").replace(" ","_")
         return site_name
@@ -250,6 +254,9 @@ class PartitionSplitter(object):
         # Rename columns according to mappings and use values for out cols
         col_mapping.update(swell_prefix_mapping)
         df.rename(columns=col_mapping, inplace=True)
+        
+        #convert the winds to knots
+        df["wind_spd[kn]"] = df["wind_spd[kn]"].apply(lambda x: self.mps_to_kts(float(x)))
         
         # rounding logic
         try:

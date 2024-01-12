@@ -334,6 +334,28 @@ class ShallowWaterSeas(object):
         
         return fetchAndDepth
 
+    def calcPeriodFromWind(self, windSpd, windDir):
+        """Calculate the period from the seas"""
+        
+        depth = self.getFetchAndDepth(windDir)[1]
+        g = 9.81  
+        wind_speed_mps = windSpd * 0.51444  # convert wind speed from knots to m/s
+    
+        # Bretschneider peak period in deep water
+        Tp_deep = 0.286 * wind_speed_mps ** 2 / g
+
+        # Wavelength in deep water
+        L_deep = g * Tp_deep ** 2 / (2 * math.pi)
+
+        # Wave speed in shallow water
+        C_shallow = math.sqrt(g * depth)
+
+        # Wave period in shallow water
+        T_shallow = L_deep / C_shallow
+
+        return int(round(T_shallow))
+
+
     def seasFromFetchLimited(self, windSpd, windDir):
         """Calculate the 'fetch limited' or full developed seas for this wind speed and direction.
     

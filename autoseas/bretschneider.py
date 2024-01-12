@@ -41,6 +41,14 @@ class Bretschneider(object):
         i = 10 * dirIndex(windDir)
         return self.FETCH_LIMITS_TABLE[i]
 
+    def calcPeriodFromWind(self, windSpd, windDir):
+        """Calculate the period from the seas"""
+        
+        g = 9.81  
+        wind_speed_mps = windSpd * 0.51444  # convert wind speed from knots to m/s
+        period = 0.286 * wind_speed_mps ** 2 / g
+        return int(round(period))
+            
     def seasFromFetchLimited(self, windSpd, windDir):
         """Calculate the 'fetch limited' or full developed seas for this wind speed and direction.
     
