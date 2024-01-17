@@ -114,23 +114,24 @@ def autoSeas(siteName, winds,
     if averageFetch:
         fetchTable = calcAverageFetches(fetchTable)
     
-    if calcType in ['deep', 'mixed', "new"] or depthTable is None:
-        # SeaCalc is seaCalc
-        SeaCalc = Bretschneider()
-
+    if calcType in ['deep', 'mixed'] or depthTable is None:
+        
         if calcType == "mixed":
             # assume there is a seaLimits table for this product
+            SeaCalc = Bretschneider()
             SeaCalc.setSeaLimitsFile("autoseas/seaLimits/{}.csv".format(siteName))
-        elif calcType == 'new':
-            SeaCalc = BreugenHolthuijsen()
-            SeaCalc.setFetchAndDepthTables(fetchTable, depthTable)            
         else:
+            SeaCalc = Bretschneider()
             SeaCalc.setFetchTable(fetchTable)
         
-    else:    
+    elif calcType == "shallow":    
         SeaCalc = ShallowWaterSeas()
         SeaCalc.setFetchAndDepthTables(fetchTable, depthTable)
-        
+    
+    else:
+        SeaCalc = BreugenHolthuijsen()
+        SeaCalc.setFetchAndDepthTables(fetchTable, depthTable)            
+           
     # this the amount the 'unforced' seas are reduced every three hours
     if varyDecreaseFactors:
         decreaseFactor = calcVaryingDecreaseFactor(fetchForDecreaseFactor)

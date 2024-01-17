@@ -1,10 +1,10 @@
 #!/cws/anaconda/envs/mlenv/bin/python -W ignore
-
-print("Content-Type: text/html\n")
-
-import autoseas.autoSeas as autoSeas
+import autoseas.auto_seas as auto_seas
 import json, sys, os
 import cgi, cgitb; cgitb.enable()
+
+sys.stdout.write("Content-Type: application/json\n")
+sys.stdout.write("Access-Control-Allow-Origin: http://wa-vw-er\n\n")
 
 # Default, if not set, is 1 decimal place
 HT_DECIMAL_PLACES = {
@@ -26,7 +26,7 @@ def jsonAutoSeas(**kwargs):
 
     else:
 
-        maxFetch = float(kwargs.get('maxFetch', autoSeas.MAX_FETCH))
+        maxFetch = float(kwargs.get('maxFetch', auto_seas.MAX_FETCH))
         firstSeas = kwargs.get('firstSeas', 0)
 
         windWeights = kwargs.get('windWeights', '0.25,0.75')
@@ -51,7 +51,7 @@ def jsonAutoSeas(**kwargs):
             print("<span style='font-size: 11px'>")
 
         if showTable:
-            autoSeas.SHOW_TABLE = True
+            auto_seas.SHOW_TABLE = True
             print("<pre>")
 
         if kwargs['winds'] == '':
@@ -64,7 +64,7 @@ def jsonAutoSeas(**kwargs):
             if w[0] != "NaN":
                 winds.append((float(w[0]), float(w[1]), int(w[2])))
 
-        seas = autoSeas.autoSeas(kwargs['site'], winds, firstSeas, maxFetch,
+        seas = auto_seas.autoSeas(kwargs['site'], winds, firstSeas, maxFetch,
                                  windWeights=windWeights,
                                  debug=debug,
                                  returnDir=returnDir,

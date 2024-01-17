@@ -123,7 +123,8 @@ def calculate_depth_term_period(D, V_stc):
     Returns:
     - float: Depth term for wave period.
     """
-    depth_term_period = math.tanh(0.1 * (GRAVITY * D / abs(V_stc)**2)**2.01)
+    V_stc_safe = max(V_stc, 0.0001)
+    depth_term_period = math.tanh(0.1 * (GRAVITY * D / abs(V_stc_safe)**2)**2.01)
     return depth_term_period
 
 def calculate_fetch_term_period(F, V_stc):
@@ -138,7 +139,8 @@ def calculate_fetch_term_period(F, V_stc):
     - float: Fetch term for wave period.
     """
     fetch = F*1852
-    fetch_term_period = math.tanh(0.000000277 * (GRAVITY * fetch / abs(V_stc)**2)**1.45)
+    V_stc_safe = max(V_stc, 0.0001)
+    fetch_term_period = math.tanh(0.000000277 * (GRAVITY * fetch / abs(V_stc_safe)**2)**1.45)
     return fetch_term_period
 
 def calculate_wave_period(T_max, depth_term_period, fetch_term_period):
