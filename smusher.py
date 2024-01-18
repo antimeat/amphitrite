@@ -180,8 +180,8 @@ class SwellSmusher():
             
         
         #tidy up unwanted columns and missing data    
-        df.fillna('',inplace=True)
-        df.replace(0,'',inplace=True)
+        #df.fillna('',inplace=True)
+        #df.replace(0,'',inplace=True)
         
         return df    
         
@@ -268,7 +268,7 @@ class SwellSmusher():
         '''
         df = df.copy()
         df.rename(columns={"peak_ht":"seas_ht[m]","peak_dir":"seas_dir[degrees]","peak_pd":"seas_pd[s]"},inplace=True)
-        df = df[["seas_ht[m]","seas_dir[degrees]","seas_pd[s]"]]
+        df = df[["seas_ht[m]","seas_pd[s]","seas_dir[degrees]"]]
         
         return df
                         

@@ -2,7 +2,7 @@
 Wind Speed in knots
 Fetch Limits in nautical miles
 Durations in hours
-
+Author: Rabi Rivett
 To Do
 -----
 
@@ -70,16 +70,18 @@ WINDS = [
 
 seaLimitsTable = None
 
-def autoSeas(siteName, winds,
-             firstSeas=1,
+def autoSeas(siteName, 
+             winds,
+             src="smush",
+             firstSeas=0,
              maxFetch=MAX_FETCH,
              maxDuration=MAX_DURATION,
              windWeights=[0.25, 0.75],
              returnDir=False,
              returnPdDir=False,
-             calcType='deep',
+             calcType='new',
              debug=False,
-             averageFetch=False,
+             averageFetch=True,
              varyDecreaseFactors=False,
              useDirectionWeights=True):
     """
@@ -158,7 +160,7 @@ def autoSeas(siteName, winds,
     
     wind = winds[0]
     
-    if firstSeas is None:
+    if (firstSeas == 0):
         duration = 4.0
         seaBins = initSeas(SeaCalc, seaBins, wind, duration, binDeltas, binWeights)
     else:

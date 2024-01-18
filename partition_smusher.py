@@ -49,10 +49,11 @@ except Exception as e:
 class PartitionSmusher(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
 
-    def __init__(self):
+    def __init__(self,site_name="Woodside - Scarborough 10 Days",first_time_step=None):
+        self.site_name = site_name
+        self.first_time_step = first_time_step
         self.config_file = os.path.join(BASE_DIR,"site_config.txt")
         self.site_tables = self.load_config_file(self.config_file)
-        self.latest_run_time = self.partition.get_latest_run_time()
         
     def transform_site_name(self,site_name):
         """Reformat the site name to api friendly"""
@@ -290,21 +291,22 @@ class PartitionSmusher(object):
         
         return df
     
-    def get_winds(self,site_name):
+    def get_winds(self,site_name,df=None):
         """Return winds from GFE
         Args:
             site_name (_str_): the site name
         """
-        df = self.get_gfe_winds(site_name)
-        df.set_index(pd.DatetimeIndex(df["time"]),inplace=True)
-        df = df[["wnd_dir","wnd_spd"]]
-        df.dropna(inplace=True)  # Remove rows with NaN values
+        if df is None:
+            df = self.get_gfe_winds(site_name)
+            df.set_index(pd.DatetimeIndex(df["time"]),inplace=True)
+            df = df[["wnd_dir","wnd_spd"]]
+            df.dropna(inplace=True)  # Remove rows with NaN values
 
-        # calc the hour difference between each time step in hours
-        df['diff'] = df.index.to_series().diff().dt.total_seconds() / 3600 
+            # calc the hour difference between each time step in hours
+            df['diff'] = df.index.to_series().diff().dt.total_seconds() / 3600 
 
-        # Backfilling only the first NaN value in the 'diff' column
-        df['diff'] = df['diff'].fillna(method='bfill', limit=1)
+            # Backfilling only the first NaN value in the 'diff' column
+            df['diff'] = df['diff'].fillna(method='bfill', limit=1)
         
         df = df.apply(lambda x: x.round().astype(int))
         
@@ -329,16 +331,15 @@ class PartitionSmusher(object):
     
         return df
     
-    def get_autoseas(self,site_name,calc="new"):
+    def get_autoseas(self,site_name,df_wind,calc="new"):
         """Return autoseas data from GFE
         Parameters:
             siteName (string): site name that matches a listed site
+            df_wind (DataFrame): dataframe of winds [wind_dir, wind_spd, diff]
         Returns:
             df_autoseas (DataFrame): dataframe of the autoseas data from GFE
         """
-        
-        #derive autoseas from wind
-        df_wind = self.get_winds(site_name)
+        # list of winds in the format [wnd_spd,wnd_dir,time_period]
         wind = df_wind.values.tolist()
         
         autoseas_seas = auto_seas.autoSeas(
@@ -366,20 +367,50 @@ class PartitionSmusher(object):
         merged_df = df_wind.join(autoseas_seas_df)
         merged_df.drop("diff",axis=1,inplace=True)
         
-        print(merged_df.tail())
         return merged_df
     
-    def smush_seas(self,site_name,calc):
+    def smush_seas(self,site_name,df_wind,calc):
         """Smush the seas together with the partitioned data
         Parameters:
             site_name (string): site name that matches a listed site
         Returns:
             df_smushed (DataFrame): dataframe of smushed seas
         """
+        #derive autoseas from wind
+        df_wind = self.get_winds(site_name,df_wind)
+        
+        # get the partitions from database
+        df_table_seas, sea_partition = self.seas_partition_df(site_name)
+        
+        # generate the autoseas data
+        df_autoseas = self.get_autoseas(site_name,df_wind,calc)
+        df_autoseas = df_autoseas.rename_axis("time[UTC]", axis="index")
+        df_autoseas.index = pd.to_datetime(df_autoseas.index)
+        
+        # lets get together
+        df_merged = df_table_seas.merge(df_autoseas, left_index=True, right_index=True, how='right')
+        
+        # smush
+        smush = smusher.SwellSmusher(siteName=self.transform_site_name(site_name), periodSplit=sea_partition)
+        df_smushed = smush.calculate_simpleSwell(df_merged,seas=True)
+        df_smushed = smush.finalFormatting(df_smushed)
+
+        # print("\n\n-------------------df_merged-----------------\n")
+        #print(df_smushed)
+        
+        return df_smushed        
+    
+    def seas_partition_df(self,site_name):
+        """Smush the seas together with the partitioned data
+        Parameters:
+            site_name (string): site name that matches a listed site
+        Returns:
+            df_table_seas (DataFrame), sea_partition (int): dataframe of partitioned seas, sea partion value in secs (eg: 9)
+        """
         # get the partitions from database
         partitions = db.get_site_partitions_from_db(site_name)["data"]
         sea_partition = partitions[0][1]
-        num_swells = len(partitions)  
+        num_swells = len(partitions)         
         
         # base columns, seas columns and swells, generate swell columns dynamically from num_swells
         base_col_names = ["time[hrs]","time[UTC]","time[WST]","wind_dir[degrees]","wind_spd[kn]","seasw_ht[m]","seasw_dir[degree]","seasw_pd[s]"]
@@ -402,23 +433,8 @@ class PartitionSmusher(object):
             "sea_dir[degree]": "swell_1_dir",
             "sea_pd[s]": "swell_1_pd"
         }, axis=1, inplace=True)
-        
-        # generate the autoseas data
-        df_autoseas = self.get_autoseas(site_name,calc)
-        df_autoseas = df_autoseas.rename_axis("time[UTC]", axis="index")
-        df_autoseas.index = pd.to_datetime(df_autoseas.index)
-        
-        # lets get together
-        df_merged = df_table_seas.merge(df_autoseas, left_index=True, right_index=True, how='left')
-        
-        # smush
-        smush = smusher.SwellSmusher(siteName=self.transform_site_name(site_name), periodSplit=sea_partition)
-        df_smushed = smush.calculate_simpleSwell(df_merged,seas=True)
-        df_smushed = smush.finalFormatting(df_smushed)
-
-        #re-merge the swells back-in
-        
-        return df_smushed        
+                
+        return df_table_seas, sea_partition        
     
     def get_site_partitions_df(self,site,*parts):
         """Return the wave spectra partions from site
@@ -542,8 +558,9 @@ def main():
         return
     # all the site parms from the database
     site_name = table_config["data"]["site_name"]    
-        
-    df_smushed = toolbox.smush_seas(args.site_name,calc)
+    winds = toolbox.get_winds(site_name)    
+    print(winds)
+    df_smushed = toolbox.smush_seas(args.site_name,winds,calc)
     
     print(df_smushed.head(50))
     print(df_smushed.tail(50))
