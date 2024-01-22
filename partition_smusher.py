@@ -49,8 +49,9 @@ except Exception as e:
 class PartitionSmusher(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
 
-    def __init__(self,site_name="Woodside - Scarborough 10 Days",first_time_step=None):
+    def __init__(self,site_name="Woodside - Scarborough 10 Days",first_time_step=None,df_index=None):
         self.site_name = site_name
+        self.df_index = df_index
         self.first_time_step = first_time_step
         self.config_file = os.path.join(BASE_DIR,"site_config.txt")
         self.site_tables = self.load_config_file(self.config_file)
@@ -400,6 +401,22 @@ class PartitionSmusher(object):
         
         return df_smushed        
     
+    def get_seas_partition_timeadjusted_df(self,site_name):
+        """Get the partition df with the required first time and index values
+        Parameters:
+            site_name (string): site name that matches a listed site
+        Returns:
+            df_partition (DataFrame): dataframe of time adjusted index values    
+        """
+        # get the partitions from database
+        df_table_seas, sea_partition = self.seas_partition_df(site_name)
+        print(df_table_seas.index)
+        print(self.df_index)
+        print(df_table_seas.index.intersection(self.df_index))
+        filtered_df = df_table_seas.loc[df_table_seas.index.intersection(self.df_index)]
+        
+        return filtered_df
+        
     def seas_partition_df(self,site_name):
         """Smush the seas together with the partitioned data
         Parameters:

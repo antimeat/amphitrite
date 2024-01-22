@@ -122,7 +122,7 @@ def main():
         df_wind.index.name = "time[UTC]"
         
         #lets now do some smushing of partition and autoseas from df_wind
-        smush_box = smusher.PartitionSmusher(site_name,first_time_step)
+        smush_box = smusher.PartitionSmusher(site_name,first_time_step,df_wind.index)
         seas_df = smush_box.smush_seas(site_name,df_wind,calc_type)
         seas = seas_df.values.tolist()
         formatted_seas = format_seas_data(seas, site_name, return_dir, return_pd_dir)
@@ -130,12 +130,7 @@ def main():
         response = {'seas': formatted_seas}
     
     # just the raw partion please    
-    elif "part" in source:
-        seas = None
-        response = {'seas': seas}
-    
-    # else we do default autoseas calcs    
-    else:
+    elif "autoseas" in source:
         site_name = transform_site_name(site_name)
         seas, return_dir, return_pd_dir = calculate_seas(kwargs)
         formatted_seas = format_seas_data(seas, site_name, return_dir, return_pd_dir)
@@ -143,7 +138,33 @@ def main():
         
         if 'callback' in kwargs:
             response = f"{kwargs['callback']}({json.dumps(response)})"
+        
+    # else we do default autoseas calcs    
+    else:
+        
+        #dataframe needed for smushing
+        df_wind = pd.DataFrame(winds, columns=["wind_dir", "wind_spd", "diff"])
+    
+        #now we need to create a datetimeindex for our df_wind from first_time_step
+        # Create a TimedeltaIndex from the 'diff' column, offsetting the first value
+        time_deltas = pd.to_timedelta(df_wind['diff'], unit='h')
+        time_deltas.iloc[0] = pd.to_timedelta(0, unit='h')
 
+        # Generate the DateTimeIndex by adding the cumulative sum of time deltas to the first time step
+        datetime_index = first_time_step + time_deltas.cumsum()
+        
+        # Assign the DateTimeIndex to your DataFrame and name it
+        df_wind.index = datetime_index
+        df_wind.index.name = "time[UTC]"
+        
+        #lets now get the partition
+        smush_box = smusher.PartitionSmusher(site_name,first_time_step,df_wind.index)
+        seas_df = smush_box.get_seas_partition_timeadjusted_df(site_name)
+        seas = seas_df.values.tolist()
+        formatted_seas = format_seas_data(seas, site_name, return_dir, return_pd_dir)
+        
+        response = {'seas': formatted_seas}
+    
     print(json.dumps(response))
 
 def print_headers():
