@@ -1,18 +1,18 @@
 #!/cws/anaconda/envs/mlenv/bin/python -W ignore
 """
 Name:
-    partitionSmusher.py
+    partition_smusher.py
+
+Author: Daz Vink
 
 Classes:
     PartitionSmusher(origin,destination)
 
+
 Functions:    
+
 """
 import os
-os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
-os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
-
-# os.environ[ 'CONDA_DEFAULT_ENV' ] = 'mlenv'
 
 # import swellSmusher
 import pandas as pd
@@ -31,7 +31,7 @@ import models
 BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
 
 # Configure logging
-LOG_FILENAME = os.path.join(BASE_DIR,"logfile.log")
+LOG_FILENAME = os.path.join(BASE_DIR,"autoseas_logfile.log")
 
 # Configure logging
 try:
@@ -86,7 +86,7 @@ class PartitionSmusher(object):
             session.close()
         
         
-    def load_config_file(self,config_file):
+    def load_config_file(self, config_file):
         """
         Get the table name and partition ranges related to the siteName
         Parameters:
@@ -95,212 +95,70 @@ class PartitionSmusher(object):
             a dictionary with the table name and partition ranges
         """
         site_tables = {}
-        with open(config_file, 'r') as file:
-            for line in file:
-                # Skip comment lines
-                if line.startswith('#'):
-                    continue
-
-                parts = line.strip().split(', ')
-                if len(parts) < 3:
-                    continue  # Skip malformed lines
-
-                site = parts[0]
-                table = parts[1]
-                # Parse all split ranges
-                split_ranges = [tuple(map(float, part.split('-'))) for part in parts[2:]]
-
-                site_tables[site] = {"table": table, "parts": split_ranges}
-
-        
+        try:
+            with open(config_file, 'r') as file:
+                for line in file:
+                    # processing logic here
+                    pass
+        except FileNotFoundError:
+            logging.error(f"Config file not found: {config_file}")
+            raise
+        except IOError as e:
+            logging.error(f"Error reading config file: {e}")
+            raise
         return site_tables
-       
-    def to_ofcast_df(self,ws):
-        """Convert the wavespectra xarray to a usable dataFrame for merging into ofcast
-        
-        Parameters:
-            ws (xarray): wave spectra
-        Returns:
-            df (DataFrame): modified dataframe with parametes and columns fit for purpose        
+   
+    def get_gfe_winds(self, site_name):
         """
-        
-        variables = list(ws.keys())
-        variables.remove("efth")
-        df = ws[variables].to_dataframe()
-        
-        #find how many swell partitions we have and add them to a reduced column list
-        all_swell_nums = ['{}_{}'.format(n.split('_')[0],n.split('_')[1]) for n in df.columns if "swell" in n]
-        unique_swell_nums = list(dict.fromkeys(all_swell_nums))
-
-        #clean up index
-        df.reset_index(inplace=True)        
-                     
-        #clean up some column names to match Ofcast expectations
-        #df["location"] = df["location"].apply(lambda x: x.decode('utf-8'))
-        df.rename(columns={"wdir":"wind_dir","wspd":"wind_spd","hs":"total_ht","time":"time_utc"},inplace=True)
-        for n in unique_swell_nums:
-            df.rename(columns={"{}_hs".format(n):"{}_ht".format(n),"{}_tm01".format(n):"{}_pd".format(n),"{}_dm".format(n):"{}_dirn".format(n)},inplace=True)
-        
-        #df.set_index("time_utc",inplace=True)
-        #df["time_utc"] = df.index
-        index = pd.DatetimeIndex(df["time_utc"].values,tz="utc")
-        df.set_index(index,inplace=True)
-        df["time_local"] = index.to_pydatetime()
-        
-        #reduced column list
-        cols = ["total_ht","wind_dir","wind_spd"]
-        for n in unique_swell_nums:
-            cols.extend(["{}_ht".format(n),"{}_pd".format(n),"{}_dirn".format(n)])
-            
-        cols.extend(["location","time_local"])
-        
-        #round stuff
-        df = df.apply(lambda x: x.round().astype(int) if "dir" in x.name else x)
-        df = df.apply(lambda x: x.round(2) if "ht" in x.name else x)
-        #df = df.apply(lambda x: x.round().astype(int) if "pd" in x.name else x)       
-        df = df.apply(lambda x: x.round(1) if "pd" in x.name else x)       
-        
-        return df[cols]
-    
-    def get_sites_list(self,ws):
-        """Return unique site names from the spectra
-        Parameters:
-            ws (xarray): wave spectra file
-        Returns:
-            sites (list): site names listed contained in model data
-        """
-        
-        df = self.to_ofcast_df(ws)
-        sites = df["location"].unique()
-        
-        return sites
-    
-    def get_ofcast_site(self,ws,siteName):
-        """Return unique site names from the spectra
-        Parameters:
-            ws (xarray): wave spectra file
-            siteName (string): site name that matches a listed site
-        Returns:
-            df_site (DataFrame): dataframe from the wave spectra of the selected site 
-        """
-        
-        df = self.to_ofcast_df(ws)
-        df_site = df[df["location"] == siteName]
-        
-        return df_site 
-
-    def to_api_df(self, ws):
-        """
-        Convert the wavespectra xarray to a DataFrame for an ofcast api.
-        
-        Parameters:
-            ws (xarray.Dataset): wave spectra.
-            
-        Returns:
-            df (pandas.DataFrame): Modified dataframe with parameters and columns fit for purpose.
-        """
-        
-        variables = list(ws.keys())
-        variables.remove("efth")
-        df = ws[variables].to_dataframe()
-        
-        #find how many swell partitions we have and add them to a reduced column list
-        all_swell_nums = ['{}'.format(n.split('_')[1]) for n in df.columns if "swell" in n]
-        unique_swell_nums = list(dict.fromkeys(all_swell_nums))
-
-        #clean up index
-        df.reset_index(inplace=True)        
-
-        # Set index to UTC time and add local time column
-        df.set_index(pd.DatetimeIndex(df["time"], tz='utc'), inplace=True)
-        df["run_time"] =  df.index[0].tz_localize(None)   
-        df["time_local"] = df.index.tz_convert('Australia/Perth').tz_localize(None)
-        
-        # Group by 'location' and use cumcount to count each group
-        df['fcst_hrs'] = df.groupby('station_name').cumcount()
-        df['fcst_hrs'] = df['fcst_hrs'].astype(str).str.zfill(3)
-        
-        col_mapping = {
-            "run_time": "run_time",
-            "station_name": "location",
-            "fcst_hrs": "time[hrs]",
-            "time": "time[UTC]",
-            "time_local": "time[WST]",
-            "wdir": "wind_dir[degrees]",
-            "wspd": "wind_spd[kn]",
-            "hs": "seasw_ht[m]",
-            "dp": "seasw_dir[degree]",
-            "tp": "seasw_pd[s]",            
-        }
-
-        # Dynamically generate swell column mappings based on the swells present
-        dir_type = 'dp'
-        swell_prefix_mapping = {}
-        for i,n in enumerate(unique_swell_nums):
-            if f"swell_{n}_hs" in df.columns:  # Check if the swell column actually exists
-                if i == 0:
-                    swell_prefix_mapping.update({
-                        f"swell_1_hs": "sea_ht[m]",
-                        f"swell_1_{dir_type}": "sea_dir[degree]",
-                        f"swell_1_tp": "sea_pd[s]",
-                    })
-                else:
-                    new_prefix = f'sw{i}_'
-                    swell_prefix_mapping.update({
-                        f"swell_{i+1}_hs": f"{new_prefix}ht[m]",
-                        f"swell_{i+1}_{dir_type}": f"{new_prefix}dir[degree]",
-                        f"swell_{i+1}_tp": f"{new_prefix}pd[s]",
-                    })
-
-        # Rename columns according to mappings and use values for out cols
-        col_mapping.update(swell_prefix_mapping)
-        df.rename(columns=col_mapping, inplace=True)
-        
-        # Rounding logic applied to columns based on their dtype
-        df = df.apply(lambda x: x.round(2) if 'ht' in x.name else x)
-        df = df.apply(lambda x: x.round().astype('Int64') if 'dir' in x.name else x)
-        df = df.apply(lambda x: x.round().astype('Int64') if 'spd' in x.name else x)
-        df = df.apply(lambda x: x.round(1).astype('Int64') if 'pd' in x.name else x)
-        
-        cols = col_mapping.values()
-        
-        df = df[cols]
-        
-        return df
-    
-    def get_api_site(self,ws,site_name):
-        """Return unique site names from the spectra
-        Parameters:
-            ws (xarray): wave spectra file
-            siteName (string): site name that matches a listed site
-        Returns:
-            df_site (DataFrame): dataframe from the wave spectra of the selected site 
-        """
-        
-        df = self.to_api_df(ws)
-        df_site = df[df["location"] == site_name]
-        
-        return df_site
-    
-    def get_gfe_winds(self,site_name):
-        """Return winds from GFE
+        Return winds from GFE.
         Args:
-            site_name (_str_): the site name
+            site_name (str): The site name.
+        Returns:
+            DataFrame: DataFrame containing wind data from GFE.
         """
         issue = "op + smoothed"
-        df = gfe.load(site_name,issue)
-        
-        return df
-    
+        try:
+            df = gfe.load(site_name, issue)
+            if df.empty:
+                logging.warning(f"No wind data returned for site: {site_name}")
+            return df
+        except Exception as e:
+            logging.error(f"Error loading wind data from GFE for site '{site_name}': {e}")
+            raise
+
     def get_winds(self,site_name,df=None):
         """Return winds from GFE
         Args:
             site_name (_str_): the site name
         """
-        if df is None:
-            df = self.get_gfe_winds(site_name)
-            df.set_index(pd.DatetimeIndex(df["time"]),inplace=True)
-            df = df[["wnd_dir","wnd_spd"]]
+        try:
+            if df is None:
+                df = self.get_gfe_winds(site_name)
+                df.set_index(pd.DatetimeIndex(df["time"]),inplace=True)
+                df = df[["wnd_dir","wnd_spd"]]
+                df.dropna(inplace=True)  # Remove rows with NaN values
+
+                # calc the hour difference between each time step in hours
+                df['diff'] = df.index.to_series().diff().dt.total_seconds() / 3600 
+
+                # Backfilling only the first NaN value in the 'diff' column
+                df['diff'] = df['diff'].fillna(method='bfill', limit=1)
+            
+            df = df.apply(lambda x: x.round().astype(int))
+            
+            return df
+        except Exception as e:
+            logging.info(f"Error getting winds: {e}")
+            raise
+            
+    def get_auswave_winds(self,df):
+        """Return winds from df
+        Args:
+            df (_DataFrame_): dataframe containing the wind data
+            site_name (_str_): the site name
+        """
+        try: 
+            df = df.copy()
             df.dropna(inplace=True)  # Remove rows with NaN values
 
             # calc the hour difference between each time step in hours
@@ -308,29 +166,14 @@ class PartitionSmusher(object):
 
             # Backfilling only the first NaN value in the 'diff' column
             df['diff'] = df['diff'].fillna(method='bfill', limit=1)
+            
+            df = df.apply(lambda x: x.round().astype(int))
         
-        df = df.apply(lambda x: x.round().astype(int))
-        
-        return df
+            return df
     
-    def get_auswave_winds(self,df):
-        """Return winds from GFE
-        Args:
-            df (_DataFrame_): dataframe containing the wind data
-            site_name (_str_): the site name
-        """
-        df = df.copy()
-        df.dropna(inplace=True)  # Remove rows with NaN values
-
-        # calc the hour difference between each time step in hours
-        df['diff'] = df.index.to_series().diff().dt.total_seconds() / 3600 
-
-        # Backfilling only the first NaN value in the 'diff' column
-        df['diff'] = df['diff'].fillna(method='bfill', limit=1)
-        
-        df = df.apply(lambda x: x.round().astype(int))
-    
-        return df
+        except Exception as e:
+            logging.info(f"Error getting winds: {e}")
+            raise
     
     def get_autoseas(self,site_name,df_wind,calc="new"):
         """Return autoseas data from GFE
@@ -340,35 +183,40 @@ class PartitionSmusher(object):
         Returns:
             df_autoseas (DataFrame): dataframe of the autoseas data from GFE
         """
-        # list of winds in the format [wnd_spd,wnd_dir,time_period]
-        wind = df_wind.values.tolist()
+        try: 
+            # list of winds in the format [wnd_spd,wnd_dir,time_period]
+            wind = df_wind.values.tolist()
+            
+            autoseas_seas = auto_seas.autoSeas(
+                siteName = self.transform_site_name(site_name), 
+                winds = wind, 
+                firstSeas = False, 
+                maxFetch = auto_seas.MAX_FETCH,
+                windWeights = [0.25,0.75],            
+                debug = False,
+                returnDir = False,
+                returnPdDir = True,
+                calcType = calc,
+                averageFetch = True,
+                varyDecreaseFactors = False,
+            )
+            
+            #now lets create a dataframe to smush
+            autoseas_seas_df = pd.DataFrame(autoseas_seas, columns=["seas_ht", "seas_pd", "seas_dir"])
+            autoseas_seas_df = autoseas_seas_df.apply(lambda x: x.round(2) if "ht" in x.name else x)
+            autoseas_seas_df = autoseas_seas_df.apply(lambda x: x.round().astype(int) if "pd" in x.name else x)
+            autoseas_seas_df = autoseas_seas_df.apply(lambda x: x.round().astype(int) if "dir" in x.name else x)
+            
+            #should always have the same number of rows/timesteps
+            autoseas_seas_df.index = df_wind.index
+            merged_df = df_wind.join(autoseas_seas_df)
+            merged_df.drop("diff",axis=1,inplace=True)
+            
+            return merged_df
         
-        autoseas_seas = auto_seas.autoSeas(
-            siteName = self.transform_site_name(site_name), 
-            winds = wind, 
-            firstSeas = False, 
-            maxFetch = auto_seas.MAX_FETCH,
-            windWeights = [0.25,0.75],            
-            debug = False,
-            returnDir = False,
-            returnPdDir = True,
-            calcType = calc,
-            averageFetch = True,
-            varyDecreaseFactors = False,
-        )
-        
-        #now lets create a dataframe to smush
-        autoseas_seas_df = pd.DataFrame(autoseas_seas, columns=["seas_ht", "seas_pd", "seas_dir"])
-        autoseas_seas_df = autoseas_seas_df.apply(lambda x: x.round(2) if "ht" in x.name else x)
-        autoseas_seas_df = autoseas_seas_df.apply(lambda x: x.round().astype(int) if "pd" in x.name else x)
-        autoseas_seas_df = autoseas_seas_df.apply(lambda x: x.round().astype(int) if "dir" in x.name else x)
-        
-        #should always have the same number of rows/timesteps
-        autoseas_seas_df.index = df_wind.index
-        merged_df = df_wind.join(autoseas_seas_df)
-        merged_df.drop("diff",axis=1,inplace=True)
-        
-        return merged_df
+        except Exception as e:
+            logging.info(f"Error getting autoseas: {e}")
+            raise
     
     def smush_seas(self,site_name,df_wind,calc):
         """Smush the seas together with the partitioned data
@@ -377,29 +225,34 @@ class PartitionSmusher(object):
         Returns:
             df_smushed (DataFrame): dataframe of smushed seas
         """
-        #derive autoseas from wind
-        df_wind = self.get_winds(site_name,df_wind)
-        
-        # get the partitions from database
-        df_table_seas, sea_partition = self.seas_partition_df(site_name)
-        
-        # generate the autoseas data
-        df_autoseas = self.get_autoseas(site_name,df_wind,calc)
-        df_autoseas = df_autoseas.rename_axis("time[UTC]", axis="index")
-        df_autoseas.index = pd.to_datetime(df_autoseas.index)
-        
-        # lets get together
-        df_merged = df_table_seas.merge(df_autoseas, left_index=True, right_index=True, how='right')
-        
-        # smush
-        smush = smusher.SwellSmusher(siteName=self.transform_site_name(site_name), periodSplit=sea_partition)
-        df_smushed = smush.calculate_simpleSwell(df_merged,seas=True)
-        df_smushed = smush.finalFormatting(df_smushed)
+        try: 
+            #derive autoseas from wind
+            df_wind = self.get_winds(site_name,df_wind)
+            
+            # get the partitions from database
+            df_table_seas, sea_partition = self.seas_partition_df(site_name)
+            
+            # generate the autoseas data
+            df_autoseas = self.get_autoseas(site_name,df_wind,calc)
+            df_autoseas = df_autoseas.rename_axis("time[UTC]", axis="index")
+            df_autoseas.index = pd.to_datetime(df_autoseas.index)
+            
+            # lets get together
+            df_merged = df_table_seas.merge(df_autoseas, left_index=True, right_index=True, how='right')
+            
+            # smush
+            smush = smusher.SwellSmusher(siteName=self.transform_site_name(site_name), periodSplit=sea_partition)
+            df_smushed = smush.calculate_simpleSwell(df_merged,seas=True)
+            df_smushed = smush.finalFormatting(df_smushed)
 
-        # print("\n\n-------------------df_merged-----------------\n")
-        #print(df_smushed)
+            # print("\n\n-------------------df_merged-----------------\n")
+            #print(df_smushed)
+            
+            return df_smushed        
         
-        return df_smushed        
+        except Exception as e:
+            logging.info(f"Error smushing seas: {e}")
+            raise
     
     def get_seas_partition_timeadjusted_df(self,site_name):
         """Get the partition df with the required first time and index values
@@ -408,14 +261,16 @@ class PartitionSmusher(object):
         Returns:
             df_partition (DataFrame): dataframe of time adjusted index values    
         """
-        # get the partitions from database
-        df_table_seas, sea_partition = self.seas_partition_df(site_name)
-        print(df_table_seas.index)
-        print(self.df_index)
-        print(df_table_seas.index.intersection(self.df_index))
-        filtered_df = df_table_seas.loc[df_table_seas.index.intersection(self.df_index)]
+        try: 
+            # get the partitions from database
+            df_table_seas, sea_partition = self.seas_partition_df(site_name)
+            filtered_df = df_table_seas.loc[df_table_seas.index.intersection(self.df_index)]
+            
+            return filtered_df
         
-        return filtered_df
+        except Exception as e:
+            logging.info(f"Error getting time adjusted partition: {e}")
+            raise
         
     def seas_partition_df(self,site_name):
         """Smush the seas together with the partitioned data
@@ -424,139 +279,39 @@ class PartitionSmusher(object):
         Returns:
             df_table_seas (DataFrame), sea_partition (int): dataframe of partitioned seas, sea partion value in secs (eg: 9)
         """
-        # get the partitions from database
-        partitions = db.get_site_partitions_from_db(site_name)["data"]
-        sea_partition = partitions[0][1]
-        num_swells = len(partitions)         
-        
-        # base columns, seas columns and swells, generate swell columns dynamically from num_swells
-        base_col_names = ["time[hrs]","time[UTC]","time[WST]","wind_dir[degrees]","wind_spd[kn]","seasw_ht[m]","seasw_dir[degree]","seasw_pd[s]"]
-        sea_col_names = ["sea_ht[m]","sea_dir[degree]","sea_pd[s]"]
-        swell_col_names = [f"sw{i}_{suffix}" for i in range(1, num_swells) for suffix in ("ht[m]","dir[degree]","pd[s]")]
-        col_names = base_col_names + sea_col_names + swell_col_names
-        
-        #get the data from database
-        table = db.get_wavetable_from_db(site_name)["data"]
-        df_table_all = pd.read_csv(StringIO(table), comment="#", names=col_names, header=None)
-        
-        # select just seas data
-        df_table_seas = df_table_all[["time[UTC]", "sea_ht[m]", "sea_dir[degree]", "sea_pd[s]"]].copy()
-        df_table_seas["time[UTC]"] = pd.to_datetime(df_table_seas["time[UTC]"])
-        df_table_seas.set_index("time[UTC]", inplace=True)
-        
-        # rename for smushing purposes
-        df_table_seas.rename({
-            "sea_ht[m]": "swell_1_ht",
-            "sea_dir[degree]": "swell_1_dir",
-            "sea_pd[s]": "swell_1_pd"
-        }, axis=1, inplace=True)
-                
-        return df_table_seas, sea_partition        
-    
-    def get_site_partitions_df(self,site,*parts):
-        """Return the wave spectra partions from site
-        Paramaters:
-            site (str): Ofcast site name
-            parts (list(tuples)): each tuple has the start and end of each partition range
-        Returns:
-            df (DataFrame): dataframe ready to merge with an Ofcast forecast
-         """
-        ws = self.partition.multi_parts(*parts)
-        df = self.get_api_site(ws,site)
-
-        return df
-    
-    def format_df(self,df, location, *parts):
-        """
-        Formats a DataFrame into a custom table format for forecast data.
-
-        Parameters:
-        - df (pandas.DataFrame): The DataFrame to be formatted.
-        - location (str): The location string.
-       
-        Returns:
-        - str: A formatted string representing the table.
-        """
-
-        table = df["location"].iloc[0]
-        start_datetime = df["time[UTC]"].iloc[0]
-        start_timestamp = int(start_datetime.timestamp())
-        start_utc = start_datetime.strftime("%Y%m%d %H%M")
-        
-        #truncate the seconds 
-        df["time[WST]"] = df["time[WST]"].apply(lambda x: x.strftime("%Y-%m-%d %H:%M"))
-        df["time[UTC]"] = df["time[UTC]"].apply(lambda x: x.strftime("%Y-%m-%d %H:%M"))
-        
-        #remove the location for the purposes of api output
-        df.drop("location",axis=1,inplace=True)        
-        df.drop("run_time",axis=1,inplace=True)        
-        fields = ", ".join(df.columns)
-        
-        # Creating header
-        header = "### AUSWAVE Partition Forecast ###\n"
-        header += f"# Location:  {location}\n"
-        header += f"# Table:  {table}\n"
-        header += f"# StartTime: {start_timestamp}\n"
-        header += f"# StartUTC:  {start_utc}\n"
-        header += f"# Partitions:  {', '.join(str(part) for part in parts)}\n"
-        header += f"# Fields:    {fields}\n"
-        header += "###\n"
-        
-        #insert commas and remove the last comma
-        formatted_df = df.astype(str)
-        formatted_df = formatted_df.apply(lambda x: x + ", ", axis=1)
-        formatted_df.iloc[:,-1] = formatted_df.iloc[:,-1].str.rstrip(", ")
-        
-        # Creating table body
-        table_body = tabulate(formatted_df, headers=[], tablefmt='plain', showindex=False)
-    
-        # Concatenating the header, table body, and footer
-        final_output = header + table_body
-
-        return final_output
-
-    def generate_all_sites_to_db(self):
-        """Generate the partition splits for all sites and save to the database"""
-        site_names = db.get_all_sites()["data"][0]
-        logging.info(f"Model run_time: {self.latest_run_time}")
-        logging.info(f"Site list: {', '.join(site_names)}")
-        for site_name in site_names:
-            try:
-                self.generate_site_to_db(site_name=site_name)
-            except:
-                pass
-
-    def generate_site_to_db(self,site_name):
-        """Generate the partition splits for all sites and save to the database"""
-        
-        try:
-            table_config = self.get_site_config_db(site_name)
+        try: 
+            # get the partitions from database
+            partitions = db.get_site_partitions_from_db(site_name)["data"]
+            sea_partition = partitions[0][1]
+            num_swells = len(partitions)         
             
-            #exit stage left if no data
-            if not table_config["success"]:
-                logging.warning(table_config["message"])
-                return
-            # all the site parms from the database
-            site_name = table_config["data"]["site_name"]    
-            table_name = table_config["data"]["table"]        
-            partitions = table_config["data"]["partitions"]    
+            # base columns, seas columns and swells, generate swell columns dynamically from num_swells
+            base_col_names = ["time[hrs]","time[UTC]","time[WST]","wind_dir[degrees]","wind_spd[kn]","seasw_ht[m]","seasw_dir[degree]","seasw_pd[s]"]
+            sea_col_names = ["sea_ht[m]","sea_dir[degree]","sea_pd[s]"]
+            swell_col_names = [f"sw{i}_{suffix}" for i in range(1, num_swells) for suffix in ("ht[m]","dir[degree]","pd[s]")]
+            col_names = base_col_names + sea_col_names + swell_col_names
             
-            #generate our table output
-            partitioned_df = self.get_site_partitions_df(table_name,*partitions)
-            run_time = partitioned_df["run_time"].iloc[0]
-            run_time = run_time.to_pydatetime()
-            table_output = self.format_df(partitioned_df,site_name,*partitions)
+            #get the data from database
+            table = db.get_wavetable_from_db(site_name)["data"]
+            df_table_all = pd.read_csv(StringIO(table), comment="#", names=col_names, header=None)
             
-            #update the database and printout results
-            wave_table = db.add_wavetable_to_db(site_name, run_time, table_output)
-            logging.info(f"Saved {site_name} to database")
-                
-            return wave_table
+            # select just seas data
+            df_table_seas = df_table_all[["time[UTC]", "sea_ht[m]", "sea_dir[degree]", "sea_pd[s]"]].copy()
+            df_table_seas["time[UTC]"] = pd.to_datetime(df_table_seas["time[UTC]"])
+            df_table_seas.set_index("time[UTC]", inplace=True)
+            
+            # rename for smushing purposes
+            df_table_seas.rename({
+                "sea_ht[m]": "swell_1_ht",
+                "sea_dir[degree]": "swell_1_dir",
+                "sea_pd[s]": "swell_1_pd"
+            }, axis=1, inplace=True)
+                    
+            return df_table_seas, sea_partition        
         
         except Exception as e:
-            logging.warning(f"Not able to save {site_name} to database. Exception: {str(e)}")
-            return None
-
+            logging.info(f"Error getting sesa partition dataframe: {e}")
+            raise
 def main():
     
     parser = argparse.ArgumentParser()
@@ -565,8 +320,8 @@ def main():
     args = parser.parse_args()
     site_name=args.site_name
     calc = args.calc
+
     toolbox = PartitionSmusher()
-    
     table_config = toolbox.get_site_config_db(site_name)
     
     #exit stage left if no data

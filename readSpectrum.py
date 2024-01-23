@@ -13,6 +13,10 @@ import xarray as xr
 import numpy as np
 import wavespectra
 
+import os
+os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
+os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
+
 def clip(ds, boundary = {'min_lon':110.88, 'min_lat':-25.68, 'max_lon':121.47,'max_lat':-16.38}):
     # clip dataset my lats and lons
     ds = ds.copy()
@@ -131,7 +135,7 @@ def onePartition(filename, period = 9):
     ws.hs_sea.attrs['standard_name'] = ws.hs_sea.attrs['standard_name']+'_sea_partition'
     ws['hmax_sea'] = sea_stats.hmax
     ws.hmax_sea.attrs['standard_name'] = ws.hmax_sea.attrs['standard_name']+'_sea_partition'
-    ws['tp_sea'] = sea.spec.tp(smooth=False).fillna(1 / sea.freq.max())
+    ws['tp_sea'] = sea.spec.tp(smooth=False).fillna(1 / sea.freq.min())
     ws.tp_sea.attrs['standard_name'] = ws.tp_sea.attrs['standard_name']+'_sea_partition'
     ws['tm01_sea'] = sea_stats.tm01
     ws.tm01.attrs['standard_name'] = ws.tm01.attrs['standard_name']+'_sea_partition'
@@ -193,15 +197,24 @@ def rangePartition(filename, start, end):
     rangePartition(filename, 8, 16)
     
     """
-    # print(f"range_partition start: {start}, end: {end}")
-    
+    # a fudge factor that was discovered through trial and error to match hs from def onePartition()
+    if start > 5:
+        start += 0.59
+        
     #read in file
     ws = amendVariablesNames(filename)
         
     #get sea and swell split
     part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
     params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
-    tp = part.spec.tp(smooth=False).fillna(1 / part.freq.max())
+    
+    #we do a fudge with tp depending on which end of the partition to push low energy
+    tp = part.spec.tp(smooth=False).fillna(1 / part.freq.min())
+    
+    #if its a swell partition push low energy tp to the start
+    if start > 5:
+        tp = part.spec.tp(smooth=False).fillna(1 / part.freq.max())
+        
     params['tp'] = tp
     params['station_name'] = ws.station_name
     

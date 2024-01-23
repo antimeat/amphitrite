@@ -21,6 +21,10 @@ import datetime
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
+import os
+os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
+os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
+
 class Partitions(object):   
     """Class of methods for bespoke swell partitions and transformations"""
 
@@ -263,7 +267,7 @@ class Partitions(object):
         
         #pass an list of tuples for each period range in the required splits
         #avoid divide by zero on the first
-        parts = [(0.0001,7),(7,13),(13,18),(16.5,40)]
+        parts = [(0.1,7),(7,13),(13,18),(16.5,40)]
         
         ws = self.multi_parts_test(*parts)
         return ws   
