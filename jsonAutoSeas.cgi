@@ -136,9 +136,6 @@ def main():
         formatted_seas = format_seas_data(seas, site_name, return_dir, return_pd_dir)
         response = {'seas': formatted_seas}
         
-        if 'callback' in kwargs:
-            response = f"{kwargs['callback']}({json.dumps(response)})"
-        
     # else we do default autoseas calcs    
     else:
         
@@ -165,6 +162,9 @@ def main():
         
         response = {'seas': formatted_seas}
     
+    if 'callback' in kwargs:
+        response = f"{kwargs['callback']}({json.dumps(response)})"
+        
     print(json.dumps(response))
 
 def print_headers():

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The jsonAutoSeas API provides sea state predictions based on wind conditions. It's designed for marine and weather forecasting applications, integrating seamlessly into various analysis tools.
+The jsonAutoSeas API provides sea state based on wind conditions at a given site. In the backend there are fetch and depth tables for each site that need to be maintained. Fetch and depth tables are used as part of the Autoseas generated seas calculations
 
 ## API Endpoint
 
@@ -25,11 +25,13 @@ The API accepts the following query parameters:
 3. `src` (required)
 
     - Values: `autoseas`, `smush`, `partition`
-    - Description: Indicates the source of the sea state data.
+    - `autoseas`: Auto seas calculation based on the winds passed
+    - `smush`: A smush of the Auswave partitioned data and the autoseas generated winds. Highest energy at each timestep wins.
+    - `partition`: Auswave swell partitioned data
 
 4. `winds` (required)
     - Format: `dir[degrees]/spd[kts]/time_period[hrs]`
-    - Description: Specifies wind conditions in direction (degrees), speed (knots), and time period (hours).
+    - Description: Specifies winds to use for calculations depending on `src` parameter. Format is direction (degrees), speed (knots), and time period (hours). Time period is the time difference between the last wind and the current.
 
 ## Response Format
 
@@ -48,26 +50,16 @@ http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi?first_
 
 {"seas": [[0.4, 4, 200], [0.8, 6, 210], [1.7, 6, 220]]}
 
-## Usage
-
-Provide guidelines on how to integrate or call this API in different environments or platforms.
-
 ## Error Handling
 
-Describe common errors and their meanings, and how users should handle them.
+At this point there is minimal useful error handling (TODO)
 
 ## Versioning
 
-Indicate the current version of the API and any previous versions if applicable.
+Version: 2.0
 
 ## Contact
 
-Provide contact information for users to report issues or seek support.
-
-## License
-
-Specify the license under which this API is released, if applicable.
+Daz Vink: daz.vink@bom.gov.au
 
 ---
-
-Remember to update this document as your API evolves. It's crucial for maintaining clarity and ease of use for your API's consumers.
