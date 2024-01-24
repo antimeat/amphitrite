@@ -30,6 +30,33 @@ Amphitrite features a user-friendly frontend dashboard for managing site configu
 -   **Site Configuration**: Manage and update the configuration of various sites, including setting up partition ranges.
 -   **Manual Script Activation**: Trigger the `partitionSplitter.py` script directly from the dashboard for immediate data processing.
 
+## API CGI Script
+
+The `api.cgi` script in Amphitrite offers web-based functionalities to access and manage partitioned wave spectrum data. This CGI script, written in Python, allows users to interact through HTML and JSON formats.
+
+### Features
+
+-   **HTML and JSON Responses**: Outputs data in HTML for web presentation and JSON for programmatic access.
+-   **Site Listing**: Lists sites and associated data in both HTML and JSON formats.
+-   **Database Interactions**: Fetches and displays data about sites, run times, and partitions from the database.
+-   **Configuration File Processing**: Processes configuration files into structured JSON data.
+-   **Customizable HTML Rendering**: Includes custom CSS styles for rendering HTML tables.
+
+### Endpoints and Parameters
+
+-   `/api.cgi?get=list_html` - Lists all sites as HTML links.
+-   `/api.cgi?get=database` - Displays database entries in HTML format.
+-   `/api.cgi?get=list_json` - Lists all sites and data in JSON format.
+-   `/api.cgi?get=exclusion` - Lists exclusion sites in JSON format.
+-   `/api.cgi?get=site&site_name=[name]&run_time=[time]` - Fetches data for a specific site and run time.
+
+### Examples
+
+-   **List Sites in HTML**:
+    `url http://[base-url]/api.cgi?get=list_html`
+-   **Get Specific Site Data in JSON**:
+    `url http://[base-url]/api.cgi?get=site&site_name=ExampleSite&run_time=2024-01-01`
+
 ## Backend usage
 
 ### Script: partitionSplitter.py
