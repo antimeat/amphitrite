@@ -17,16 +17,16 @@ The script can be accessed via HTTP requests with specific parameters:
 
 ### Endpoints
 
--   **List Sites (HTML)**: `GET /path/to/script/api.cgi?get=list_html`
--   **Database Check (HTML)**: `GET /path/to/script/api.cgi?get=database`
--   **List Sites (JSON)**: `GET /path/to/script/api.cgi?get=list_json`
--   **Exclusion List (JSON)**: `GET /path/to/script/api.cgi?get=exclusion`
--   **Site Wave Data (JSON)**: `GET /path/to/script/api.cgi?get=site&site_name=[SITE_NAME]&run_time=[RUN_TIME]`
+-   **List Sites (HTML)**: `GET http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_html`
+-   **Database Check (HTML)**: `GET http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=database`
+-   **List Sites (JSON)**: `GET http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_json`
+-   **Exclusion List (JSON)**: `GET http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=exclusion`
+-   **Site Wave Data (JSON)**: `GET http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=site&site_name=[SITE_NAME]&run_time=[RUN_TIME]`
 
 ### Examples
 
--   To list all sites as HTML: `http://yourserver.com/cgi-bin/api.cgi?get=list_html`
--   To get JSON data for a specific site: `http://yourserver.com/cgi-bin/api.cgi?get=site&site_name=Woodside%20-%20Pluto%207%20days`
+-   To list all sites as HTML: `http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_html`
+-   To get JSON data for a specific site: `http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=site&site_name=Woodside%20-%20Pluto%207%20days`
 
 ## Logging
 

@@ -17,15 +17,15 @@ The script supports various endpoints for different functionalities:
 
 ### Endpoints
 
--   **List Sites in HTML**: `GET /path/to/script/api.cgi`
--   **List Sites in JSON**: `GET /path/to/script/api.cgi?get=json_sites`
--   **Compare Sites and Configuration**: `GET /path/to/script/api.cgi?get=compare`
--   **List Active Partition Names**: `GET /path/to/script/api.cgi?get=active_sites`
+-   **List Sites in HTML**: `GET http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi`
+-   **List Sites in JSON**: `GET http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=json_sites`
+-   **Compare Sites and Configuration**: `GET http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=compare`
+-   **List Active Partition Names**: `GET http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=active_sites`
 
 ### Examples
 
--   To list all sites in HTML: `http://yourserver.com/cgi-bin/api.cgi`
--   To get JSON data for site titles: `http://yourserver.com/cgi-bin/api.cgi?get=json_sites`
+-   To list all sites in HTML: `http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi`
+-   To get JSON data for site titles: `http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=json_sites`
 
 ## Logging
 

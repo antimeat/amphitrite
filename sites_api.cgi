@@ -83,8 +83,9 @@ def get_active_partition_names():
         
         # Compare active sites with site configurations
         in_config_not_in_excluded = set(config_sites_df['name']) - set(exclusion_sites_df['name'])       
-        
-        return json.dumps(list(in_config_not_in_excluded))
+        sorted_list = sorted(in_config_not_in_excluded)
+
+        return json.dumps(sorted_list)
     
     except Exception as e:
         handle_error(500, f"Internal Server Error: {e}")
