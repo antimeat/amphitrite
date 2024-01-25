@@ -141,7 +141,7 @@ The script can be accessed via HTTP requests with specific parameters:
 
 ## Logging
 
-Errors are logged to `[cws/op/webapps/er_ml_projects/davink/amphitrite/api.log]`. Ensure the log file is writable by the web server.
+Errors are logged to [api.log](http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.log). Ensure the log file is writable by the web server.
 
 ## Author
 
