@@ -1,0 +1,226 @@
+<h1 id="cgiapi-script-for-wave-data-partitioning">CGI/API Script for
+Wave Data Partitioning</h1>
+<h2 id="overview">Overview</h2>
+<p>CGI/API interface for managing and visualizing wave data partitions
+and comparing output to Ofcast active sites. It provides various
+functionalities, such as comparing active sites with configuration
+files, listing sites in HTML or JSON formats, and handling site-specific
+data.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>List wave data sites in both HTML and JSON formats.</li>
+<li>Compare active sites with site configurations and exclusions.</li>
+<li>Fetch and display site-specific data.</li>
+<li>Handle active partition names and site titles with latitude and
+longitude information.</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>The script can be executed through a web server that supports CGI,
+with different parameters to trigger specific functionalities:</p>
+<h3 id="endpoints">Endpoints</h3>
+<p>The script can be executed through a web server that supports CGI,
+with different parameters to trigger specific functionalities:</p>
+<ul>
+<li><code>?get=json_sites</code>: Returns site titles in JSON
+format.</li>
+<li><code>?get=json_tables</code>: Returns aswave tables in JSON.</li>
+<li><code>?get=html_sites</code>: Returns site titles with latitude and
+longitude from active Ofcast sites in HTML format.</li>
+<li><code>?get=compare</code>: Compares the active sites with the site
+configurations and displays the result in HTML.</li>
+<li><code>?get=active_sites</code>: Returns all active sites in JSON
+format.</li>
+</ul>
+<h3 id="examples">Examples</h3>
+<ul>
+<li><p><strong>List all sites in HTML</strong>:
+<code>url http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi</code></p>
+<h4 id="returns">returns:</h4>
+<pre><code>22.5_107.5: -22.5,107.5
+Abbot_Poin: -19.8,148.07
+Adelaide: -34.75,138.375
+...
+Wickham: -12.52,130.84
+Wonthaggi_: -38.59,145.51
+Xena: -19.96,115.218
+Yoorn: -20.34,115.79</code></pre></li>
+<li><p><strong>List all sites in HTML</strong>:
+<code>url http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=json_tables</code></p>
+<h4 id="returns-1">returns:</h4>
+<pre><code>[
+    {
+        &quot;name&quot;: &quot;22.5_107.5&quot;,
+        &quot;lat&quot;: -22.5,
+        &quot;lon&quot;: 107.5
+    },
+    {
+        &quot;name&quot;: &quot;Abbot_Poin&quot;,
+        &quot;lat&quot;: -19.8,
+        &quot;lon&quot;: 148.07
+    },
+    ...,
+    {
+        &quot;name&quot;: &quot;Xena&quot;,
+        &quot;lat&quot;: -19.96,
+        &quot;lon&quot;: 115.218
+    },
+    {
+        &quot;name&quot;: &quot;Yoorn&quot;,
+        &quot;lat&quot;: -20.34,
+        &quot;lon&quot;: 115.79
+    }
+]
+</code></pre></li>
+<li><p><strong>List all sites in HTML</strong>:
+<code>url http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=html_sites</code></p>
+<h4 id="returns-2">returns:</h4>
+<pre><code>Anglogold - Tropicana: -29.24,124.54
+Boskalis - Dampier 7 Days: -20.6,116.75
+Chevron - Gorgon: -20.46,114.84
+...,
+Woodside - Pyrenees: -21.54,114.12
+Woodside - Scarborough 10 days: -19.926,113.242
+Woodside - Stybarrow 10 Days: -21.45,113.82</code></pre></li>
+<li><p><strong>List all sites in HTML</strong>:
+<code>url http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=compare</code></p>
+<h4 id="returns-3">returns:</h4>
+<h4 id="returns-4">returns:</h4>
+<pre><code>    Active Sites</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Forecast site</th>
+<th style="text-align: center;">lat</th>
+<th style="text-align: center;">lon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Anglogold - Tropicana</td>
+<td style="text-align: center;">-29.2400</td>
+<td style="text-align: center;">124.540</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Boskalis - Dampier 7 Days</td>
+<td style="text-align: center;">-20.6000</td>
+<td style="text-align: center;">116.750</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Chevron - Gorgon</td>
+<td style="text-align: center;">-20.4600</td>
+<td style="text-align: center;">114.840</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - Jansz</td>
+<td style="text-align: center;">-19.8100</td>
+<td style="text-align: center;">114.610</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+</tr>
+</tbody>
+</table>
+<pre><code>    Site Configurations</code></pre>
+<table>
+<colgroup>
+<col style="width: 43%" />
+<col style="width: 15%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">site</th>
+<th style="text-align: center;">table</th>
+<th style="text-align: center;">partitions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">BHP - Pyrenees</td>
+<td style="text-align: center;">Pyrenees</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Boskalis - Dampier 7 Days</td>
+<td style="text-align: center;">Dampier_Po</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Boskalis - Scarborough 7 Days</td>
+<td style="text-align: center;">Scarb_new</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - Gorgon</td>
+<td style="text-align: center;">Gorgon</td>
+<td style="text-align: center;">[0.001, 10.0], [10.0, 40.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+<td style="text-align: center;">…</td>
+</tr>
+</tbody>
+</table>
+<pre><code>    Active Sites Not excluded</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">site</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Santos - Barossa</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Woodside - Scarborough 10 days</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Santos - Barossa KP40</td>
+</tr>
+</tbody>
+</table>
+<pre><code>    Excluded from Active Sites</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Anglogold - Tropicana</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - North Whites Beach</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Chevron - Wheatstone Platform AFS</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron Barrow Island AFS ML ext</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Santos - Van Gogh 4 days</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Woodside - Logistics Karratha 7
+days</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Woodside - Logistics Learmonth 7
+days</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<h2 id="logging">Logging</h2>
+<p>Errors are logged to <a
+href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.log">sites_api.log</a>.
+Ensure the log file is writable by the web server.</p>
+<h2 id="author">Author</h2>
+<p>Daz Vink: <a href="mailto:daz.vink@bom.gov.au"
+class="email">daz.vink@bom.gov.au</a></p>

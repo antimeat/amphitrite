@@ -1,6 +1,15 @@
 # Amphitrite
 
-Amphitrite is designed for processing and partitioning wave spectrum data. Utilizing data from Auswave, with a view to incorporate SWAN model output, Amphitrite creates bespoke swell partitions based on specified period ranges.
+Amphitrite is designed for processing and partitioning wave spectrum data. Utilizing data from Auswave, with a view to incorporate SWAN model output in the future. Amphitrite creates bespoke swell partitions based on specified period ranges.
+
+## Features
+
+-   **Dashboard**: GUI for maintaining configuration, monitoring logs and manual activation of scripts (see [dashboard](http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php)).
+-   **Partition Splitting**: Splits wave spectrum data into specified swell partitions.
+-   **Customizable Configurations**: Users can define their own partition ranges and site configurations.
+-   **Automated Execution**: Configured to run automatically as a cron job for regular processing.
+-   **Frontend API**: Provides an API endpoint for easy access to processed data.
+-   **Backend Database**: Archives data for past 7 days of model runs.
 
 ## Trouble shooting
 
@@ -8,15 +17,6 @@ Amphitrite is designed for processing and partitioning wave spectrum data. Utili
 2. [run manually from dashboard](#running-the-script-from-the-dashboard)
 3. [check auswave files](#auswave-files)
 4. [run manually from terminal](#running-the-script-manually)
-
-## Features
-
--   **Dashboard**: GUI for maintaining configuration, monitoring logs and manual activation of scripts.
--   **Partition Splitting**: Splits wave spectrum data into specified swell partitions.
--   **Customizable Configurations**: Users can define their own partition ranges and site configurations.
--   **Automated Execution**: Configured to run automatically as a cron job for regular processing.
--   **Frontend API**: Provides an API endpoint for easy access to processed data.
--   **Backend Database**: Archives data for past 7 days of model runs.
 
 ## Frontend Dashboard
 
