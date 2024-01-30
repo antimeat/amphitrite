@@ -23,6 +23,8 @@
 <li><code class="notranslate">?get=site&amp;site_name=[name]&amp;run_time=[time]</code> - Fetches data for a specific site and run time.</li>
 </ul>
 <h3>Examples</h3>
+<ul>
+<li>
 <p><strong>List all sites in HTML</strong>:<br>
 <code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_html</code></p>
 <h4>returns:</h4>
@@ -62,6 +64,8 @@
 </tr>
 </tbody>
 </table>
+</li>
+<li>
 <p><strong>List entries in database</strong>:<br>
 <code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=database</code></p>
 <h4>returns:</h4>
@@ -107,6 +111,8 @@
 </tr>
 </tbody>
 </table>
+</li>
+<li>
 <p><strong>List sites in json</strong>:<br>
 <code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_json</code></p>
 <h4>returns:</h4>
@@ -140,6 +146,8 @@
     }
 }
 </code></pre>
+</li>
+<li>
 <p><strong>List exclusion sites in json</strong>:<br>
 <code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=exclusion</code></p>
 <h4>returns:</h4>
@@ -167,6 +175,8 @@
     }
 }
 </code></pre>
+</li>
+<li>
 <p><strong>Get Specific Site Data in JSON</strong>:<br>
 <code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=site&amp;site_name=Woodside - Scarborough 10 Days&amp;run_time=2024010112</code></p>
 <h4>returns</h4>
@@ -183,6 +193,8 @@
 002,  2024-01-24 14:00,  2024-01-24 22:00,  204,  19,  2.93,  204,  9,   2.5,   204,  9,  1.52,  204,  17
 003,  2024-01-24 15:00,  2024-01-24 23:00,  206,  19,  2.89,  204,  9,   2.46,  204,  9,  1.5,   204,  17
 </code></pre>
+</li>
+</ul>
 <h2>Logging</h2>
 <hr>
 <p>Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.log" rel="nofollow">api.log</a>. Ensure the log file is writable by the web server.</p>

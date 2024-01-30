@@ -211,7 +211,7 @@ source activate mlenv
 
 ---
 
-Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/logfile.log" target="_blank">logfile.log</a>. Ensure the log file is writable by the web server.
+Errors are logged to [logfile.log](http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/logfile.log). Ensure the log file is writable by the web server.
 
 ## Author
 

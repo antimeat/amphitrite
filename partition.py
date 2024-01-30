@@ -37,7 +37,7 @@ class Partitions(object):
         return self.latest_run_time
     
     def set_latest_run_time(self,filename):
-        date_string = filename.split("/")[4].split("_")[2].split(".")[0]
+        date_string = filename.split("/")[-1].split("_")[2].split(".")[0]
         print(date_string)
         self.latest_run_time = datetime.datetime.strptime(date_string,"%Y%m%d%H")
     
@@ -100,6 +100,70 @@ class Partitions(object):
         
         return latest
 
+    def get_latest_file_new(self):
+        """
+        Return the path to the most relevant wavewatch file by selecting the two most recent files.
+
+        Returns:
+        str: The file path to the most relevant wavewatch NetCDF file.
+        """
+        extn = '/cws/data/wavewatch/IDY35050_G3_??????????.nc'
+        files = glob.glob(extn)
+
+        # Filter out files older than max_hours and sort by modification time
+        max_hours = 48
+        fresh_files = [file for file in files if (time.time() - os.path.getmtime(file)) / 3600 < max_hours]
+        fresh_files.sort(key=os.path.getmtime, reverse=True)
+
+        if len(fresh_files) < 2:
+            print('No fresh input files!')
+            exit(1)
+
+        # Pass the two most recent files to create_combined_file for further processing
+        return self.create_combined_file(fresh_files[0], fresh_files[1])
+
+    def create_combined_file(self, latest_file, previous_file):
+        """
+        Create a new file combining data from the latest and previous files if necessary.
+
+        This method checks the file sizes and modification times of the latest and previous files.
+        If the latest file is smaller and newer, it combines data from both files.
+
+        Parameters:
+        latest_file (str): The file path to the most recent NetCDF file.
+        previous_file (str): The file path to the second most recent NetCDF file.
+
+        Returns:
+        str: The file path to the combined or latest NetCDF file.
+        """
+        latest_file_string = latest_file.split("/")[-1]
+        new_file_path = f"/tmp/wavewatch/{latest_file_string}"
+
+        # Ensure the /tmp/wavewatch directory exists
+        os.makedirs(os.path.dirname(new_file_path), exist_ok=True)
+
+        latest_size = os.stat(latest_file).st_size 
+        previous_size = os.stat(previous_file).st_size
+
+        # Open the previous file to get its stop_date
+        with xr.open_dataset(previous_file) as previous_ds:
+            stop_date_prev = previous_ds.attrs['stop_date']
+
+        # Only combine files if the latest is smaller than the previous
+        if latest_size < previous_size:
+            # Open the datasets
+            with xr.open_dataset(latest_file) as latest_ds, xr.open_dataset(previous_file) as previous_ds:
+                max_time_latest = latest_ds.time.max()
+                additional_data = previous_ds.sel(time=previous_ds.time > max_time_latest)
+                combined_ds = xr.concat([latest_ds, additional_data], dim='time')
+                combined_ds.attrs['stop_date'] = stop_date_prev  # Set stop_date from previous file
+                combined_ds.to_netcdf(new_file_path)
+
+            return new_file_path
+        else:
+            # Use the latest file if it is larger or equal in size
+            return latest_file
+    
     def single_part(self,*parts):
         """Split the spectrum across a single partion
         
