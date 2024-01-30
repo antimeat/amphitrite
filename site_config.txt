@@ -50,8 +50,8 @@ Woodside - North Rankin 10 days, Rankin, 0.001-9, 9-40
 Woodside - North Rankin 7 days, Rankin, 0.001-9, 9-40
 Woodside - Pluto 7 days, PLA, 0.001-9, 9-40
 Woodside - Pluto 10 days, PLA, 0.001-9, 9-40
-Woodside - Scarborough 7 Days, Scarboroug, 0.001-9, 9-40
 Woodside - Stybarrow 10 Days, Stybarrow, 0.001-9, 9-40
 Woodside - Pyrenees, Pyrenees, 0.001-9, 9-40
-Woodside - Scarborough 10 Days, Scarb_new, 0.001-9, 9-40
+Woodside - Scarborough 7 days, Scarboroug, 0.001-9, 9-40
+Woodside - Scarborough 10 days, Scarb_new, 0.001-9, 9-40
 Woodside - Dampier Port DPS1 10 days, Dampier_Po, 0.001-9, 9-40

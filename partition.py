@@ -133,6 +133,11 @@ class Partitions(object):
         try:
             # Ensure the /tmp/wavewatch directory exists
             os.makedirs(os.path.dirname(new_file_path), exist_ok=True)
+            
+            # Delete existing files in the directory
+            existing_files = glob.glob(f"/tmp/wavewatch/*")
+            for file in existing_files:
+                os.remove(file)
 
             latest_size = os.stat(latest_file).st_size 
             previous_size = os.stat(previous_file).st_size
@@ -152,6 +157,9 @@ class Partitions(object):
                     
                     # Write the combined dataset to a new file
                     combined_ds.to_netcdf(new_file_path)
+                    
+                    # Set proper file permissions
+                    os.chmod(new_file_path, 0o666)  # Make it writable by others (rw-rw-rw-)
 
                 return new_file_path
             else:
