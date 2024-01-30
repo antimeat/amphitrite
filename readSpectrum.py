@@ -63,6 +63,7 @@ def amendVariablesNames(filename):
     siteNames = []
     for stn in ds.station_name.values:
         siteNames.append(''.join(stn.astype(str)))
+        
     me = xr.DataArray(np.array(siteNames), coords={'station': ds.station},dims=['station'])
     ds['station_name'] = me
     ws = wavespectra.read_dataset(ds)

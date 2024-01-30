@@ -30,7 +30,7 @@ class Partitions(object):
 
     def __init__(self):
         self.dir = "/cws/data/wavewatch/"
-        self.filename = self.get_latest_file()
+        self.filename = self.get_latest_file_new()
         self.set_latest_run_time(self.filename)
             
     def get_latest_run_time(self):
@@ -125,45 +125,42 @@ class Partitions(object):
     def create_combined_file(self, latest_file, previous_file):
         """
         Create a new file combining data from the latest and previous files if necessary.
-
-        This method checks the file sizes and modification times of the latest and previous files.
-        If the latest file is smaller and newer, it combines data from both files.
-
-        Parameters:
-        latest_file (str): The file path to the most recent NetCDF file.
-        previous_file (str): The file path to the second most recent NetCDF file.
-
-        Returns:
-        str: The file path to the combined or latest NetCDF file.
         """
         latest_file_string = latest_file.split("/")[-1]
+        previous_file_string = previous_file.split("/")[-1]
         new_file_path = f"/tmp/wavewatch/{latest_file_string}"
 
-        # Ensure the /tmp/wavewatch directory exists
-        os.makedirs(os.path.dirname(new_file_path), exist_ok=True)
+        try:
+            # Ensure the /tmp/wavewatch directory exists
+            os.makedirs(os.path.dirname(new_file_path), exist_ok=True)
 
-        latest_size = os.stat(latest_file).st_size 
-        previous_size = os.stat(previous_file).st_size
+            latest_size = os.stat(latest_file).st_size 
+            previous_size = os.stat(previous_file).st_size
 
-        # Open the previous file to get its stop_date
-        with xr.open_dataset(previous_file) as previous_ds:
-            stop_date_prev = previous_ds.attrs['stop_date']
+            if latest_size < previous_size:
+                # Open the datasets for concatenation
+                with xr.open_dataset(latest_file, chunks={}) as latest_ds, xr.open_dataset(previous_file, chunks={}) as previous_ds:
+                    max_time_latest = latest_ds.time.max()
+                    additional_data = previous_ds.sel(time=previous_ds.time > max_time_latest)
+                    combined_ds = xr.concat([latest_ds, additional_data], dim='time')
 
-        # Only combine files if the latest is smaller than the previous
-        if latest_size < previous_size:
-            # Open the datasets
-            with xr.open_dataset(latest_file) as latest_ds, xr.open_dataset(previous_file) as previous_ds:
-                max_time_latest = latest_ds.time.max()
-                additional_data = previous_ds.sel(time=previous_ds.time > max_time_latest)
-                combined_ds = xr.concat([latest_ds, additional_data], dim='time')
-                combined_ds.attrs['stop_date'] = stop_date_prev  # Set stop_date from previous file
-                combined_ds.to_netcdf(new_file_path)
+                    # Assign attributes and variables from the previous dataset
+                    combined_ds.attrs['stop_date'] = previous_ds.attrs['stop_date']
+                    combined_ds['station'] = previous_ds['station']
+                    combined_ds['string16'] = previous_ds['string16']
+                    combined_ds['station_name'] = previous_ds['station_name']
+                    
+                    # Write the combined dataset to a new file
+                    combined_ds.to_netcdf(new_file_path)
 
-            return new_file_path
-        else:
-            # Use the latest file if it is larger or equal in size
-            return latest_file
-    
+                return new_file_path
+            else:
+                # Use the latest file if it is larger or equal in size
+                return latest_file
+        
+        except Exception as e:
+            print(f"Problem combining model runs from files: {latest_file_string} and {previous_file_string}: {str(e)}")
+        
     def single_part(self,*parts):
         """Split the spectrum across a single partion
         
