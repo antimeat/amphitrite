@@ -1,148 +1,230 @@
-<h1>Amphitrite</h1>
-<hr>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="github-markdown.css">
+    </head>
+    <body><h1 id="amphitrite">Amphitrite</h1>
+
+<hr />
+
 <p>Amphitrite is designed for processing and partitioning wave spectrum data. Utilizing data from Auswave, with a view to incorporate SWAN model output in the future. Amphitrite creates bespoke swell partitions based on specified period ranges.</p>
-<h2>Features</h2>
-<hr>
+
+<h2 id="features">Features</h2>
+
+<hr />
+
 <ul>
-<li><strong>Dashboard</strong>: GUI for maintaining configuration, monitoring logs and manual activation of scripts (see <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php" rel="nofollow">dashboard</a>).</li>
+<li><strong>Dashboard</strong>: GUI for maintaining configuration, monitoring logs and manual activation of scripts (see <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php" target="_blank">dashboard</a>).</li>
 <li><strong>Partition Splitting</strong>: Splits wave spectrum data into specified swell partitions.</li>
 <li><strong>Customizable Configurations</strong>: Users can define their own partition ranges and site configurations.</li>
 <li><strong>Automated Execution</strong>: Configured to run automatically as a cron job for regular processing.</li>
 <li><strong>Frontend API</strong>: Provides an API endpoint for easy access to processed data.</li>
 <li><strong>Backend Database</strong>: Archives data for past 7 days of model runs.</li>
 </ul>
-<h2>Trouble shooting</h2>
-<hr>
+
+<h2 id="trouble-shooting">Trouble shooting</h2>
+
+<hr />
+
 <ol>
 <li><a href="#logging">check the log</a></li>
 <li><a href="#running-the-script-from-the-dashboard">run manually from dashboard</a></li>
 <li><a href="#auswave-files">check auswave files</a></li>
 <li><a href="#running-the-script-manually">run manually from terminal</a></li>
 </ol>
-<h2>Frontend Dashboard</h2>
-<hr>
-<p>Amphitrite features a frontend <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php" rel="nofollow">dashboard</a> for managing site configurations and manually activating the partition splitting scripts.</p>
-<h3>Autoseas</h3>
-<p>API and package for calculating and returning autoseas swell data from winds and partitioned data. More detailed information is here (see <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_JSONAUTOSEAS.html" rel="nofollow">README_JSONAUTOSEAS</a>).</p>
-<h3>Dashboard Features</h3>
+
+<h2 id="frontend-dashboard">Frontend Dashboard</h2>
+
+<hr />
+
+<p>Amphitrite features a frontend <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php" target="_blank">dashboard</a> for managing site configurations and manually activating the partition splitting scripts.</p>
+
+<h3 id="autoseas">Autoseas</h3>
+
+<p>API and package for calculating and returning autoseas swell data from winds and partitioned data. More detailed information is here (see <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_JSONAUTOSEAS.html" target="_blank">README_JSONAUTOSEAS</a>).</p>
+
+<h3 id="dashboard-features">Dashboard Features</h3>
+
 <ul>
 <li><strong>Site data</strong>: API access to interogate current and recent data.</li>
 <li><strong>Site Configuration</strong>: Manage and update the configuration of various sites, including setting up partition ranges.</li>
-<li><strong>Manual Script Activation</strong>: Trigger the <code class="notranslate">partitionSplitter.py</code> script directly from the dashboard for immediate data processing.</li>
+<li><strong>Manual Script Activation</strong>: Trigger the <code>partitionSplitter.py</code> script directly from the dashboard for immediate data processing.</li>
 <li><strong>Logging</strong>: Inspect log files</li>
 </ul>
-<h2>Backend details</h2>
-<hr>
-<h3>File Descriptions</h3>
+
+<h2 id="backend-details">Backend details</h2>
+
+<hr />
+
+<h3 id="file-descriptions">File Descriptions</h3>
+
 <p><strong>api.cgi</strong>:</p>
+
 <ul>
 <li>CGI script for the API. More details in the <a href="#api">API</a>.</li>
 </ul>
+
 <p><strong>autoseas/</strong>:</p>
+
 <ul>
-<li>A package for calculating and returning swell data from winds and partitioned data. Interfaces through <code class="notranslate">jsonAutoSeas.cgi</code>. Further details are in the <a href="#autoseas">AutoSeas section</a>.</li>
+<li>A package for calculating and returning swell data from winds and partitioned data. Interfaces through <code>jsonAutoSeas.cgi</code>. Further details are in the <a href="#autoseas">AutoSeas section</a>.</li>
 </ul>
+
 <p><strong>database.py</strong>:</p>
+
 <ul>
 <li>Provides backend database functions and interface.</li>
 </ul>
+
 <p><strong>data.py</strong>:</p>
+
 <ul>
 <li>Utility functions for managing data.</li>
 </ul>
+
 <p><strong>gfe.py</strong>:</p>
+
 <ul>
 <li>A function to retrieve point data from GFE.</li>
 </ul>
+
 <p><strong>html/</strong>:</p>
+
 <ul>
 <li>Contains the frontend dashboard for the package. More details can be found in the <a href="#frontend-dashboard">Frontend Dashboard section</a>.</li>
 </ul>
+
 <p><strong>jsonAutoSeas.cgi</strong>:</p>
+
 <ul>
 <li>CGI script for the AutoSeas interface. See <a href="#autoseas">AutoSeas section</a> for more information.</li>
 </ul>
+
 <p><strong>models.py</strong>:</p>
+
 <ul>
 <li>Contains descriptions of the database models.</li>
 </ul>
+
 <p><strong>partition.py</strong>:</p>
+
 <ul>
 <li>A class for managing wave partitions and format.</li>
 </ul>
+
 <p><strong>partitionSplitter.py</strong>:</p>
+
 <ul>
-<li>
-<p>This is the main script that calls other partitioning scripts. It includes a <code class="notranslate">PartitionSplitter</code> class with methods to handle wave spectra data, transform it into different formats, and integrate/interact with the database.</p>
-<h3>Running the script from the dashboard</h3>
-<p><a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php" rel="nofollow">go-to dashboard</a> -&gt; Activate run</p>
-<h3>Running the script manually</h3>
+<li><p>This is the main script that calls other partitioning scripts. It includes a <code>PartitionSplitter</code> class with methods to handle wave spectra data, transform it into different formats, and integrate/interact with the database.</p>
+
+<h3 id="running-the-script-from-the-dashboard">Running the script from the dashboard</h3>
+
+<p><a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php" target="_blank">go-to dashboard</a> -> Activate run</p>
+
+<h3 id="running-the-script-manually">Running the script manually</h3>
+
 <p>You can run the script manually (it is automatically scheduled to run using a cron job).</p>
+
 <p>Manual execution:</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate">ssh wa-vw-er
-<span class="pl-c1">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite
-<span class="pl-c1">source</span> activate mlenv
-python partitionSplitter.py --site [site_name<span class="pl-k">|</span>all]</pre></div>
-</li>
+
+<div class="codehilite">
+<pre><span></span><code>ssh wa-vw-er
+<span class="nb">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite
+<span class="nb">source</span> activate mlenv
+python partitionSplitter.py --site <span class="o">[</span>site_name<span class="p">|</span>all<span class="o">]</span>
+</code></pre>
+</div></li>
 </ul>
+
 <p><strong>partition_smusher.py</strong>:</p>
+
 <ul>
 <li>A class designed to combine spectral data with AutoSeas data.</li>
 </ul>
+
 <p><strong>readSpectrum.py</strong>:</p>
+
 <ul>
 <li>Backend script for partitioning wave spectra files.</li>
 </ul>
+
 <p><strong>save_config.py</strong>:</p>
+
 <ul>
-<li>Used to update file <code class="notranslate">table_config.txt</code> (configuration file used for swell partitioning)</li>
+<li>Used to update file <code>table_config.txt</code> and save to database (configuration file used for swell partitioning)</li>
 </ul>
+
 <p><strong>save_exclusions.py</strong>:</p>
+
 <ul>
 <li>Used by <a href="#api">API</a> and <a href="#frontend-dashboard">dashboard</a> to configure the active sites to exclude from swell partitioning checks</li>
 </ul>
+
 <p><strong>sites.py</strong>:</p>
+
 <ul>
 <li>Used by <a href="#api">API</a> to get the current active sites.</li>
 </ul>
+
 <p><strong>sites_api.cgi</strong>:</p>
+
 <ul>
 <li>Manages site-specific API interactions. See <a href="#sites-api">Sites API</a> for more information.</li>
 </ul>
+
 <p><strong>table_config.txt</strong>:</p>
+
 <ul>
 <li>The config file used by <a href="#api">API</a> and <a href="#frontend-dashboard">dashboard</a> for swell partitioning</li>
 </ul>
+
 <p><strong>update_sites.py</strong>:</p>
+
 <ul>
-<li>Utility functions for initializing or updating the database.</li>
+<li>Utility functions for initializing or updating the database. Used by save_config.py</li>
 </ul>
+
 <p><strong>watchdog.sh</strong>:</p>
+
 <ul>
 <li>A shell script for monitoring the last run time of the cron job. Refer to <a href="#cron">Cron section</a> for more details.</li>
 </ul>
+
 <p><strong>waves_data.db</strong>:</p>
+
 <ul>
 <li>sqlite3 database used for storing the wave partitioned data (for up to 7 days).</li>
 </ul>
-<h3>Cron:</h3>
-<p>Currently run under user <code class="notranslate">davink</code> on server: <code class="notranslate">wa-vw-er</code><br>
-The script is set up to run every 5 minutes for 2 hours staring at 5:00AM, 11:00AM, 5:30PM and 11:00PM WST. A lock file (<code class="notranslate">.lockfile.lock</code>) and log file (<code class="notranslate">script_errors.log</code>) are used for checking if the script is already running and logging errors respectively. This should ensure regular/consistent data processing to begin within 5 minutes of data arriving. As of <code class="notranslate">25/01/2024</code> Auswave data files have been arriving at approximately 5:20AM, 11:20AM, 5:20PM and 11:20PM WST.</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span>##########################</span>
-<span class="pl-c"><span class="pl-c">#</span>scripts to run wave partitioning. check for new models every 5 minutes over a 2 hour period</span>
-<span class="pl-c"><span class="pl-c">#</span>##########################</span>
-<span class="pl-k">*</span>/5 5-6 <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-c1">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="pl-k">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
-<span class="pl-k">*</span>/5 11-12 <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-c1">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="pl-k">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
-<span class="pl-k">*</span>/5 17-18 <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-c1">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="pl-k">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
-<span class="pl-k">*</span>/5 23 <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-c1">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="pl-k">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
-<span class="pl-k">*</span>/5 0 <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-k">*</span> <span class="pl-c1">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="pl-k">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
-<span class="pl-c"><span class="pl-c">#</span>###########################</span></pre></div>
-<h3>Auswave files</h3>
-<p>The partition splitter relies on the timely arrival of the Auswave data files and a cron job to start the paritioning process (see <a href="#cron">cron</a> for more details). The Auswave files arrive on server <code class="notranslate">wa-vw-er</code> here: <code class="notranslate">/cws/data/wavewatch/</code>.</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate">ssh wa-vw-er
-<span class="pl-c1">cd</span> /cws/data/wavewatch/
-ls -la</pre></div>
-<pre class="notranslate"><code class="notranslate">drwxr-xr-x.  2 cwsop cwsop      4096 Jan 25 09:20 .
+
+<h3 id="cron">Cron:</h3>
+
+<p>Currently run under user <code>davink</code> on server: <code>wa-vw-er</code>
+The script is set up to run every 5 minutes for 2 hours staring at 5:00AM, 11:00AM, 5:30PM and 11:00PM WST. A lock file (<code>.lockfile.lock</code>) and log file (<code>script_errors.log</code>) are used for checking if the script is already running and logging errors respectively. This should ensure regular/consistent data processing to begin within 5 minutes of data arriving. As of <code>25/01/2024</code> Auswave data files have been arriving at approximately 5:20AM, 11:20AM, 5:20PM and 11:20PM WST.</p>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1">###########################</span>
+<span class="c1">#scripts to run wave partitioning. check for new models every 5 minutes over a 2 hour period</span>
+<span class="c1">###########################</span>
+*/5 <span class="m">5</span>-6 * * * <span class="nb">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="o">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
+*/5 <span class="m">11</span>-12 * * * <span class="nb">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="o">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
+*/5 <span class="m">17</span>-18 * * * <span class="nb">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="o">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
+*/5 <span class="m">23</span> * * * <span class="nb">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="o">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
+*/5 <span class="m">0</span> * * * <span class="nb">cd</span> /cws/op/webapps/er_ml_projects/davink/amphitrite <span class="o">&amp;&amp;</span> /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
+<span class="c1">############################</span>
+</code></pre>
+</div>
+
+<h3 id="auswave-files">Auswave files</h3>
+
+<p>The partition splitter relies on the timely arrival of the Auswave data files and a cron job to start the paritioning process (see <a href="#cron">cron</a> for more details). The Auswave files arrive on server <code>wa-vw-er</code> here: <code>/cws/data/wavewatch/</code>.</p>
+
+<div class="codehilite">
+<pre><span></span><code>ssh wa-vw-er
+<span class="nb">cd</span> /cws/data/wavewatch/
+ls -la
+</code></pre>
+</div>
+
+<pre><code>drwxr-xr-x.  2 cwsop cwsop      4096 Jan 25 09:20 .
 drwxr-xr-x. 18 cwsop cwsop      4096 Jul 25  2023 ..
 -rw-rw-r--.  1 cwsop cwsop  52309922 Jan 18 10:50 IDY35050_G3_2024011718.nc
 -rw-rw-r--.  1 cwsop cwsop 165489628 Jan 18 17:20 IDY35050_G3_2024011800.nc
@@ -150,23 +232,43 @@ drwxr-xr-x. 18 cwsop cwsop      4096 Jul 25  2023 ..
 -rw-rw-r--.  1 cwsop cwsop 165494747 Jan 19 05:20 IDY35050_G3_2024011812.nc
 -rw-rw-r--.  1 cwsop cwsop  52294154 Jan 19 09:20 IDY35050_G3_2024011818.nc
 </code></pre>
-<h2>Api</h2>
-<hr>
-<p>The <code class="notranslate">api.cgi</code> script in Amphitrite offers web-based functionalities to access and manage partitioned wave spectrum data. This CGI script, written in Python, allows users to interact through HTML and JSON formats.<br>
-A detailed guide for the <code class="notranslate">api.cgi</code> is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_API.html" rel="nofollow">README_API</a></p>
-<h2>Sites api</h2>
-<hr>
-<p>A <code class="notranslate">sites_api.cgi</code> script is available for managing and visualizing wave data partitions and comparing output to Ofcast active sites. It provides various functionalities, such as comparing active sites with configuration files, listing sites in HTML or JSON formats, and handling site-specific data.<br>
-A detailed guide for the <code class="notranslate">sites_api.cgi</code> is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_SITES_API.html" rel="nofollow">README_SITES_API</a></p>
-<h2>Installation</h2>
-<hr>
-<p>Python package requirements are currently met on server <code class="notranslate">wa-vw-er</code> by using conda environment <code class="notranslate">mlenv</code>:</p>
-<div class="highlight highlight-source-shell"><pre class="notranslate">git clone git@gitlab.bom.gov.au:er/innovation/amphitrite.git
-<span class="pl-c1">cd</span> amphitrite
-<span class="pl-c1">source</span> activate mlenv</pre></div>
-<h2>Logging</h2>
-<hr>
-<p>Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/logfile.log" rel="nofollow">logfile.log</a>. Ensure the log file is writable by the web server.</p>
-<h2>Author</h2>
-<hr>
-<p>Daz Vink: <a href="mailto:daz.vink@bom.gov.au">daz.vink@bom.gov.au</a></p>
+
+<h2 id="api">Api</h2>
+
+<hr />
+
+<p>The <code>api.cgi</code> script in Amphitrite offers web-based functionalities to access and manage partitioned wave spectrum data. This CGI script, written in Python, allows users to interact through HTML and JSON formats.
+A detailed guide for the <code>api.cgi</code> is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_API.html" target="_blank">README_API</a></p>
+
+<h2 id="sites-api">Sites api</h2>
+
+<hr />
+
+<p>A <code>sites_api.cgi</code> script is available for managing and visualizing wave data partitions and comparing output to Ofcast active sites. It provides various functionalities, such as comparing active sites with configuration files, listing sites in HTML or JSON formats, and handling site-specific data.
+A detailed guide for the <code>sites_api.cgi</code> is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_SITES_API.html" target="_blank">README<em>SITES</em>API</a></p>
+
+<h2 id="installation">Installation</h2>
+
+<hr />
+
+<p>Python package requirements are currently met on server <code>wa-vw-er</code> by using conda environment <code>mlenv</code>:</p>
+
+<div class="codehilite">
+<pre><span></span><code>git clone git@gitlab.bom.gov.au:er/innovation/amphitrite.git
+<span class="nb">cd</span> amphitrite
+<span class="nb">source</span> activate mlenv
+</code></pre>
+</div>
+
+<h2 id="logging">Logging</h2>
+
+<hr />
+
+<p>Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/logfile.log">logfile.log</a>. Ensure the log file is writable by the web server.</p>
+
+<h2 id="author">Author</h2>
+
+<hr />
+
+<p>Daz Vink: <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#111;&#58;&#x64;&#97;z&#x2e;&#118;&#105;&#110;&#107;&#64;&#98;&#x6f;&#109;&#46;&#103;&#111;&#x76;.&#97;&#117;">&#x64;&#97;z&#x2e;&#118;&#105;&#110;&#107;&#64;&#98;&#x6f;&#109;&#46;&#103;&#111;&#x76;.&#97;&#117;</a></p>
+</body></html>

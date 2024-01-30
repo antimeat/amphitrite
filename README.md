@@ -114,7 +114,7 @@ API and package for calculating and returning autoseas swell data from winds and
 
 **save_config.py**:
 
--   Used to update file `table_config.txt` (configuration file used for swell partitioning)
+-   Used to update file `table_config.txt` and save to database (configuration file used for swell partitioning)
 
 **save_exclusions.py**:
 
@@ -134,7 +134,7 @@ API and package for calculating and returning autoseas swell data from winds and
 
 **update_sites.py**:
 
--   Utility functions for initializing or updating the database.
+-   Utility functions for initializing or updating the database. Used by save_config.py
 
 **watchdog.sh**:
 

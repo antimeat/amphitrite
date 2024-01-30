@@ -1,122 +1,141 @@
-<h1>CGI Script for Wave Data Partitioning retrieval from database</h1>
-<hr>
-<h2>Overview</h2>
-<hr>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="github-markdown.css">
+    </head>
+    <body><h1 id="cgi-script-for-wave-data-partitioning-retrieval-from-database">CGI Script for Wave Data Partitioning retrieval from database</h1>
+
+<hr />
+
+<h2 id="overview">Overview</h2>
+
+<hr />
+
 <p>This CGI script, provides a simple interface for managing and retrieving wave data. It offers functionalities like listing sites, fetching specific wave table data, and handling exclusion lists, both in HTML and JSON formats.</p>
-<h2>Features</h2>
-<hr>
+
+<h2 id="features">Features</h2>
+
+<hr />
+
 <ul>
 <li>List all sites as links in an HTML table format.</li>
 <li>Provide database checks and return results in HTML.</li>
 <li>Return site configurations and exclusion lists in JSON format.</li>
 <li>Fetch wave table data for specific sites and run times.</li>
 </ul>
-<h2>Usage</h2>
-<hr>
+
+<h2 id="usage">Usage</h2>
+
+<hr />
+
 <p>The script can be accessed via HTTP requests with specific parameters:</p>
-<h3>Endpoints and Parameters</h3>
+
+<h3 id="endpoints-and-parameters">Endpoints and Parameters</h3>
+
 <ul>
-<li><code class="notranslate">?get=list_html</code> - Lists all sites as HTML links.</li>
-<li><code class="notranslate">?get=database</code> - Displays database entries in HTML format.</li>
-<li><code class="notranslate">?get=list_json</code> - Lists all sites and data in JSON format.</li>
-<li><code class="notranslate">?get=exclusion</code> - Lists exclusion sites in JSON format.</li>
-<li><code class="notranslate">?get=site&amp;site_name=[name]&amp;run_time=[time]</code> - Fetches data for a specific site and run time.</li>
+<li><code>?get=list_html</code> - Lists all sites as HTML links.</li>
+<li><code>?get=database</code> - Displays database entries in HTML format.</li>
+<li><code>?get=list_json</code> - Lists all sites and data in JSON format.</li>
+<li><code>?get=exclusion</code> - Lists exclusion sites in JSON format.</li>
+<li><code>?get=site&amp;site_name=[name]&amp;run_time=[time]</code> - Fetches data for a specific site and run time.</li>
 </ul>
-<h3>Examples</h3>
+
+<h3 id="examples">Examples</h3>
+
 <ul>
-<li>
-<p><strong>List all sites in HTML</strong>:<br>
-<code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_html</code></p>
-<h4>returns:</h4>
-<table role="table">
+<li><p><strong>List all sites in HTML</strong>:
+<code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_html</code></p>
+
+<h4 id="returns">returns:</h4>
+
+<table>
 <thead>
 <tr>
-<th align="center">Forecast site</th>
-<th align="center">Auswave table</th>
-<th align="center">Partitions</th>
+  <th style="text-align:center;">Forecast site</th>
+  <th style="text-align:center;">Auswave table</th>
+  <th style="text-align:center;">Partitions</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="center">BHP - Pyrenees</td>
-<td align="center">Pyrenees</td>
-<td align="center">[0.001, 9.0], [9.0, 40.0]</td>
+  <td style="text-align:center;">BHP - Pyrenees</td>
+  <td style="text-align:center;">Pyrenees</td>
+  <td style="text-align:center;">[0.001, 9.0], [9.0, 40.0]</td>
 </tr>
 <tr>
-<td align="center">Boskalis - Dampier 7 Days</td>
-<td align="center">Dampier_Po</td>
-<td align="center">[0.001, 9.0], [9.0, 40.0]</td>
+  <td style="text-align:center;">Boskalis - Dampier 7 Days</td>
+  <td style="text-align:center;">Dampier_Po</td>
+  <td style="text-align:center;">[0.001, 9.0], [9.0, 40.0]</td>
 </tr>
 <tr>
-<td align="center">Boskalis - Scarborough 7 Days</td>
-<td align="center">Scarb_new</td>
-<td align="center">[0.001, 9.0], [9.0, 40.0]</td>
+  <td style="text-align:center;">Boskalis - Scarborough 7 Days</td>
+  <td style="text-align:center;">Scarb_new</td>
+  <td style="text-align:center;">[0.001, 9.0], [9.0, 40.0]</td>
 </tr>
 <tr>
-<td align="center">Chevron - Gorgon</td>
-<td align="center">Gorgon</td>
-<td align="center">[0.001, 10.0], [10.0, 40.0]</td>
+  <td style="text-align:center;">Chevron - Gorgon</td>
+  <td style="text-align:center;">Gorgon</td>
+  <td style="text-align:center;">[0.001, 10.0], [10.0, 40.0]</td>
 </tr>
 <tr>
-<td align="center">...</td>
-<td align="center">...</td>
-<td align="center">...</td>
+  <td style="text-align:center;">...</td>
+  <td style="text-align:center;">...</td>
+  <td style="text-align:center;">...</td>
 </tr>
 </tbody>
-</table>
-</li>
-<li>
-<p><strong>List entries in database</strong>:<br>
-<code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=database</code></p>
-<h4>returns:</h4>
-<table role="table">
+</table></li>
+<li><p><strong>List entries in database</strong>:
+<code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=database</code></p>
+
+<h4 id="returns-2">returns:</h4>
+
+<table>
 <thead>
 <tr>
-<th align="center">sites</th>
-<th align="center">table</th>
-<th align="center">partitions</th>
-<th align="center">run_times</th>
+  <th style="text-align:center;">sites</th>
+  <th style="text-align:center;">table</th>
+  <th style="text-align:center;">partitions</th>
+  <th style="text-align:center;">run_times</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td align="center">BHP - Pyrenees</td>
-<td align="center">Pyrenees</td>
-<td align="center">[0.001, 9.0], [9.0, 40.0]</td>
-<td align="center">24/0124/12</td>
+  <td style="text-align:center;">BHP - Pyrenees</td>
+  <td style="text-align:center;">Pyrenees</td>
+  <td style="text-align:center;">[0.001, 9.0], [9.0, 40.0]</td>
+  <td style="text-align:center;">24/0124/12</td>
 </tr>
 <tr>
-<td align="center">Boskalis - Dampier 7 Days</td>
-<td align="center">Dampier_Po</td>
-<td align="center">[0.001, 9.0], [9.0, 40.0]</td>
-<td align="center">24/0124/00</td>
+  <td style="text-align:center;">Boskalis - Dampier 7 Days</td>
+  <td style="text-align:center;">Dampier_Po</td>
+  <td style="text-align:center;">[0.001, 9.0], [9.0, 40.0]</td>
+  <td style="text-align:center;">24/0124/00</td>
 </tr>
 <tr>
-<td align="center">Boskalis - Scarborough 7 Days</td>
-<td align="center">Scarb_new</td>
-<td align="center">[0.001, 9.0], [9.0, 40.0]</td>
-<td align="center">24/0123/12</td>
+  <td style="text-align:center;">Boskalis - Scarborough 7 Days</td>
+  <td style="text-align:center;">Scarb_new</td>
+  <td style="text-align:center;">[0.001, 9.0], [9.0, 40.0]</td>
+  <td style="text-align:center;">24/0123/12</td>
 </tr>
 <tr>
-<td align="center">Chevron - Gorgon</td>
-<td align="center">Gorgon</td>
-<td align="center">[0.001, 10.0], [10.0, 40.0]</td>
-<td align="center">24/0123/00</td>
+  <td style="text-align:center;">Chevron - Gorgon</td>
+  <td style="text-align:center;">Gorgon</td>
+  <td style="text-align:center;">[0.001, 10.0], [10.0, 40.0]</td>
+  <td style="text-align:center;">24/0123/00</td>
 </tr>
 <tr>
-<td align="center">...</td>
-<td align="center">...</td>
-<td align="center">...</td>
-<td align="center">...</td>
+  <td style="text-align:center;">...</td>
+  <td style="text-align:center;">...</td>
+  <td style="text-align:center;">...</td>
+  <td style="text-align:center;">...</td>
 </tr>
 </tbody>
-</table>
-</li>
-<li>
-<p><strong>List sites in json</strong>:<br>
-<code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_json</code></p>
-<h4>returns:</h4>
-<pre class="notranslate"><code class="notranslate">{
+</table></li>
+<li><p><strong>List sites in json</strong>:
+<code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_json</code></p>
+
+<h4 id="returns-3">returns:</h4>
+
+<pre><code>{
     "BHP - Pyrenees": {
         "table": "Pyrenees",
         "parts": [
@@ -145,13 +164,13 @@
         ]
     }
 }
-</code></pre>
-</li>
-<li>
-<p><strong>List exclusion sites in json</strong>:<br>
-<code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=exclusion</code></p>
-<h4>returns:</h4>
-<pre class="notranslate"><code class="notranslate">{
+</code></pre></li>
+<li><p><strong>List exclusion sites in json</strong>:
+<code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=exclusion</code></p>
+
+<h4 id="returns-4">returns:</h4>
+
+<pre><code>{
     "Anglogold - Tropicana": {
         "name": "Anglogold - Tropicana"
     },
@@ -174,13 +193,13 @@
         "name": "Chevron - North Whites Beach"
     }
 }
-</code></pre>
-</li>
-<li>
-<p><strong>Get Specific Site Data in JSON</strong>:<br>
-<code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=site&amp;site_name=Woodside - Scarborough 10 Days&amp;run_time=2024010112</code></p>
-<h4>returns</h4>
-<pre class="notranslate"><code class="notranslate">### AUSWAVE Partition Forecast ###
+</code></pre></li>
+<li><p><strong>Get Specific Site Data in JSON</strong>:
+<code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=site&amp;site_name=Woodside - Scarborough 10 Days&amp;run_time=2024010112</code></p>
+
+<h4 id="returns-5">returns</h4>
+
+<pre><code>### AUSWAVE Partition Forecast ###
 # Location:  Woodside - Scarborough 10 Days
 # Table:  Scarb_new
 # StartTime: 1706097600
@@ -192,12 +211,18 @@
 001,  2024-01-24 13:00,  2024-01-24 21:00,  203,  19,  2.97,  204,  9,   2.54,  204,  9,  1.53,  204,  17
 002,  2024-01-24 14:00,  2024-01-24 22:00,  204,  19,  2.93,  204,  9,   2.5,   204,  9,  1.52,  204,  17
 003,  2024-01-24 15:00,  2024-01-24 23:00,  206,  19,  2.89,  204,  9,   2.46,  204,  9,  1.5,   204,  17
-</code></pre>
-</li>
+</code></pre></li>
 </ul>
-<h2>Logging</h2>
-<hr>
-<p>Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.log" rel="nofollow">api.log</a>. Ensure the log file is writable by the web server.</p>
-<h2>Author</h2>
-<hr>
-<p>Daz Vink: <a href="mailto:daz.vink@bom.gov.au">daz.vink@bom.gov.au</a></p>
+
+<h2 id="logging">Logging</h2>
+
+<hr />
+
+<p>Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.log" target="_blank">api.log</a>. Ensure the log file is writable by the web server.</p>
+
+<h2 id="author">Author</h2>
+
+<hr />
+
+<p>Daz Vink: <a href="ma&#105;&#x6c;&#116;&#111;&#x3a;&#x64;&#97;&#122;&#x2e;&#118;&#105;&#110;&#107;&#64;&#x62;&#x6f;&#x6d;.&#x67;o&#118;&#x2e;&#x61;&#117;">&#x64;&#97;&#122;&#x2e;&#118;&#105;&#110;&#107;&#64;&#x62;&#x6f;&#x6d;.&#x67;o&#118;&#x2e;&#x61;&#117;</a></p>
+</body></html>

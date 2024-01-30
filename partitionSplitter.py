@@ -20,6 +20,7 @@ import pandas as pd
 from tabulate import tabulate
 import argparse
 import logging
+from datetime import datetime, timedelta
 
 #package imports
 import database as db
@@ -393,6 +394,47 @@ class PartitionSplitter(object):
             logging.warning(f"Not able to save {site_name} to database. Exception: {str(e)}")
             return None
 
+def cleanup_logfile():
+    days = 7
+    logfile_path = LOG_FILENAME
+
+    try:
+        with open(logfile_path, 'r') as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        logging.warning(f"Log file {logfile_path} not found.")
+        return
+
+    if not lines:
+        logging.warning("No log entries found in the file.")
+        return
+
+    cutoff = datetime.now() - timedelta(days=days)
+    valid_lines = []
+
+    for line in lines:
+        # Extract the timestamp, assuming format 'YYYY-MM-DD HH:MM:SS,fff'
+        timestamp_str = line.split(',')[0]
+        try:
+            log_date = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
+            if log_date > cutoff:
+                valid_lines.append(line)
+            else:
+                logging.info(f"Excluding old log entry: {line}")
+        except ValueError as e:
+            logging.warning(f"Skipping line with unrecognized format: {line}. Error: {e}")
+            continue
+
+    if not valid_lines:
+        logging.warning("No log entries within the last 7 days.")
+    else:
+        with open(logfile_path, 'w') as file:
+            file.writelines(valid_lines)
+
+    logging.info("--------------------------------------------------------------")
+    logging.info(f"Logfile cleanup complete. Retained {len(valid_lines)} entries.")
+    logging.info("--------------------------------------------------------------")    
+            
 def main():
     
     parser = argparse.ArgumentParser()
@@ -415,6 +457,7 @@ def main():
     
     #tidy up the old records
     db.cleanup_old_run_times()
+    cleanup_logfile()
             
 if __name__ == '__main__':
     main()
