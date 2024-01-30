@@ -139,7 +139,7 @@ The script can be executed through a web server that supports CGI, with differen
 
 ## Logging
 
-Errors are logged to [sites_api.log](http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.log). Ensure the log file is writable by the web server.
+Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.log" target="_blank">sites_api.log</a>. Ensure the log file is writable by the web server.
 
 ## Author
 

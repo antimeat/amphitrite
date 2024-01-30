@@ -89,6 +89,7 @@ class Partitions(object):
         fresh_files = sorted(fresh_files,reverse=True)
         
         #compare size of last 2 files to determine weather its a 12/00Z run (which are larger) 
+        #at least stage we are only using the larger runs: 12Z/00Z
         latest = fresh_files[0]
         last = fresh_files[1]
         latest_size = os.stat(latest).st_size 
