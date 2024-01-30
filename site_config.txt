@@ -32,6 +32,8 @@ Pilbara Ports Authority - Ashburton, Ashburton_, 0.001-9, 9-40
 Pilbara Port Authority - Port Hedland, PH_Beacon1, 0.001-9, 9-40
 Pilbara Ports Authority - Dampier, Dampier_Po, 0.001-9, 9-40
 Petrofac - Northern Endeavour 7 days, Bayu_Undan, 0.001-9, 9-40
+Santos - Barossa, Barossa, 0.001-9, 9-40
+Santos - Barossa KP40, Barossa, 0.001-9, 9-40
 Santos ABUW - Bayu-Undan, Bayu_Undan, 0.001-9, 9-40
 Santos - John Brookes 4 days, John_Brook, 0.001-9, 9-40
 Santos - Reindeer 4 days, Reindeer, 0.001-9, 9-40
