@@ -1,10 +1,16 @@
 # CGI/API Script for Wave Data Partitioning
 
+---
+
 ## Overview
+
+---
 
 CGI/API interface for managing and visualizing wave data partitions and comparing output to Ofcast active sites. It provides various functionalities, such as comparing active sites with configuration files, listing sites in HTML or JSON formats, and handling site-specific data.
 
 ## Features
+
+---
 
 -   List wave data sites in both HTML and JSON formats.
 -   Compare active sites with site configurations and exclusions.
@@ -12,6 +18,8 @@ CGI/API interface for managing and visualizing wave data partitions and comparin
 -   Handle active partition names and site titles with latitude and longitude information.
 
 ## Usage
+
+---
 
 The script can be executed through a web server that supports CGI, with different parameters to trigger specific functionalities:
 
@@ -139,8 +147,12 @@ The script can be executed through a web server that supports CGI, with differen
 
 ## Logging
 
+---
+
 Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.log" target="_blank">sites_api.log</a>. Ensure the log file is writable by the web server.
 
 ## Author
+
+---
 
 Daz Vink: <daz.vink@bom.gov.au>

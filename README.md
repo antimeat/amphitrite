@@ -1,8 +1,12 @@
 # Amphitrite
 
+---
+
 Amphitrite is designed for processing and partitioning wave spectrum data. Utilizing data from Auswave, with a view to incorporate SWAN model output in the future. Amphitrite creates bespoke swell partitions based on specified period ranges.
 
 ## Features
+
+---
 
 -   **Dashboard**: GUI for maintaining configuration, monitoring logs and manual activation of scripts (see <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php" target="_blank">dashboard</a>).
 -   **Partition Splitting**: Splits wave spectrum data into specified swell partitions.
@@ -13,12 +17,16 @@ Amphitrite is designed for processing and partitioning wave spectrum data. Utili
 
 ## Trouble shooting
 
+---
+
 1. [check the log](#logging)
 2. [run manually from dashboard](#running-the-script-from-the-dashboard)
 3. [check auswave files](#auswave-files)
 4. [run manually from terminal](#running-the-script-manually)
 
 ## Frontend Dashboard
+
+---
 
 Amphitrite features a frontend <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php" target="_blank">dashboard</a> for managing site configurations and manually activating the partition splitting scripts.
 
@@ -34,6 +42,8 @@ API and package for calculating and returning autoseas swell data from winds and
 -   **Logging**: Inspect log files
 
 ## Backend details
+
+---
 
 ### File Descriptions
 
@@ -173,15 +183,21 @@ drwxr-xr-x. 18 cwsop cwsop      4096 Jul 25  2023 ..
 
 ## Api
 
+---
+
 The `api.cgi` script in Amphitrite offers web-based functionalities to access and manage partitioned wave spectrum data. This CGI script, written in Python, allows users to interact through HTML and JSON formats.
 A detailed guide for the `api.cgi` is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_API.html" target="_blank">README_API</a>
 
 ## Sites api
 
+---
+
 A `sites_api.cgi` script is available for managing and visualizing wave data partitions and comparing output to Ofcast active sites. It provides various functionalities, such as comparing active sites with configuration files, listing sites in HTML or JSON formats, and handling site-specific data.
 A detailed guide for the `sites_api.cgi` is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_SITES_API.html" target="_blank">README_SITES_API</a>
 
 ## Installation
+
+---
 
 Python package requirements are currently met on server `wa-vw-er` by using conda environment `mlenv`:
 
@@ -193,8 +209,12 @@ source activate mlenv
 
 ## Logging
 
+---
+
 Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/logfile.log" target="_blank">logfile.log</a>. Ensure the log file is writable by the web server.
 
 ## Author
+
+---
 
 Daz Vink: <daz.vink@bom.gov.au>

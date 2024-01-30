@@ -1,95 +1,70 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
-<head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>README_JSONAUTOSEAS</title>
-  <style>
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: 1;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    ul.task-list{list-style: none;}
-    ul.task-list li input[type="checkbox"] {
-      width: 0.8em;
-      margin: 0 0.8em 0.2em -1.6em;
-      vertical-align: middle;
-    }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-  </style>
-  <link rel="stylesheet" href="github-markdown.css" />
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
-</head>
-<body>
-<h1 id="jsonautoseas-api-documentation">jsonAutoSeas API
-Documentation</h1>
-<h2 id="overview">Overview</h2>
-<p>The jsonAutoSeas API provides sea state based on wind conditions at a
-given site. In the backend there are fetch and depth tables for each
-site that need to be maintained. Fetch and depth tables are used as part
-of the Autoseas generated seas calculations</p>
-<h2 id="api-endpoint">API Endpoint</h2>
+<h1>jsonAutoSeas API Documentation</h1>
+<hr>
+<h2>Overview</h2>
+<hr>
+<p>The jsonAutoSeas API provides sea state based on wind conditions at a given site. In the backend there are fetch and depth tables for each site that need to be maintained. Fetch and depth tables are used as part of the Autoseas generated seas calculations</p>
+<h2>API Endpoint</h2>
+<hr>
 <ul>
-<li><strong>URL</strong>:
-<code>http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi</code></li>
+<li><strong>URL</strong>: <code class="notranslate">http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi</code></li>
 </ul>
-<h2 id="request-parameters">Request Parameters</h2>
+<h2>Request Parameters</h2>
+<hr>
 <p>The API accepts the following query parameters:</p>
-<ol type="1">
-<li><p><code>first_time_step</code> (required)</p>
+<ol>
+<li>
+<p><code class="notranslate">first_time_step</code> (required)</p>
 <ul>
-<li>Format: <code>YYYYMMDDHH</code></li>
-<li>Description: Indicates the time step of the first wind values in
-UTC.</li>
-</ul></li>
-<li><p><code>site</code> (required)</p>
-<ul>
-<li>Format: String with <code>%20</code> as whitespace</li>
-<li>Description: Specifies the site name for partitioned data
-retrieval.</li>
-</ul></li>
-<li><p><code>src</code> (required)</p>
-<ul>
-<li>Values: <code>autoseas</code>, <code>smush</code>,
-<code>partition</code></li>
-<li><code>autoseas</code>: Auto seas calculation based on the winds
-passed</li>
-<li><code>smush</code>: A smush of the Auswave partitioned data and the
-autoseas generated winds. Highest energy at each timestep wins.</li>
-<li><code>partition</code>: Auswave swell partitioned data</li>
-</ul></li>
-<li><p><code>winds</code> (required)</p>
-<ul>
-<li>Format: <code>dir[degrees]/spd[kts]/time_period[hrs]</code></li>
-<li>Description: Specifies winds to use for calculations depending on
-<code>src</code> parameter. Format is direction (degrees), speed
-(knots), and time period (hours). Time period is the time difference
-between the last wind and the current.</li>
-</ul></li>
-</ol>
-<h2 id="response-format">Response Format</h2>
-<p>The response is a JSON object with the following structure: {"seas":
-[[seas_hs, seas_pd, seas_dir]]}</p>
-<ul>
-<li><code>seas_hs</code>: Sea state height (meters).</li>
-<li><code>seas_pd</code>: Period of the sea state (hours).</li>
-<li><code>seas_dir</code>: Direction of the sea state (degrees).</li>
+<li>Format: <code class="notranslate">YYYYMMDDHH</code></li>
+<li>Description: Indicates the time step of the first wind values in UTC.</li>
 </ul>
-<h2 id="example-request">Example Request</h2>
-<p>http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi?first_time_step=2024012212&amp;site=Woodside%20-%20Scarborough%2010%20Days&amp;src=autoseas&amp;winds=200/10/3,210/20/3,220/30/3</p>
-<h2 id="example-response">Example Response</h2>
+</li>
+<li>
+<p><code class="notranslate">site</code> (required)</p>
+<ul>
+<li>Format: String with <code class="notranslate">%20</code> as whitespace</li>
+<li>Description: Specifies the site name for partitioned data retrieval.</li>
+</ul>
+</li>
+<li>
+<p><code class="notranslate">src</code> (required)</p>
+<ul>
+<li>Values: <code class="notranslate">autoseas</code>, <code class="notranslate">smush</code>, <code class="notranslate">partition</code></li>
+<li><code class="notranslate">autoseas</code>: Auto seas calculation based on the winds passed</li>
+<li><code class="notranslate">smush</code>: A smush of the Auswave partitioned data and the autoseas generated winds. Highest energy at each timestep wins.</li>
+<li><code class="notranslate">partition</code>: Auswave swell partitioned data</li>
+</ul>
+</li>
+<li>
+<p><code class="notranslate">winds</code> (required)</p>
+<ul>
+<li>Format: <code class="notranslate">dir[degrees]/spd[kts]/time_period[hrs]</code></li>
+<li>Description: Specifies winds to use for calculations depending on <code class="notranslate">src</code> parameter. Format is direction (degrees), speed (knots), and time period (hours). Time period is the time difference between the last wind and the current.</li>
+</ul>
+</li>
+</ol>
+<h2>Response Format</h2>
+<hr>
+<p>The response is a JSON object with the following structure:<br>
+{"seas": [[seas_hs, seas_pd, seas_dir]]}</p>
+<ul>
+<li><code class="notranslate">seas_hs</code>: Sea state height (meters).</li>
+<li><code class="notranslate">seas_pd</code>: Period of the sea state (hours).</li>
+<li><code class="notranslate">seas_dir</code>: Direction of the sea state (degrees).</li>
+</ul>
+<h2>Example Request</h2>
+<hr>
+<p><a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi?first_time_step=2024012212&amp;site=Woodside%20-%20Scarborough%2010%20Days&amp;src=autoseas&amp;winds=200/10/3,210/20/3,220/30/3" rel="nofollow">http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi?first_time_step=2024012212&amp;site=Woodside%20-%20Scarborough%2010%20Days&amp;src=autoseas&amp;winds=200/10/3,210/20/3,220/30/3</a></p>
+<h2>Example Response</h2>
+<hr>
 <p>{"seas": [[0.4, 4, 200], [0.8, 6, 210], [1.7, 6, 220]]}</p>
-<h2 id="error-handling">Error Handling</h2>
+<h2>Error Handling</h2>
+<hr>
 <p>At this point there is minimal useful error handling (TODO)</p>
-<h2 id="versioning">Versioning</h2>
+<h2>Versioning</h2>
+<hr>
 <p>Version: 2.0</p>
-<h2 id="contact">Contact</h2>
-<p>Daz Vink: <a
-href="mailto:daz.vink@bom.gov.au">daz.vink@bom.gov.au</a></p>
-<hr />
-</body>
-</html>
+<h2>Contact</h2>
+<hr>
+<p>Daz Vink: <a href="mailto:daz.vink@bom.gov.au">daz.vink@bom.gov.au</a></p>
+<hr>
