@@ -36,7 +36,7 @@ The script can be executed through a web server that supports CGI, with differen
 ### Examples
 
 -   **List all sites in HTML**:
-    `url http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi`
+    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi`
 
     #### returns:
 
@@ -52,7 +52,7 @@ The script can be executed through a web server that supports CGI, with differen
     ```
 
 -   **List all sites in HTML**:
-    `url http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=json_tables`
+    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=json_tables`
 
     #### returns:
 
@@ -84,7 +84,7 @@ The script can be executed through a web server that supports CGI, with differen
     ```
 
 -   **List all sites in HTML**:
-    `url http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=html_sites`
+    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=html_sites`
 
     #### returns:
 
@@ -99,7 +99,7 @@ The script can be executed through a web server that supports CGI, with differen
     ```
 
 -   **List all sites in HTML**:
-    `url http://wa-vw-er/cws/op/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=compare`
+    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=compare`
 
     #### returns:
 

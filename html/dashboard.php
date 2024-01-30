@@ -69,6 +69,10 @@
 				    fileName = 'database_check.php';
 					$("#imageContainer").load(fileName);
 				}
+				else if (input == 'table_names') {
+				    fileName = 'table_names.php';
+					$("#imageContainer").load(fileName);
+				}
 				else if (input == 'activate') {
 				    fileName = 'activate_wrapper.php';
 					$("#imageContainer").load(fileName);
