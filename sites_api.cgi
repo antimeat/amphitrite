@@ -92,17 +92,46 @@ def get_active_partition_names():
             
 def get_html_sites():
     """Return site titles with lat lon"""
-    try: 
-        site_dict = {}
-        json_data = load_json()
-        all_info = json.loads(json_data)
-    
-        for i,site in enumerate(all_info):
-            site_dict[site['name']] = site['name'] + ': ' + str(site['lat']) + ',' + str(site['lon'])
-            print('{}<br>'.format(site_dict[site['name']]))    
-    except Exception as e:
-        handle_error(500, f"Internal Server Error: {e}")
+    try:
+        df = load()
+        df = df[["shift","name","days","lat","lon"]]
+        df = df.sort_values(by='name')
             
+        # Convert DataFrame to HTML table with centered headings and applying siteTable style
+        html_table = df.to_html(index=False, escape=True, table_id="siteTable", classes="siteTable")
+
+        # Adding CSS for siteTable to increase width and center headings
+        table_style = """
+            <style>
+                table { 
+                    border-collapse: collapse; 
+                    width: 50%; 
+                    margin: 20px auto; 
+                }
+                th, td { 
+                    border: 1px solid black; 
+                    padding-right: 20px;
+                    padding-left: 20px;
+                    vertical-align: top;
+                    text-align: center; 
+                }
+                tr:nth-child(even) { 
+                    background-color: #f2f2f2; 
+                }
+            </style>
+        """
+        
+        # Wrapping the table in a div with styling to center it horizontally
+        centered_html_table = f'<div>{html_table}</div>'
+
+        # Adding title and applying CSS
+        title_html = '<h2 style="text-align: center;">Auswave Tables</h2>'
+        complete_html = f'{table_style}{centered_html_table}'
+
+        print(complete_html)
+    except Exception as e:
+        handle_error(500, f"Internal Server Error: {e}")       
+
 def get_json_sites():
     """Return site titles in json"""
     try: 

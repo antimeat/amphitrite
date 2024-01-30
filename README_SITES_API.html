@@ -26,21 +26,63 @@
 <h3>Examples</h3>
 <ul>
 <li>
-<p><strong>List all sites in HTML</strong>:<br>
+<p><strong>List table names in HTML</strong>:<br>
 <code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi</code></p>
 <h4>returns:</h4>
-<pre class="notranslate"><code class="notranslate">22.5_107.5: -22.5,107.5
-Abbot_Poin: -19.8,148.07
-Adelaide: -34.75,138.375
-...
-Wickham: -12.52,130.84
-Wonthaggi_: -38.59,145.51
-Xena: -19.96,115.218
-Yoorn: -20.34,115.79
-</code></pre>
+<table role="table">
+<thead>
+<tr>
+<th align="center">name</th>
+<th align="center">lat</th>
+<th align="center">lon</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">22.5_107.5</td>
+<td align="center">-22.5</td>
+<td align="center">107.5</td>
+</tr>
+<tr>
+<td align="center">Abbot_Poin</td>
+<td align="center">-19.8</td>
+<td align="center">148.07</td>
+</tr>
+<tr>
+<td align="center">Adelaide</td>
+<td align="center">-34.75</td>
+<td align="center">138.375</td>
+</tr>
+<tr>
+<td align="center">...</td>
+<td align="center">...</td>
+<td align="center">...</td>
+</tr>
+<tr>
+<td align="center">Wickham</td>
+<td align="center">-12.52</td>
+<td align="center">130.84</td>
+</tr>
+<tr>
+<td align="center">Wonthaggi_</td>
+<td align="center">-38.59</td>
+<td align="center">145.51</td>
+</tr>
+<tr>
+<td align="center">Xena</td>
+<td align="center">-19.96</td>
+<td align="center">115.218</td>
+</tr>
+<tr>
+<td align="center">Yoorn</td>
+<td align="center">-20.34</td>
+<td align="center">115.79</td>
+</tr>
+</tbody>
+</table>
 </li>
 <li>
-<p><strong>List all sites in HTML</strong>:<br>
+<p><strong>List table names in json</strong>:<br>
 <code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=json_tables</code></p>
 <h4>returns:</h4>
 <pre class="notranslate"><code class="notranslate">[
@@ -70,17 +112,55 @@ Yoorn: -20.34,115.79
 </code></pre>
 </li>
 <li>
-<p><strong>List all sites in HTML</strong>:<br>
+<p><strong>List active sites in HTML</strong>:<br>
 <code class="notranslate">url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=html_sites</code></p>
 <h4>returns:</h4>
-<pre class="notranslate"><code class="notranslate">Anglogold - Tropicana: -29.24,124.54
-Boskalis - Dampier 7 Days: -20.6,116.75
-Chevron - Gorgon: -20.46,114.84
-...,
-Woodside - Pyrenees: -21.54,114.12
-Woodside - Scarborough 10 days: -19.926,113.242
-Woodside - Stybarrow 10 Days: -21.45,113.82
-</code></pre>
+<table role="table">
+<thead>
+<tr>
+<th>Company</th>
+<th>Project Name</th>
+<th>Coordinates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Anglogold</td>
+<td>Tropicana</td>
+<td>-29.24, 124.54</td>
+</tr>
+<tr>
+<td>Boskalis</td>
+<td>Dampier 7 Days</td>
+<td>-20.6, 116.75</td>
+</tr>
+<tr>
+<td>Chevron</td>
+<td>Gorgon</td>
+<td>-20.46, 114.84</td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<td>Woodside</td>
+<td>Pyrenees</td>
+<td>-21.54, 114.12</td>
+</tr>
+<tr>
+<td>Woodside</td>
+<td>Scarborough 10 days</td>
+<td>-19.926, 113.242</td>
+</tr>
+<tr>
+<td>Woodside</td>
+<td>Stybarrow 10 Days</td>
+<td>-21.45, 113.82</td>
+</tr>
+</tbody>
+</table>
 </li>
 <li>
 <p><strong>List all sites in HTML</strong>:<br>

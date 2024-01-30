@@ -35,23 +35,23 @@ The script can be executed through a web server that supports CGI, with differen
 
 ### Examples
 
--   **List all sites in HTML**:
+-   **List table names in HTML**:
     `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi`
 
     #### returns:
 
-    ```
-    22.5_107.5: -22.5,107.5
-    Abbot_Poin: -19.8,148.07
-    Adelaide: -34.75,138.375
-    ...
-    Wickham: -12.52,130.84
-    Wonthaggi_: -38.59,145.51
-    Xena: -19.96,115.218
-    Yoorn: -20.34,115.79
-    ```
+    |    name     |  lat   |   lon   |
+    | :---------: | :----: | :-----: |
+    | 22.5_107.5  | -22.5  |  107.5  |
+    | Abbot_Poin  | -19.8  | 148.07  |
+    |  Adelaide   | -34.75 | 138.375 |
+    |     ...     |  ...   |   ...   |
+    |   Wickham   | -12.52 | 130.84  |
+    | Wonthaggi\_ | -38.59 | 145.51  |
+    |    Xena     | -19.96 | 115.218 |
+    |    Yoorn    | -20.34 | 115.79  |
 
--   **List all sites in HTML**:
+-   **List table names in json**:
     `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=json_tables`
 
     #### returns:
@@ -83,20 +83,20 @@ The script can be executed through a web server that supports CGI, with differen
 
     ```
 
--   **List all sites in HTML**:
+-   **List active sites in HTML**:
     `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=html_sites`
 
     #### returns:
 
-    ```
-    Anglogold - Tropicana: -29.24,124.54
-    Boskalis - Dampier 7 Days: -20.6,116.75
-    Chevron - Gorgon: -20.46,114.84
-    ...,
-    Woodside - Pyrenees: -21.54,114.12
-    Woodside - Scarborough 10 days: -19.926,113.242
-    Woodside - Stybarrow 10 Days: -21.45,113.82
-    ```
+    | Company   | Project Name        | Coordinates      |
+    | --------- | ------------------- | ---------------- |
+    | Anglogold | Tropicana           | -29.24, 124.54   |
+    | Boskalis  | Dampier 7 Days      | -20.6, 116.75    |
+    | Chevron   | Gorgon              | -20.46, 114.84   |
+    | ...       | ...                 | ...              |
+    | Woodside  | Pyrenees            | -21.54, 114.12   |
+    | Woodside  | Scarborough 10 days | -19.926, 113.242 |
+    | Woodside  | Stybarrow 10 Days   | -21.45, 113.82   |
 
 -   **List all sites in HTML**:
     `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=compare`
