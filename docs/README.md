@@ -63,6 +63,10 @@ API and package for calculating and returning autoseas swell data from winds and
 
 -   Utility functions for managing data.
 
+**docs/**:
+
+-   Home of the README documentation and script/css for rendering to html
+
 **gfe.py**:
 
 -   A function to retrieve point data from GFE.

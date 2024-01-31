@@ -50,7 +50,8 @@ The API supports various endpoints, some with its own set of parameters.
     - `site_name` (required)
         - Format: String with `%20` as whitespace.
         - Description: Specifies the site name for data retrieval.
-    - `run_time` (required)
+    - `run_time`
+        - Default: latest runtime available in the database
         - Format: `YYYYMMDDHH`.
         - Description: Indicates the time step for data retrieval in UTC.
 
