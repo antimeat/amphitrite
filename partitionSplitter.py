@@ -25,6 +25,7 @@ from datetime import datetime, timedelta
 #package imports
 import database as db
 import models
+import emails
 
 BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
 
@@ -443,21 +444,32 @@ def main():
     
     toolbox = PartitionSplitter()
     
-    if args.site_name.strip().lower() == 'all':
-        toolbox.generate_all_sites_to_db()
-    else:
-        wave_table = toolbox.generate_site_to_db(site_name=args.site_name)
-
-        # Check if wave_table is not None
-        if wave_table is not None and "data" in wave_table:
-            table = wave_table["data"]
-            print(table)
+    try: 
+        if args.site_name.strip().lower() == 'all':
+            toolbox.generate_all_sites_to_db()
+            message = f"Amphitrite latest run: {toolbox.latest_run_time} for all sites is now available."
+            emails.send_email(message=message)
         else:
-            print(f"No data available for site '{args.site_name}'.")
-    
+            wave_table = toolbox.generate_site_to_db(site_name=args.site_name)
+
+            # Check if wave_table is not None
+            if wave_table is not None and "data" in wave_table:
+                table = wave_table["data"]
+                print(table)
+                message = f"Amphitrite latest run: {toolbox.latest_run_time} for {args.site_name} is now available."
+                emails.send_email(message=message)
+            else:
+                print(f"No data available for site '{args.site_name}'.")     
+        
+        
+    except Exception as e:
+        message = f"Problem with latest run: {toolbox.latest_run_time}"
+        emails.send_email(message=message)
+        
     #tidy up the old records
     db.cleanup_old_run_times()
-    cleanup_logfile()
+    cleanup_logfile()   
+    
             
 if __name__ == '__main__':
     main()
