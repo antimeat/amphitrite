@@ -12,5 +12,8 @@ plots/
 #logging
 *.log
 
+#lockfiles
+*.lock
+
 #database
 *.db
