@@ -1,5 +1,5 @@
-# CGI/API Script for Wave Data Partitioning
-
+---
+title: API for sites, table and configuration data
 ---
 
 ## Overview
@@ -17,21 +17,44 @@ CGI/API interface for managing and visualizing wave data partitions and comparin
 -   Fetch and display site-specific data.
 -   Handle active partition names and site titles with latitude and longitude information.
 
-## Usage
+## API Endpoint
 
 ---
 
-The script can be executed through a web server that supports CGI, with different parameters to trigger specific functionalities:
+The API supports various endpoints, some with its own set of parameters.
 
-### Endpoints
+## Request Parameters
 
-The script can be executed through a web server that supports CGI, with different parameters to trigger specific functionalities:
+1. `get=list_html` (default)
 
--   `?get=json_sites`: Returns site titles in JSON format.
--   `?get=json_tables`: Returns aswave tables in JSON.
--   `?get=html_sites`: Returns site titles with latitude and longitude from active Ofcast sites in HTML format.
--   `?get=compare`: Compares the active sites with the site configurations and displays the result in HTML.
--   `?get=active_sites`: Returns all active sites in JSON format.
+    - No additional parameters required.
+    - Description: Lists all sites as HTML links.
+
+2. `get=database`
+
+    - No additional parameters required.
+    - Description: Displays database entries in HTML format.
+
+3. `get=list_json`
+
+    - No additional parameters required.
+    - Description: Lists all sites and data in JSON format.
+
+4. `get=exclusion`
+
+    - No additional parameters required.
+    - Description: Lists exclusion sites in JSON format.
+
+5. `get=site`
+
+    - `site_name` (required)
+        - Format: String with `%20` as whitespace
+        - Description: Specifies the site name for data retrieval.
+    - `run_time` (required)
+        - Format: `YYYYMMDDHH`
+        - Description: Indicates the time step for data retrieval in UTC.
+
+Each endpoint serves a specific purpose and may require different parameters to function correctly. The `site_name` and `run_time` parameters are essential for fetching data related to a specific site and time.
 
 ### Examples
 
@@ -100,8 +123,6 @@ The script can be executed through a web server that supports CGI, with differen
 
 -   **List all sites in HTML**:
     `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=compare`
-
-    #### returns:
 
     #### returns:
 

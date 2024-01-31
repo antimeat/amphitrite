@@ -1,5 +1,5 @@
-# jsonAutoSeas API Documentation
-
+---
+title: API for Autoseas, partitioned seas and smushed seas
 ---
 
 ## Overview
@@ -15,8 +15,6 @@ The jsonAutoSeas API provides sea state based on wind conditions at a given site
 -   **URL**: `http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi`
 
 ## Request Parameters
-
----
 
 The API accepts the following query parameters:
 
@@ -43,8 +41,6 @@ The API accepts the following query parameters:
 
 ## Response Format
 
----
-
 The response is a JSON object with the following structure:
 {"seas": [[seas_hs, seas_pd, seas_dir]]}
 
@@ -52,34 +48,20 @@ The response is a JSON object with the following structure:
 -   `seas_pd`: Period of the sea state (hours).
 -   `seas_dir`: Direction of the sea state (degrees).
 
-## Example Request
+## Example
 
 ---
 
-http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi?first_time_step=2024012212&site=Woodside%20-%20Scarborough%2010%20Days&src=autoseas&winds=200/10/3,210/20/3,220/30/3
+**get autoseas**
 
-## Example Response
+`url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi?first_time_step=2024012212&site=Woodside%20-%20Scarborough%2010%20Days&src=autoseas&winds=200/10/3,210/20/3,220/30/3`
 
----
+## returns
 
 {"seas": [[0.4, 4, 200], [0.8, 6, 210], [1.7, 6, 220]]}
 
-## Error Handling
-
----
-
-At this point there is minimal useful error handling (TODO)
-
-## Versioning
-
----
-
-Version: 2.0
-
-## Contact
+## Author
 
 ---
 
 Daz Vink: daz.vink@bom.gov.au
-
----

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>API for sites, table and configuration data</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: 1;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style type="text/css">@font-face {font-family: octicons-link;src: url(data:font/woff;charset=utf-8;base64,d09GRgABAAAAAAZwABAAAAAACFQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEU0lHAAAGaAAAAAgAAAAIAAAAAUdTVUIAAAZcAAAACgAAAAoAAQAAT1MvMgAAAyQAAABJAAAAYFYEU3RjbWFwAAADcAAAAEUAAACAAJThvmN2dCAAAATkAAAABAAAAAQAAAAAZnBnbQAAA7gAAACyAAABCUM+8IhnYXNwAAAGTAAAABAAAAAQABoAI2dseWYAAAFsAAABPAAAAZwcEq9taGVhZAAAAsgAAAA0AAAANgh4a91oaGVhAAADCAAAABoAAAAkCA8DRGhtdHgAAAL8AAAADAAAAAwGAACfbG9jYQAAAsAAAAAIAAAACABiATBtYXhwAAACqAAAABgAAAAgAA8ASm5hbWUAAAToAAABQgAAAlXu73sOcG9zdAAABiwAAAAeAAAAME3QpOBwcmVwAAAEbAAAAHYAAAB/aFGpk3jaTY6xa8JAGMW/O62BDi0tJLYQincXEypYIiGJjSgHniQ6umTsUEyLm5BV6NDBP8Tpts6F0v+k/0an2i+itHDw3v2+9+DBKTzsJNnWJNTgHEy4BgG3EMI9DCEDOGEXzDADU5hBKMIgNPZqoD3SilVaXZCER3/I7AtxEJLtzzuZfI+VVkprxTlXShWKb3TBecG11rwoNlmmn1P2WYcJczl32etSpKnziC7lQyWe1smVPy/Lt7Kc+0vWY/gAgIIEqAN9we0pwKXreiMasxvabDQMM4riO+qxM2ogwDGOZTXxwxDiycQIcoYFBLj5K3EIaSctAq2kTYiw+ymhce7vwM9jSqO8JyVd5RH9gyTt2+J/yUmYlIR0s04n6+7Vm1ozezUeLEaUjhaDSuXHwVRgvLJn1tQ7xiuVv/ocTRF42mNgZGBgYGbwZOBiAAFGJBIMAAizAFoAAABiAGIAznjaY2BkYGAA4in8zwXi+W2+MjCzMIDApSwvXzC97Z4Ig8N/BxYGZgcgl52BCSQKAA3jCV8CAABfAAAAAAQAAEB42mNgZGBg4f3vACQZQABIMjKgAmYAKEgBXgAAeNpjYGY6wTiBgZWBg2kmUxoDA4MPhGZMYzBi1AHygVLYQUCaawqDA4PChxhmh/8ODDEsvAwHgMKMIDnGL0x7gJQCAwMAJd4MFwAAAHjaY2BgYGaA4DAGRgYQkAHyGMF8NgYrIM3JIAGVYYDT+AEjAwuDFpBmA9KMDEwMCh9i/v8H8sH0/4dQc1iAmAkALaUKLgAAAHjaTY9LDsIgEIbtgqHUPpDi3gPoBVyRTmTddOmqTXThEXqrob2gQ1FjwpDvfwCBdmdXC5AVKFu3e5MfNFJ29KTQT48Ob9/lqYwOGZxeUelN2U2R6+cArgtCJpauW7UQBqnFkUsjAY/kOU1cP+DAgvxwn1chZDwUbd6CFimGXwzwF6tPbFIcjEl+vvmM/byA48e6tWrKArm4ZJlCbdsrxksL1AwWn/yBSJKpYbq8AXaaTb8AAHja28jAwOC00ZrBeQNDQOWO//sdBBgYGRiYWYAEELEwMTE4uzo5Zzo5b2BxdnFOcALxNjA6b2ByTswC8jYwg0VlNuoCTWAMqNzMzsoK1rEhNqByEyerg5PMJlYuVueETKcd/89uBpnpvIEVomeHLoMsAAe1Id4AAAAAAAB42oWQT07CQBTGv0JBhagk7HQzKxca2sJCE1hDt4QF+9JOS0nbaaYDCQfwCJ7Au3AHj+LO13FMmm6cl7785vven0kBjHCBhfpYuNa5Ph1c0e2Xu3jEvWG7UdPDLZ4N92nOm+EBXuAbHmIMSRMs+4aUEd4Nd3CHD8NdvOLTsA2GL8M9PODbcL+hD7C1xoaHeLJSEao0FEW14ckxC+TU8TxvsY6X0eLPmRhry2WVioLpkrbp84LLQPGI7c6sOiUzpWIWS5GzlSgUzzLBSikOPFTOXqly7rqx0Z1Q5BAIoZBSFihQYQOOBEdkCOgXTOHA07HAGjGWiIjaPZNW13/+lm6S9FT7rLHFJ6fQbkATOG1j2OFMucKJJsxIVfQORl+9Jyda6Sl1dUYhSCm1dyClfoeDve4qMYdLEbfqHf3O/AdDumsjAAB42mNgYoAAZQYjBmyAGYQZmdhL8zLdDEydARfoAqIAAAABAAMABwAKABMAB///AA8AAQAAAAAAAAAAAAAAAAABAAAAAA==)format("woff");}.octicon {display: inline-block;fill: currentColor;vertical-align: text-bottom;}.anchor {float: left;line-height: 1;margin-left: -20px;padding-right: 4px;}.anchor:focus {outline: none;}h1 .octicon-link,h2 .octicon-link,h3 .octicon-link,h4 .octicon-link,h5 .octicon-link,h6 .octicon-link {color: #1b1f23;vertical-align: middle;visibility: hidden;}h1:hover .anchor,h2:hover .anchor,h3:hover .anchor,h4:hover .anchor,h5:hover .anchor,h6:hover .anchor {text-decoration: none;}h1:hover .anchor .octicon-link,h2:hover .anchor .octicon-link,h3:hover .anchor .octicon-link,h4:hover .anchor .octicon-link,h5:hover .anchor .octicon-link,h6:hover .anchor .octicon-link {visibility: visible;}body {-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #24292e;line-height: 1.5;font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji,Segoe UI Emoji, Segoe UI Symbol;font-size: 16px;line-height: 1.5;word-wrap: break-word;}.pl-c {color: #6a737d;}.pl-c1,.pl-s .pl-v {color: #005cc5;}.pl-e,.pl-en {color: #6f42c1;}.pl-s .pl-s1,.pl-smi {color: #24292e;}.pl-ent {color: #22863a;}.pl-k {color: #d73a49;}.pl-pds,.pl-s,.pl-s .pl-pse .pl-s1,.pl-sr,.pl-sr .pl-cce,.pl-sr .pl-sra,.pl-sr .pl-sre {color: #032f62;}.pl-smw,.pl-v {color: #e36209;}.pl-bu {color: #b31d28;}.pl-ii {background-color: #b31d28;color: #fafbfc;}.pl-c2 {background-color: #d73a49;color: #fafbfc;}.pl-c2:before {content: "^M";}.pl-sr .pl-cce {color: #22863a;font-weight: 700;}.pl-ml {color: #735c0f;}.pl-mh,.pl-mh .pl-en,.pl-ms {color: #005cc5;font-weight: 700;}.pl-mi {color: #24292e;font-style: italic;}.pl-mb {color: #24292e;font-weight: 700;}.pl-md {background-color: #ffeef0;color: #b31d28;}.pl-mi1 {background-color: #f0fff4;color: #22863a;}.pl-mc {background-color: #ffebda;color: #e36209;}.pl-mi2 {background-color: #005cc5;color: #f6f8fa;}.pl-mdr {color: #6f42c1;font-weight: 700;}.pl-ba {color: #586069;}.pl-sg {color: #959da5;}.pl-corl {color: #032f62;text-decoration: underline;}details {display: block;}summary {display: list-item;}a {background-color: transparent;}a:active,a:hover {outline-width: 0;}strong {font-weight: inherit;font-weight: bolder;}h1 {font-size: 2em;margin: 0.67em 0;}img {border-style: none;}code,kbd,pre {font-family: monospace, monospace;font-size: 1em;}hr {box-sizing: content-box;height: 0;overflow: visible;}input {font: inherit;margin: 0;}input {overflow: visible;}[type="checkbox"] {box-sizing: border-box;padding: 0;}* {box-sizing: border-box;}input {font-family: inherit;font-size: inherit;line-height: inherit;}a {color: #0366d6;text-decoration: none;}a:hover {text-decoration: underline;}strong {font-weight: 600;}hr {background: transparent;border: 0;border-bottom: 1px solid #dfe2e5;height: 0;margin: 15px 0;overflow: hidden;}hr:before {content: "";display: table;}hr:after {clear: both;content: "";display: table;}table {border-collapse: collapse;border-spacing: 0;}td,th {padding: 0;}details summary {cursor: pointer;}h1,h2,h3,h4,h5,h6 {margin-bottom: 0;margin-top: 0;}h1 {font-size: 32px;}h1,h2 {font-weight: 600;}h2 {font-size: 24px;}h3 {font-size: 20px;}h3,h4 {font-weight: 600;}h4 {font-size: 16px;}h5 {font-size: 14px;}h5,h6 {font-weight: 600;}h6 {font-size: 12px;}p {margin-bottom: 10px;margin-top: 0;}blockquote {margin: 0;}ol,ul {margin-bottom: 0;margin-top: 0;padding-left: 0;}ol ol,ul ol {list-style-type: lower-roman;}ol ol ol,ol ul ol,ul ol ol,ul ul ol {list-style-type: lower-alpha;}dd {margin-left: 0;}code,pre {font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;font-size: 12px;}pre {margin-bottom: 0;margin-top: 0;}input::-webkit-inner-spin-button,input::-webkit-outer-spin-button {-webkit-appearance: none;appearance: none;margin: 0;}.border {border: 1px solid #e1e4e8 !important;}.border-0 {border: 0 !important;}.border-bottom {border-bottom: 1px solid #e1e4e8 !important;}.rounded-1 {border-radius: 3px !important;}.bg-white {background-color: #fff !important;}.bg-gray-light {background-color: #fafbfc !important;}.text-gray-light {color: #6a737d !important;}.mb-0 {margin-bottom: 0 !important;}.my-2 {margin-bottom: 8px !important;margin-top: 8px !important;}.pl-0 {padding-left: 0 !important;}.py-0 {padding-bottom: 0 !important;padding-top: 0 !important;}.pl-1 {padding-left: 4px !important;}.pl-2 {padding-left: 8px !important;}.py-2 {padding-bottom: 8px !important;padding-top: 8px !important;}.pl-3,.px-3 {padding-left: 16px !important;}.px-3 {padding-right: 16px !important;}.pl-4 {padding-left: 24px !important;}.pl-5 {padding-left: 32px !important;}.pl-6 {padding-left: 40px !important;}.f6 {font-size: 12px !important;}.lh-condensed {line-height: 1.25 !important;}.text-bold {font-weight: 600 !important;}a:not([href]) {color: inherit;text-decoration: none;}blockquote,dl,ol,p,pre,table,ul {margin-bottom: 16px;margin-top: 0;}hr {background-color: #e1e4e8;border: 0;height: 0.25em;margin: 24px 0;padding: 0;}blockquote {border-left: 0.25em solid #dfe2e5;color: #6a737d;padding: 0 1em;}blockquote > :first-child {margin-top: 0;}blockquote > :last-child {margin-bottom: 0;}kbd {background-color: #fafbfc;border: 1px solid #c6cbd1;border-bottom-color: #959da5;border-radius: 3px;box-shadow: inset 0 -1px 0 #959da5;color: #444d56;display: inline-block;font-size: 11px;line-height: 10px;padding: 3px 5px;vertical-align: middle;}h1,h2,h3,h4,h5,h6 {font-weight: 600;line-height: 1.25;margin-bottom: 16px;margin-top: 24px;}h1 {font-size: 2em;}h1,h2 {border-bottom: 1px solid #eaecef;padding-bottom: 0.3em;}h2 {font-size: 1.5em;}h3 {font-size: 1.25em;}h4 {font-size: 1em;}h5 {font-size: 0.875em;}h6 {color: #6a737d;font-size: 0.85em;}ol,ul {padding-left: 2em;}ol ol,ol ul,ul ol,ul ul {margin-bottom: 0;margin-top: 0;}li {word-wrap: break-all;}li > p {margin-top: 16px;}li + li {margin-top: 0.25em;}dl {padding: 0;}dl dt {font-size: 1em;font-style: italic;font-weight: 600;margin-top: 16px;padding: 0;}dl dd {margin-bottom: 16px;padding: 0 16px;}table {display: block;overflow: auto;width: 100%;}table th {font-weight: 600;}table td,table th {border: 1px solid #dfe2e5;padding: 6px 13px;}table tr {background-color: #fff;border-top: 1px solid #c6cbd1;}table tr:nth-child(2n) {background-color: #f6f8fa;}img {background-color: #fff;box-sizing: content-box;max-width: 100%;}img[align="right"] {padding-left: 20px;}img[align="left"] {padding-right: 20px;}code {background-color: rgba(27, 31, 35, 0.05);border-radius: 3px;font-size: 85%;margin: 0;padding: 0.2em 0.4em;}pre {word-wrap: normal;}pre > code {background: transparent;border: 0;font-size: 100%;margin: 0;padding: 0;white-space: pre;word-break: normal;}.highlight {margin-bottom: 16px;}.highlight pre {margin-bottom: 0;word-break: normal;}.highlight pre,pre {background-color: #f6f8fa;border-radius: 3px;font-size: 85%;line-height: 1.45;overflow: auto;padding: 16px;}pre code {background-color: transparent;border: 0;display: inline;line-height: inherit;margin: 0;max-width: auto;overflow: visible;padding: 0;word-wrap: normal;}.commit-tease-sha {color: #444d56;display: inline-block;font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;font-size: 90%;}.blob-wrapper {border-bottom-left-radius: 3px;border-bottom-right-radius: 3px;overflow-x: auto;overflow-y: hidden;}.blob-wrapper-embedded {max-height: 240px;overflow-y: auto;}.blob-num {-moz-user-select: none;-ms-user-select: none;-webkit-user-select: none;color: rgba(27, 31, 35, 0.3);cursor: pointer;font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;font-size: 12px;line-height: 20px;min-width: 50px;padding-left: 10px;padding-right: 10px;text-align: right;user-select: none;vertical-align: top;white-space: nowrap;width: 1%;}.blob-num:hover {color: rgba(27, 31, 35, 0.6);}.blob-num:before {content: attr(data-line-number);}.blob-code {line-height: 20px;padding-left: 10px;padding-right: 10px;position: relative;vertical-align: top;}.blob-code-inner {color: #24292e;font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;font-size: 12px;overflow: visible;white-space: pre;word-wrap: normal;}.pl-token.active,.pl-token:hover {background: #ffea7f;cursor: pointer;}kbd {background-color: #fafbfc;border: 1px solid #d1d5da;border-bottom-color: #c6cbd1;border-radius: 3px;box-shadow: inset 0 -1px 0 #c6cbd1;color: #444d56;display: inline-block;font: 11px SFMono-Regular, Consolas, Liberation Mono, Menlo, Courier, monospace;line-height: 10px;padding: 3px 5px;vertical-align: middle;}:checked + .radio-label {border-color: #0366d6;position: relative;z-index: 1;}.tab-size[data-tab-size="1"] {-moz-tab-size: 1;tab-size: 1;}.tab-size[data-tab-size="2"] {-moz-tab-size: 2;tab-size: 2;}.tab-size[data-tab-size="3"] {-moz-tab-size: 3;tab-size: 3;}.tab-size[data-tab-size="4"] {-moz-tab-size: 4;tab-size: 4;}.tab-size[data-tab-size="5"] {-moz-tab-size: 5;tab-size: 5;}.tab-size[data-tab-size="6"] {-moz-tab-size: 6;tab-size: 6;}.tab-size[data-tab-size="7"] {-moz-tab-size: 7;tab-size: 7;}.tab-size[data-tab-size="8"] {-moz-tab-size: 8;tab-size: 8;}.tab-size[data-tab-size="9"] {-moz-tab-size: 9;tab-size: 9;}.tab-size[data-tab-size="10"] {-moz-tab-size: 10;tab-size: 10;}.tab-size[data-tab-size="11"] {-moz-tab-size: 11;tab-size: 11;}.tab-size[data-tab-size="12"] {-moz-tab-size: 12;tab-size: 12;}.task-list-item {list-style-type: none;}.task-list-item + .task-list-item {margin-top: 3px;}.task-list-item input {margin: 0 0.2em 0.25em -1.6em;vertical-align: middle;}hr {border-bottom-color: #eee;}.pl-0 {padding-left: 0 !important;}.pl-1 {padding-left: 4px !important;}.pl-2 {padding-left: 8px !important;}.pl-3 {padding-left: 16px !important;}.pl-4 {padding-left: 24px !important;}.pl-5 {padding-left: 32px !important;}.pl-6 {padding-left: 40px !important;}.pl-7 {padding-left: 48px !important;}.pl-8 {padding-left: 64px !important;}.pl-9 {padding-left: 80px !important;}.pl-10 {padding-left: 96px !important;}.pl-11 {padding-left: 112px !important;}.pl-12 {padding-left: 128px !important;}</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">API for sites, table and configuration data</h1>
+</header>
+<h2 id="overview">Overview</h2>
+<hr />
+<p>CGI/API interface for managing and visualizing wave data partitions
+and comparing output to Ofcast active sites. It provides various
+functionalities, such as comparing active sites with configuration
+files, listing sites in HTML or JSON formats, and handling site-specific
+data.</p>
+<h2 id="features">Features</h2>
+<hr />
+<ul>
+<li>List wave data sites in both HTML and JSON formats.</li>
+<li>Compare active sites with site configurations and exclusions.</li>
+<li>Fetch and display site-specific data.</li>
+<li>Handle active partition names and site titles with latitude and
+longitude information.</li>
+</ul>
+<h2 id="api-endpoint">API Endpoint</h2>
+<hr />
+<p>The API supports various endpoints, some with its own set of
+parameters.</p>
+<h2 id="request-parameters">Request Parameters</h2>
+<ol type="1">
+<li><p><code>get=list_html</code> (default)</p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Lists all sites as HTML links.</li>
+</ul></li>
+<li><p><code>get=database</code></p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Displays database entries in HTML format.</li>
+</ul></li>
+<li><p><code>get=list_json</code></p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Lists all sites and data in JSON format.</li>
+</ul></li>
+<li><p><code>get=exclusion</code></p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Lists exclusion sites in JSON format.</li>
+</ul></li>
+<li><p><code>get=site</code></p>
+<ul>
+<li><code>site_name</code> (required)
+<ul>
+<li>Format: String with <code>%20</code> as whitespace</li>
+<li>Description: Specifies the site name for data retrieval.</li>
+</ul></li>
+<li><code>run_time</code> (required)
+<ul>
+<li>Format: <code>YYYYMMDDHH</code></li>
+<li>Description: Indicates the time step for data retrieval in UTC.</li>
+</ul></li>
+</ul></li>
+</ol>
+<p>Each endpoint serves a specific purpose and may require different
+parameters to function correctly. The <code>site_name</code> and
+<code>run_time</code> parameters are essential for fetching data related
+to a specific site and time.</p>
+<h3 id="examples">Examples</h3>
+<ul>
+<li><p><strong>List table names in HTML</strong>:
+<code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi</code></p>
+<h4 id="returns">returns:</h4>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">name</th>
+<th style="text-align: center;">lat</th>
+<th style="text-align: center;">lon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">22.5_107.5</td>
+<td style="text-align: center;">-22.5</td>
+<td style="text-align: center;">107.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Abbot_Poin</td>
+<td style="text-align: center;">-19.8</td>
+<td style="text-align: center;">148.07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Adelaide</td>
+<td style="text-align: center;">-34.75</td>
+<td style="text-align: center;">138.375</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Wickham</td>
+<td style="text-align: center;">-12.52</td>
+<td style="text-align: center;">130.84</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Wonthaggi_</td>
+<td style="text-align: center;">-38.59</td>
+<td style="text-align: center;">145.51</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Xena</td>
+<td style="text-align: center;">-19.96</td>
+<td style="text-align: center;">115.218</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Yoorn</td>
+<td style="text-align: center;">-20.34</td>
+<td style="text-align: center;">115.79</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>List table names in json</strong>:
+<code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=json_tables</code></p>
+<h4 id="returns-1">returns:</h4>
+<pre><code>[
+    {
+        &quot;name&quot;: &quot;22.5_107.5&quot;,
+        &quot;lat&quot;: -22.5,
+        &quot;lon&quot;: 107.5
+    },
+    {
+        &quot;name&quot;: &quot;Abbot_Poin&quot;,
+        &quot;lat&quot;: -19.8,
+        &quot;lon&quot;: 148.07
+    },
+    ...,
+    {
+        &quot;name&quot;: &quot;Xena&quot;,
+        &quot;lat&quot;: -19.96,
+        &quot;lon&quot;: 115.218
+    },
+    {
+        &quot;name&quot;: &quot;Yoorn&quot;,
+        &quot;lat&quot;: -20.34,
+        &quot;lon&quot;: 115.79
+    }
+]
+</code></pre></li>
+<li><p><strong>List active sites in HTML</strong>:
+<code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=html_sites</code></p>
+<h4 id="returns-2">returns:</h4>
+<table>
+<thead>
+<tr class="header">
+<th>Company</th>
+<th>Project Name</th>
+<th>Coordinates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Anglogold</td>
+<td>Tropicana</td>
+<td>-29.24, 124.54</td>
+</tr>
+<tr class="even">
+<td>Boskalis</td>
+<td>Dampier 7 Days</td>
+<td>-20.6, 116.75</td>
+</tr>
+<tr class="odd">
+<td>Chevron</td>
+<td>Gorgon</td>
+<td>-20.46, 114.84</td>
+</tr>
+<tr class="even">
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td>Woodside</td>
+<td>Pyrenees</td>
+<td>-21.54, 114.12</td>
+</tr>
+<tr class="even">
+<td>Woodside</td>
+<td>Scarborough 10 days</td>
+<td>-19.926, 113.242</td>
+</tr>
+<tr class="odd">
+<td>Woodside</td>
+<td>Stybarrow 10 Days</td>
+<td>-21.45, 113.82</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>List all sites in HTML</strong>:
+<code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=compare</code></p>
+<h4 id="returns-3">returns:</h4>
+<pre><code>    Active Sites</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Forecast site</th>
+<th style="text-align: center;">lat</th>
+<th style="text-align: center;">lon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Anglogold - Tropicana</td>
+<td style="text-align: center;">-29.2400</td>
+<td style="text-align: center;">124.540</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Boskalis - Dampier 7 Days</td>
+<td style="text-align: center;">-20.6000</td>
+<td style="text-align: center;">116.750</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Chevron - Gorgon</td>
+<td style="text-align: center;">-20.4600</td>
+<td style="text-align: center;">114.840</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - Jansz</td>
+<td style="text-align: center;">-19.8100</td>
+<td style="text-align: center;">114.610</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+</tr>
+</tbody>
+</table>
+<pre><code>    Site Configurations</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">site</th>
+<th style="text-align: center;">table</th>
+<th style="text-align: center;">partitions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">BHP - Pyrenees</td>
+<td style="text-align: center;">Pyrenees</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Boskalis - Dampier 7 Days</td>
+<td style="text-align: center;">Dampier_Po</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Boskalis - Scarborough 7 Days</td>
+<td style="text-align: center;">Scarb_new</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - Gorgon</td>
+<td style="text-align: center;">Gorgon</td>
+<td style="text-align: center;">[0.001, 10.0], [10.0, 40.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+</tr>
+</tbody>
+</table>
+<pre><code>    Active Sites Not excluded</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">site</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Santos - Barossa</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Woodside - Scarborough 10 days</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Santos - Barossa KP40</td>
+</tr>
+</tbody>
+</table>
+<pre><code>    Excluded from Active Sites</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Anglogold - Tropicana</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - North Whites Beach</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Chevron - Wheatstone Platform AFS</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron Barrow Island AFS ML ext</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Santos - Van Gogh 4 days</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Woodside - Logistics Karratha 7
+days</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Woodside - Logistics Learmonth 7
+days</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<h2 id="logging">Logging</h2>
+<hr />
+<p>Errors are logged to
+<a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.log" target="_blank">sites_api.log</a>.
+Ensure the log file is writable by the web server.</p>
+<h2 id="author">Author</h2>
+<hr />
+<p>Daz Vink: <a href="mailto:daz.vink@bom.gov.au">daz.vink@bom.gov.au</a></p>
+</body>
+</html>

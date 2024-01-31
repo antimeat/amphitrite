@@ -1,5 +1,5 @@
-# Amphitrite
-
+---
+title: Amphitrite
 ---
 
 Amphitrite is designed for processing and partitioning wave spectrum data. Utilizing data from Auswave, with a view to incorporate SWAN model output in the future. Amphitrite creates bespoke swell partitions based on specified period ranges.
@@ -30,16 +30,16 @@ Amphitrite is designed for processing and partitioning wave spectrum data. Utili
 
 Amphitrite features a frontend <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/html/dashboard.php" target="_blank">dashboard</a> for managing site configurations and manually activating the partition splitting scripts.
 
-### Autoseas
-
-API and package for calculating and returning autoseas swell data from winds and partitioned data. More detailed information is here (see <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_JSONAUTOSEAS.html" target="_blank">README_JSONAUTOSEAS</a>).
-
 ### Dashboard Features
 
 -   **Site data**: API access to interogate current and recent data.
 -   **Site Configuration**: Manage and update the configuration of various sites, including setting up partition ranges.
 -   **Manual Script Activation**: Trigger the `partitionSplitter.py` script directly from the dashboard for immediate data processing.
 -   **Logging**: Inspect log files
+
+### Autoseas
+
+API and package for calculating and returning autoseas swell data from winds and partitioned data. More detailed information is here (see <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/README_JSONAUTOSEAS.html" target="_blank">README_JSONAUTOSEAS</a>).
 
 ## Backend details
 
@@ -147,17 +147,16 @@ API and package for calculating and returning autoseas swell data from winds and
 ### Cron:
 
 Currently run under user `davink` on server: `wa-vw-er`
-The script is set up to run every 5 minutes for 2 hours staring at 5:00AM, 11:00AM, 5:30PM and 11:00PM WST. A lock file (`.lockfile.lock`) and log file (`script_errors.log`) are used for checking if the script is already running and logging errors respectively. This should ensure regular/consistent data processing to begin within 5 minutes of data arriving. As of `25/01/2024` Auswave data files have been arriving at approximately 5:20AM, 11:20AM, 5:20PM and 11:20PM WST.
+The script is set up to run every 3 minutes for 2 hours staring at 5:00AM, 9:00AM, 5:30PM and 9:00PM WST. A lock file (`.lockfile.lock`) and log file (`script_errors.log`) are used for checking if the script is already running and logging errors respectively. This should ensure regular/consistent data processing to begin within 5 minutes of data arriving. As of `25/01/2024` Auswave data files have been arriving at approximately 5:20AM, 9:20AM, 5:20PM and 9:20PM WST.
 
 ```bash
 ###########################
-#scripts to run wave partitioning. check for new models every 5 minutes over a 2 hour period
+#scripts to run wave partitioning. check for new models every 3 minutes over a 2 hour period
 ###########################
-*/5 5-6 * * * cd /cws/op/webapps/er_ml_projects/davink/amphitrite && /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
-*/5 11-12 * * * cd /cws/op/webapps/er_ml_projects/davink/amphitrite && /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
-*/5 17-18 * * * cd /cws/op/webapps/er_ml_projects/davink/amphitrite && /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
-*/5 23 * * * cd /cws/op/webapps/er_ml_projects/davink/amphitrite && /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
-*/5 0 * * * cd /cws/op/webapps/er_ml_projects/davink/amphitrite && /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
+*/3 5-6 * * * cd /cws/op/webapps/er_ml_projects/davink/amphitrite && /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
+*/3 9-10 * * * cd /cws/op/webapps/er_ml_projects/davink/amphitrite && /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
+*/3 17-18 * * * cd /cws/op/webapps/er_ml_projects/davink/amphitrite && /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
+*/3 9-10 * * * cd /cws/op/webapps/er_ml_projects/davink/amphitrite && /cws/op/webapps/er_ml_projects/davink/amphitrite/watchdog.sh
 ############################
 ```
 
@@ -186,14 +185,14 @@ drwxr-xr-x. 18 cwsop cwsop      4096 Jul 25  2023 ..
 ---
 
 The `api.cgi` script in Amphitrite offers web-based functionalities to access and manage partitioned wave spectrum data. This CGI script, written in Python, allows users to interact through HTML and JSON formats.
-A detailed guide for the `api.cgi` is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_API.html" target="_blank">README_API</a>
+A detailed guide for the `api.cgi` is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/README_API.html" target="_blank">README_API</a>
 
 ## Sites api
 
 ---
 
 A `sites_api.cgi` script is available for managing and visualizing wave data partitions and comparing output to Ofcast active sites. It provides various functionalities, such as comparing active sites with configuration files, listing sites in HTML or JSON formats, and handling site-specific data.
-A detailed guide for the `sites_api.cgi` is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/README_SITES_API.html" target="_blank">README_SITES_API</a>
+A detailed guide for the `sites_api.cgi` is here: <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/README_SITES_API.html" target="_blank">README_SITES_API</a>
 
 ## Installation
 

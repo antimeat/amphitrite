@@ -1,5 +1,5 @@
-# CGI Script for Wave Data Partitioning retrieval from database
-
+---
+title: API for wave data partitioning retrieval from database
 ---
 
 ## Overview
@@ -17,19 +17,44 @@ This CGI script, provides a simple interface for managing and retrieving wave da
 -   Return site configurations and exclusion lists in JSON format.
 -   Fetch wave table data for specific sites and run times.
 
-## Usage
+## API Endpoint
+
+The API supports various endpoints, some with its own set of parameters.
 
 ---
 
-The script can be accessed via HTTP requests with specific parameters:
-
 ### Endpoints and Parameters
 
--   `?get=list_html` - Lists all sites as HTML links.
--   `?get=database` - Displays database entries in HTML format.
--   `?get=list_json` - Lists all sites and data in JSON format.
--   `?get=exclusion` - Lists exclusion sites in JSON format.
--   `?get=site&site_name=[name]&run_time=[time]` - Fetches data for a specific site and run time.
+1. `get=list_html`
+
+    - Default endpoint.
+    - No additional parameters required.
+    - Description: Lists all sites as HTML links.
+
+2. `get=database`
+
+    - No additional parameters required.
+    - Description: Displays database entries in HTML format.
+
+3. `get=list_json`
+
+    - No additional parameters required.
+    - Description: Lists all sites and data in JSON format.
+
+4. `get=exclusion`
+
+    - No additional parameters required.
+    - Description: Lists exclusion sites in JSON format.
+
+5. `get=site`
+    - `site_name` (required)
+        - Format: String with `%20` as whitespace.
+        - Description: Specifies the site name for data retrieval.
+    - `run_time` (required)
+        - Format: `YYYYMMDDHH`.
+        - Description: Indicates the time step for data retrieval in UTC.
+
+Each endpoint serves a specific purpose and may require different parameters to function correctly. The `site_name` and `run_time` parameters are essential for fetching data related to a specific site and time.
 
 ### Examples
 
