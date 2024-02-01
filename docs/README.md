@@ -67,6 +67,10 @@ API and package for calculating and returning autoseas swell data from winds and
 
 -   Home of the README documentation and script/css for rendering to html
 
+**emails.py**:
+
+-   Functionality for an alert email to be sent once a new model run arrives and the partition splitting is complete.
+
 **gfe.py**:
 
 -   A function to retrieve point data from GFE.

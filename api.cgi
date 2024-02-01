@@ -93,7 +93,7 @@ def database_check():
             <style>
                 table { 
                     border-collapse: collapse; 
-                    width: 80%; 
+                    width: 90%; 
                     margin: 20px auto; 
                 }
                 th, td { 
@@ -118,15 +118,16 @@ def database_check():
 def list_sites_as_html():
     """Print out all the sites and links to tables from the database via html"""
     try:
-        site_data = db.get_all_sites()["data"]
+        site_data = db.get_all_wave_data()["data"]
         site_names = site_data[0]
         tables = site_data[1]
         partitions = site_data[2]
+        run_times = site_data[3]
         table_style = """
             <style>
                 table { 
                     border-collapse: collapse; 
-                    width: 50%; 
+                    width: 80%; 
                     margin: 20px auto; 
                 }
                 th, td { 
@@ -142,9 +143,9 @@ def list_sites_as_html():
                 }
             </style>
         """
-        headers = "<tr><th>Forecast site</th><th>Auswave table</th><th>Partitions</th></tr>"
+        headers = "<tr><th>Forecast site</th><th>Auswave table</th><th>Partitions</th><th>Latest run-time</th></tr>"
 
-        html_table_rows = "".join([f"<tr><td><a href='api.cgi?get=site&site_name={site_names[i]}' target='_blank'>{site_names[i]}</a></td><td>{tables[i]}</td><td>{', '.join(map(str, partitions[i]))}</td></tr>" for i in range(len(site_names))])
+        html_table_rows = "".join([f"<tr><td><a href='api.cgi?get=site&site_name={site_names[i]}' target='_blank'>{site_names[i]}</a></td><td>{tables[i]}</td><td>{', '.join(map(str, partitions[i]))}</td><td>{run_times[i]}</td></tr>" for i in range(len(site_names))])
         return f"{table_style}<h2>Partitioned Swell Tables</h2><table>{headers}{html_table_rows}</table>"
     except Exception as e:
         handle_error(500, f"Internal Server Error: {e}")

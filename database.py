@@ -100,11 +100,19 @@ def get_all_wave_data():
     """return all wave data"""
     session = get_session()
     try:
-        sites = session.query(models.Site).all()
+        sites = session.query(models.Site).order_by(models.Site.site_name).all()
         site_names = [site.site_name for site in sites]
         tables = [site.table for site in sites]
         partitions = [site.get_partitions() for site in sites]
-        run_times = [session.query(models.WaveData.run_time).filter(models.WaveData.site_id == site.site_id).order_by(desc(models.WaveData.run_time)).first() for site in sites]
+        run_times = [
+            session.query(models.WaveData.run_time)
+            .filter(models.WaveData.site_id == site.site_id)
+            .order_by(desc(models.WaveData.run_time))
+            .first()[0].strftime("%Y/%m/%d %H") if session.query(models.WaveData.run_time)
+            .filter(models.WaveData.site_id == site.site_id)
+            .order_by(desc(models.WaveData.run_time))
+            .first()[0] is not None else None for site in sites
+        ]
         # run_times = [rt.strftime("%Y/%m/%d %H") if rt is not None else None for rt in run_times]        
         return {"success": True, "message": "All wave data returned", "data":[site_names,tables,partitions,run_times]}
     except Exception as e:
