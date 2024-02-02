@@ -60,13 +60,13 @@
                                     <br>                                        
                                     <li><h4>Database check</h4>
                                         <ul>
-                                            <li><i>state of the database with site info available run_times </i></li>
+                                            <li><i>state of the database with site info and available run_times </i></li>
                                         </ul>
                                     </li>
                                     <br>
                                     <li><h4>Activate run</h4>
                                         <ul>
-                                            <li><i>manually generate new partions based on latest available data (if automation fails) </i> </li>
+                                            <li><i>manually generate new partitions based on latest available data (if automation fails) </i> </li>
                                         </ul>  
                                     </li>
                                 </ol>    

@@ -39,7 +39,7 @@ Amphitrite features a frontend <a href="http://wa-vw-er/webapps/er_ml_projects/d
 
 ### Autoseas
 
-API and package for calculating and returning autoseas swell data from winds and partitioned data. More detailed information is here (see <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/README_JSONAUTOSEAS.html" target="_blank">README_JSONAUTOSEAS</a>).
+API and package for calculating and returning autoseas swell data from winds and partitioned data. More detailed information is here (see <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/README_AUTOSEAS.html" target="_blank">README_AUTOSEAS</a>).
 
 ## Backend details
 
@@ -53,7 +53,7 @@ API and package for calculating and returning autoseas swell data from winds and
 
 **autoseas/**:
 
--   A package for calculating and returning swell data from winds and partitioned data. Interfaces through `jsonAutoSeas.cgi`. Further details are in the [AutoSeas section](#autoseas).
+-   A package for calculating and returning swell data from winds and partitioned data. Interfaces through `autoseas.cgi`. Further details are in the [AutoSeas section](#autoseas).
 
 **database.py**:
 
@@ -79,7 +79,7 @@ API and package for calculating and returning autoseas swell data from winds and
 
 -   Contains the frontend dashboard for the package. More details can be found in the [Frontend Dashboard section](#frontend-dashboard).
 
-**jsonAutoSeas.cgi**:
+**autoseas.cgi**:
 
 -   CGI script for the AutoSeas interface. See [AutoSeas section](#autoseas) for more information.
 

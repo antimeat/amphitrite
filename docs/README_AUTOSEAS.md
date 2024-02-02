@@ -6,13 +6,13 @@ title: API for Autoseas, partitioned seas and smushed seas
 
 ---
 
-The jsonAutoSeas API provides sea state based on wind conditions at a given site. In the backend there are fetch and depth tables for each site that need to be maintained. Fetch and depth tables are used as part of the Autoseas generated seas calculations
+The autoseas API provides sea state based on wind conditions at a given site. In the backend there are fetch and depth tables for each site that need to be maintained. Fetch and depth tables are used as part of the Autoseas generated seas calculations
 
 ## API Endpoint
 
 ---
 
--   **URL**: `http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi`
+-   **URL**: `http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/autoseas.cgi`
 
 ## Request Parameters
 
@@ -54,7 +54,7 @@ The response is a JSON object with the following structure:
 
 **get autoseas**
 
-`url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi?first_time_step=2024012212&site=Woodside%20-%20Scarborough%2010%20Days&src=autoseas&winds=200/10/3,210/20/3,220/30/3`
+`url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/autoseas.cgi?first_time_step=2024012212&site=Woodside%20-%20Scarborough%2010%20Days&src=autoseas&winds=200/10/3,210/20/3,220/30/3`
 
 ## returns
 

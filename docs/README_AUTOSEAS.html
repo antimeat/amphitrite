@@ -31,7 +31,7 @@ seas</h1>
 </header>
 <h2 id="overview">Overview</h2>
 <hr />
-<p>The jsonAutoSeas API provides sea state based on wind conditions at a
+<p>The autoseas API provides sea state based on wind conditions at a
 given site. In the backend there are fetch and depth tables for each
 site that need to be maintained. Fetch and depth tables are used as part
 of the Autoseas generated seas calculations</p>
@@ -39,7 +39,7 @@ of the Autoseas generated seas calculations</p>
 <hr />
 <ul>
 <li><strong>URL</strong>:
-<code>http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi</code></li>
+<code>http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/autoseas.cgi</code></li>
 </ul>
 <h2 id="request-parameters">Request Parameters</h2>
 <p>The API accepts the following query parameters:</p>
@@ -86,7 +86,7 @@ between the last wind and the current.</li>
 <h2 id="example">Example</h2>
 <hr />
 <p><strong>get autoseas</strong></p>
-<p><code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/jsonAutoSeas.cgi?first_time_step=2024012212&amp;site=Woodside%20-%20Scarborough%2010%20Days&amp;src=autoseas&amp;winds=200/10/3,210/20/3,220/30/3</code></p>
+<p><code>url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/autoseas.cgi?first_time_step=2024012212&amp;site=Woodside%20-%20Scarborough%2010%20Days&amp;src=autoseas&amp;winds=200/10/3,210/20/3,220/30/3</code></p>
 <h2 id="returns">returns</h2>
 <p>{&quot;seas&quot;: [[0.4, 4, 200], [0.8, 6, 210], [1.7, 6, 220]]}</p>
 <h2 id="author">Author</h2>

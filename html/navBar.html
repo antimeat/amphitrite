@@ -27,7 +27,7 @@
       <div class="modal-body">
         
         <p>
-          <b>The partition splitting scripts execute for the 00Z and 12Z runs of Auswave each day. Check that the <i>Active Sites</i> are configured correctly using <i>"Config check"</i></b>
+          <b>The partitioning process executes for the 00Z/06Z/12Z/18Z runs of Auswave each day. Check that the <i>Active Sites</i> are configured correctly using <i>"Config check"</i></b>
         </p>
         <p>
           <b>Config check</b>  
@@ -44,8 +44,8 @@
         <p>
           <b>Site partition tables</b>  
           <ul>
-            <li>html table of sites from the database linking to api's used for the data retrieval</li>  
-            <li>data is the latest available in the database for each particular site</i></li>          
+            <li>table of site info and links to the output</li>  
+            <li>pulls latest available data from the database for each site</i></li>          
           </ul>
         </p>  
         <p>
@@ -71,6 +71,13 @@
           <ul>
             <li>activate a manual run of the partion splitter choosing individual sites or all</li>  
             <li>by default it will run using the latest available auswave data to split</li>  
+          </ul>
+        </p>
+        <p>
+          <b>Log file</b>  
+          <ul>
+            <li>each time the partitioning process is run we generate a log file </li>  
+            <li>its a good place to find clues for trouble-shooting</li>  
           </ul>
         </p>
         <br>
