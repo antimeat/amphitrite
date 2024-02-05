@@ -116,7 +116,7 @@ def autoSeas(siteName,
     if averageFetch:
         fetchTable = calcAverageFetches(fetchTable)
     
-    if calcType in ['deep', 'mixed'] or depthTable is None:
+    if calcType in ['deep', 'mixed', "bretschneider"] or depthTable is None:
         
         if calcType == "mixed":
             # assume there is a seaLimits table for this product

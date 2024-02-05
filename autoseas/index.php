@@ -66,270 +66,166 @@
 
     <!-- Modernized CSS -->
 	<style>
-        /* The Modal (background) */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        }
+    /* Simplified and Streamlined CSS */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    color: #333;
+    background-color: #f4f4f4;
+    padding: 20px;
+    margin: 0;
+}
 
-        /* Modal Content */
-        .modal-content {
-            background-color: #fefefe;
-            text-align: "center";
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 30%; /* Could be more or less, depending on screen size */
-            border-radius: 30px; /* Rounded edges */
-        }
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
 
-        /* The Close Button */
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
+.modal-content, .container {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
 
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            font-size: 14px;
-            color: #333;
-            background-color: #f4f4f4;
-            padding: 20px;
-            margin: 0;
-        }
+.close:hover, .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
 
-        /* Style for the outer flex container */
-        .outer-container {
-            display: flex;
-            flex-direction: row; /* Align children side by side */
-            justify-content: flex-start; /* Adjust spacing as needed */
-            align-items: flex-start; 
-            flex-wrap: wrap;
-            padding: 20px;
+.outer-container, .flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
 
-        }
+.inner-container, .settings, .editLinkContainer, .actions {
+    padding: 20px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
 
-        /* Style for the outer flex container */
-        .inner-container {
-            display: flex;
-            min-width: 20%;
-            height: 20%;
-            padding: 20px;
-            flex-direction: column;
-            justify-content: flex-start; /* Adjust spacing as needed */
-            align-items: flex-start; 
-            flex-wrap: wrap;
-        }
+select, input[type="text"], textarea {
+    width: 100%;
+    padding: 0px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
 
-        .flex-container {
-            min-height: 100px;
-            display: flex; /* Enables flexbox layout */
-            align-items: center; /* Aligns items vertically in the center */
-            flex-wrap: wrap;
-        }
+.btn, a {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 8px 12px;
+    margin-right: 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
 
-        .flex-container > div {
-            margin-right: 10px; /* Adds some space between the div elements */
-            min-height: 60px;
-        }
+.btn:hover, a:hover {
+    background-color: #0056b3;
+}
 
-        /* Adjust this as necessary for your layout */
-        #fetchTable, .container {
-            /* Ensures that the fetchTable has a similar style and width as other containers */
-            min-width: 300px; /* Adjust this value as needed */
-            width: 100%;
-            height: 100%;
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            justify-content: flex-start; /* Spaces the child elements evenly */
-            align-items: flex-start; /* Aligns items at the start of the container */
-            flex-wrap: wrap;
-        }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
 
-        .tables-container {
-            width: 50%;
-            display: flex;
-            justify-content: flex-start; /* Spaces the child elements evenly */
-            align-items: flex-start; /* Aligns items at the start of the container */
-            flex-wrap: wrap;
-        }
-        
-        .container, .site, .settings, #fetchTable, .seasCopyContainer, .editLinkContainer, .algorithmInfo {
-            background-color: #fff;
-            border: solid 1px #ddd;
-            padding: 20px;
-            margin-bottom: 20px;
-            min-height: 60px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            margin-top: 20px;
-            min-width: 300px;     
-            justify-content: flex-start; /* Spaces the child elements evenly */
-            align-items: flex-start; /* Aligns items at the start of the container */
-            flex-wrap: wrap;       
-        }
+table, th, td {
+    text-align: "center";
+    border: 1px solid #ddd;
+    padding: 0px; /* Adjusted padding */
+}
 
-        a {
-            color: #007bff;
-            text-decoration: none;
-            background-color: #f8f9fa;
-            padding: 8px 12px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            margin-right: 5px;
-            transition: background-color 0.2s, color 0.2s;
-        }
+th {
+    background-color: #4CAF50;
+    color: white;
+}
 
-        a:hover {
-            background-color: #e2e6ea;
-            color: #0056b3;
-        }
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Adjusts spacing between child elements */
+    margin-top: 20px; /* Space above the container */
+}
 
-        /* New button style */
-        .btn {
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            border: none; /* No border for button */
-            cursor: pointer; /* Change cursor to pointer on hover */
-            transition: background-color 0.3s ease;
-        }
+.container, .settings {
+    flex: 1; /* Allows each container to grow equally */
+    padding: 20px;
+    margin: 10px; /* Space between containers */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    min-width: 300px; /* Minimum width to prevent containers from becoming too narrow */
+}
+@media (max-width: 768px) {
+    .inner-container, .settings, .editLinkContainer, .actions {
+        width: 100%;
+    }
+    .flex-container {
+        flex-direction: column; /* Stack the containers on smaller screens */
+    }
+    .container {
+        width: 100%; /* Full width containers on smaller screens */
+        margin-bottom: 20px; /* Space between stacked containers */
+    }
+}
 
-        .btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Adjust input[type="text"] width if necessary */
-        input[type="text"] {
-            height: 30px;
-            width: auto; /* Adjust based on your layout needs */
-            padding: 4px 12px;
-            margin-right: 10px; /* Ensures some space between the input and the button */
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        textarea {
-            width: 100%;
-            min-width: 300px;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            justify-content: flex-end; /* Spaces the child elements evenly */
-            align-items: flex-end; /* Aligns items at the start of the container */
-            flex-wrap: nowrap;
-        }
-
-        select {
-            width: 70%;
-            height: 40px;
-            min-width: 200px;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            justify-content: flex-end; /* Spaces the child elements evenly */
-            align-items: flex-end; /* Aligns items at the start of the container */
-            flex-wrap: nowrap;
-        }
-
-        .flex-container {
-            display: flex;
-            align-items: flex-start;
-            flex-wrap: nowrap; /* Prevents wrapping, ensuring elements stay in a single line */
-        }
-
-        .actions a, .editLinkContainer a {
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            transition: background-color 0.3s ease;
-        }
-
-        .actions a:hover, .editLinkContainer a:hover {
-            background-color: #0056b3;
-        }
-
-        table {
-            min-width: 300px; /* Adjust this value as needed */
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-            padding: 0px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        .settings {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            padding: 20px;
-
-        }
-
-        .settings > div, .settings > form {
-            width: 50%;
-            margin-top: 10px;
-            padding: 20px;
-
-        }
-
-        .algorithmInfo ul {
-            padding-left: 20px;
-            list-style-type: disc;
-        }
-
-        @media (max-width: 768px) {
-            .settings, .editLinkContainer, .seasCopyContainer {
-                width: 50%;
-            }
-        }
-    
     </style>
 </head>
 <body>  
 
     <div class = "outer-container">    
+        <div class = "inner-container">
+            <div id="session_box" class="container">
+                Session: <input type="text" size="10" id="session" style="width: 60%">
+                <button type="button" onclick="storeValues()" id="button" name="button" class="btn">Set Cookie</button>
+            </div>
+            <div class="container actions">
+                <div class="container actions flex" sytle="width: 80%;">
+                    Site: <select id="siteSelect"></select>
+                </div>
+            
+                <div class="container actions flex" style="width: 80%;">
+                    <!-- Radio buttons for algorithm choice -->
+                    <h3>Algorithm</h3>
+                    <form id="algorithmChoice">
+                        <label><input type="radio" name="algorithm" value="holthuijsen" checked> Breugem Holthuijsen</label>
+                        <label><input type="radio" name="algorithm" value="bretschneider"> Bretschneider</label>
+                        <label><input type="radio" name="algorithm" value="shallow"> Shallow</label>
+                    </form>
+                </div>
+                <a href="javascript:loadWinds()">Load Winds</a>
+                <a href="javascript:refreshSeas()">Calc Seas</a>                
+            </div>
+            
+            <div class="container actions">
+                <a href="edit_fetch_limits.php">Edit Fetch Limits</a>
+            </div>
+        </div>
         <div class="settings">
             <h1>Autoseas: calculate seas </h1><br>
             <div class="algorithmInfo">
@@ -338,7 +234,7 @@
                 <section>
                     <h3>Changes 2023</h3>
                     <ul>
-                        <li>implement and use the Breugem-Holthuijsen algorithm as the default <a href="https://repository.oceanbestpractices.org/bitstream/handle/11329/121/702_en_for_approval.pdf?sequence=4&isAllowed=y" target="_blank">article</a>.</li>                    
+                        <li>implement and use the Breugem-Holthuijsen algorithm as the default. More reading: <a href="https://repository.oceanbestpractices.org/bitstream/handle/11329/121/702_en_for_approval.pdf?sequence=4&isAllowed=y" target="_blank">here</a>.</li>                    
                     </ul>
                 </section>
 
@@ -360,23 +256,6 @@
             </div>
         </div>
 
-        <div class = "inner-container">
-            <div class="container">
-                Site: <select id="siteSelect"></select>
-            </div>
-            <div id="session_box" class="container">
-                Session: <input type="text" size="10" id="session">
-                <button type="button" onclick="storeValues()" id="button" name="button" class="btn">Set Cookie</button>
-            </div>
-            <div class="container actions">
-                <a href="javascript:loadWinds()">Load Winds</a>
-                <a href="javascript:refreshSeas()">Calc Seas</a>
-            </div>
-            <div class="container actions">
-                <a href="edit_fetch_limits.php">Edit Fetch Limits</a>
-            </div>
-            
-        </div>
     </div>    
 
     <div class="flex-container">

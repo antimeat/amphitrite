@@ -211,10 +211,13 @@ function capitalizeFirstLetter(string) {
 }
 
 function refreshSeas() {
-    // get the site
+    // get the site and seas algo
     var site = $("#siteSelect").val();
-
+    var algo_form = document.getElementById("algorithmChoice");
+    var form_data = new FormData(algo_form);
+    var algo = form_data.get("algorithm");
     console.log(site);
+    console.log(algo);
 
     // collect all the values
     var winds = {};
@@ -222,9 +225,7 @@ function refreshSeas() {
     seasData = {};
 
     $(".windInput").each(function (i, input) {
-        console.log(input);
         var name = input.name;
-        console.log(name);
         var n = name.split("_");
         var field = n[0];
         var hour = n[1];

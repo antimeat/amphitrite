@@ -52,7 +52,7 @@ class PartitionSplitter(object):
         self.partition = partition.Partitions()
         self.config_file = os.path.join(BASE_DIR,"site_config.txt")
         self.site_tables = self.load_config_file(self.config_file)
-        self.latest_run_time = self.partition.get_latest_run_time()
+        self.latest_run_time = self.partition.get_latest_run_time().strftime(format="%Y-%m-%d %HZ")
         
     def mps_to_kts(self,windSpd):
         windSpd_kts = windSpd * 1.94384  # Convert from knots to m/s
@@ -447,7 +447,7 @@ def main():
     try: 
         if args.site_name.strip().lower() == 'all':
             toolbox.generate_all_sites_to_db()
-            message = f"Amphitrite latest run: {toolbox.latest_run_time} for all sites is now available."
+            message = f"{toolbox.latest_run_time} run-time for all sites now available."
             emails.send_email(message=message)
         else:
             wave_table = toolbox.generate_site_to_db(site_name=args.site_name)
@@ -456,7 +456,7 @@ def main():
             if wave_table is not None and "data" in wave_table:
                 table = wave_table["data"]
                 print(table)
-                message = f"Amphitrite latest run: {toolbox.latest_run_time} for {args.site_name} is now available."
+                message = f"{toolbox.latest_run_time} run-time for {args.site_name} now available."
                 emails.send_email(message=message)
             else:
                 print(f"No data available for site '{args.site_name}'.")     
