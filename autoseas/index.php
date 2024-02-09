@@ -180,6 +180,8 @@ th {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     min-width: 300px; /* Minimum width to prevent containers from becoming too narrow */
+    background-color: rgba(255,255,255);
+
 }
 @media (max-width: 768px) {
     .inner-container, .settings, .editLinkContainer, .actions {
