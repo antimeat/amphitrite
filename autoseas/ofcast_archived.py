@@ -262,7 +262,7 @@ def getProductFileAndTime(userID, label):
                     # work out the status
                     status = tds[-1].text
 
-                    if status in ["Due", "OK"]:
+                    if status in ["Due", "OK", "OK (Outbox)"]:
                         # Not opened yet, use the Last issue
                         idx = 1
 

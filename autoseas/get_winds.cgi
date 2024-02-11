@@ -1,7 +1,5 @@
 #!/cws/anaconda/envs/mlenv/bin/python -W ignore
 
-print("Content-Type: application/json\n")
-
 # Load forecast winds from ofcast.
 # Print json for [[dirn, spd, hours since previous], ...]
 
@@ -28,29 +26,32 @@ def getForecastWinds(**kwargs):
         None, but prints a JSON object representing the retrieved wind data.
     """
     #setup some defaults if not passed
-    sessionID = kwargs.get("sessionID", "davink83142")
+    sessionID = kwargs.get("sessionID", "davink46641")
     fName = kwargs.get("fName", "Woodside - Mermaid Sound 7 days")
     archive = kwargs.get("archive", 0)
     data_type = kwargs.get("data_type", "forecast")
+    df = None
     
-    df = ofcast.load_archive(sessionID, fName, archive, data_type)
-
-    # find time diff with previous row
-    df['time_diff'] = (df['time_local'] - df['time_local'].shift()) / np.timedelta64(1, 'h')
-
-    df['time_diff'] = df['time_diff'].fillna(0).astype(int)
-
-    # reorder columns so it matches the desired output
-    df = df[['wnd_dir', 'wnd_spd', 'time_diff']]
+    #attempt to get forecast winds from ofcast
+    try:
+        df = ofcast.load_archive(sessionID, fName, archive, data_type)
     
-    #print out in the format "dir/spd/previous_hr,"
-    winds = df.values.tolist()
-    # wind_string = ','.join(['/'.join(map(str, item)) for item in winds])
-                   
-    # print(wind_string)    
+        # find time diff with previous row
+        df['time_diff'] = (df['time_local'] - df['time_local'].shift()) / np.timedelta64(1, 'h')
 
-    # #json_string = json.dumps(['/'.join(map(str, item)) for item in winds])
-    print(json.dumps(winds))
+        df['time_diff'] = df['time_diff'].fillna(0).astype(int)
+
+        # reorder columns so it matches the desired output
+        df = df[['wnd_dir', 'wnd_spd', 'time_diff']]
+        
+        #print out in the format "dir/spd/previous_hr,"
+        winds = df.values.tolist()
+        print(json.dumps(winds))
+
+    #return a defualt string of winds useful for testing
+    except Exception as e:        
+        json_winds = [[230, 6, 3], [270, 10, 3], [300, 11, 3], [290, 15, 3], [270, 12, 3], [250, 13, 3], [250, 11, 3], [270, 8, 3], [280, 6, 3], [290, 8, 3], [320, 15, 3], [310, 16, 3], [280, 15, 3], [260, 9, 3], [260, 10, 3], [320, 7, 3], [290, 10, 3], [340, 11, 3], [330, 13, 3], [290, 11, 3], [310, 13, 3], [300, 12, 3], [280, 12, 3], [340, 9, 3], [340, 7, 3], [330, 9, 3], [320, 12, 3], [310, 10, 3], [310, 10, 3], [290, 9, 3], [270, 5, 3], [300, 6, 3], [290, 12, 3], [280, 8, 3], [310, 10, 3], [290, 10, 3], [280, 11, 3], [280, 10, 3], [260, 10, 3], [240, 8, 3], [220, 7, 3], [280, 10, 3], [290, 14, 3], [270, 14, 3], [270, 12, 3], [260, 12, 3], [250, 13, 3], [260, 12, 3], [250, 12, 3], [260, 15, 3], [270, 17, 3], [270, 16, 3], [270, 14, 3], [260, 14, 3], [260, 14, 3], [250, 14, 3], [260, 13, 3], [270, 14, 3], [280, 16, 3], [270, 18, 3], [250, 18, 3]]
+        print(json.dumps(json_winds))
 
 def get_gfeWinds(**kwargs):
     """
@@ -101,7 +102,13 @@ def get_gfeWinds(**kwargs):
                    
     print(wind_string)    
     
-if __name__ == "__main__":
+def print_headers():
+    print("Content-Type: application/json")
+    print("Access-Control-Allow-Origin: *\n")
+    
+def main():
+
+    print_headers()
     
     q = cgi.FieldStorage()
     keys = q.keys()
@@ -115,3 +122,7 @@ if __name__ == "__main__":
     
     getForecastWinds(**kwargs)
     # getForecastWinds(**kwargs)
+
+if __name__ == "__main__":
+    
+    main()
