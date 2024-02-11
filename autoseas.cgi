@@ -14,7 +14,7 @@ cgitb.enable()
 HT_DECIMAL_PLACES = {
     "Barrow Island 7 Day - AusWaveBWI".replace(' ', '_'): 2
 }
-DEFAULT_WINDS = "360/10/3,330/20/3,330/20/3,330/20/9,330/20/9,330/20/9,330/20/9,330/20/9,330/20/9"
+DEFAULT_WINDS = "330/10/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3"
 DEFAULT_SITE = 'Woodside - Scarborough 10 Days'
 FETCH_DIR = "autoseas/fetchLimits/"
 
@@ -47,7 +47,7 @@ def parse_winds(wind_string):
     return winds
 
 def calculate_seas(kwargs):
-    source = kwargs.get('source', "smush")
+    source = kwargs.get('src', "smush")
     site = kwargs.get('site', DEFAULT_SITE).replace(' ', '_')
     winds = parse_winds(kwargs.get('winds', DEFAULT_WINDS))
     max_fetch = float(kwargs.get('maxFetch', auto_seas.MAX_FETCH))
@@ -169,7 +169,8 @@ def main():
 
 def print_headers():
     print("Content-Type: application/json")
-    print("Access-Control-Allow-Origin: http://wa-vw-er\n")
+    print("Access-Control-Allow-Origin: *\n")
+    # print("Access-Control-Allow-Origin: http://wa-vw-er\n")
 
 if __name__ == "__main__":
     main()

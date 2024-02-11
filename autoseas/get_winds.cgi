@@ -1,7 +1,7 @@
 #!/cws/anaconda/envs/mlenv/bin/python -W ignore
 
 # Load forecast winds from ofcast.
-# Print json for [[dirn, spd, hours since previous], ...]
+# get_winds.cgi
 
 import json
 import numpy as np
