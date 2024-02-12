@@ -204,14 +204,15 @@ class BreugenHolthuijsen():
         #seas = seasFromFetchAndDepth(windSpd, fetch, depth)
         
         #deep seas uses kts
-        deepSeas = self.seasFromFetchLimitedDeepWater(windSpd, fetch)
+        deep_seas = self.seasFromFetchLimitedDeepWater(windSpd, fetch)
         
         #this one uses mps
-        H_max = calculate_fully_developed_wave_height(kts_to_mps(windSpd))
-        seas = calculate_wave_height(H_max, depth, fetch)
+        seas_bh = calculate_fully_developed_wave_height(kts_to_mps(windSpd))
+        seas = calculate_wave_height(seas_bh, depth, fetch)
         
         # take the min of the shallow water values and the deep water values (which can be less)
-        seas = min(seas, deepSeas)
+        # seas = min(seas, deepSeas)
+        seas = min(seas, deep_seas)
         
         return seas
     

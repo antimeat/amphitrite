@@ -224,9 +224,9 @@ th {
                 <a href="javascript:refreshSeas()">Calc Seas</a>                
             </div>
             
-            <div class="container actions">
+            <!-- <div class="container actions">
                 <a href="edit_fetch_limits.php">Edit Fetch Limits</a>
-            </div>
+            </div> -->
         </div>
         <div class="settings">
             <h1>Autoseas: calculate seas </h1><br>

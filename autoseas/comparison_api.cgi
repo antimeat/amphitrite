@@ -147,8 +147,17 @@ def get_cgi_params():
     
     form = cgi.FieldStorage()
     params = {}
+    
     for key in form.keys():
         params[key] = form.getvalue(key)
+    
+    #default settings here
+    params['site'] = form.getvalue('site',"Woodside - Mermaid Sound 7 days")
+    # params['sessionID'] = form.getvalue('sessionID',"_blah")
+    # params['get'] = form.getvalue('get',"ofcast_archived")
+    # params['data_type'] = form.getvalue('data_type',"forecast")
+    # params['archive'] = form.getvalue('archive',"0")        
+    
     return params
 
 def fetch_algorithm_data(algo, params):
@@ -162,6 +171,8 @@ def fetch_algorithm_data(algo, params):
 def main():
     print_headers()
     params = get_cgi_params()
+    site_name = params['site']
+    
     #first lets get some forecast winds
     winds = get_ofcast_winds(params)
     params['winds'] = winds[0]
@@ -200,6 +211,7 @@ def main():
     print("</style></head><body>")
     
     print("<h1 class='body'>Comparison of autoseas algorithms</h1><hr>")
+    print(f"<h2 class='body'>{site_name}</h2><hr>")
     
     #wind_sea_tables
     print("<div class='table-container'>")
