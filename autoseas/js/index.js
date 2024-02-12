@@ -22,6 +22,7 @@ $(document).ready(function () {
         });
     }
 
+    // ofcast server selector
     $("#siteSelect").change(function (e) {
         isFetchTableLoaded = false; // Reset flag when site changes
         loadFetchTable();
@@ -77,6 +78,7 @@ function createWindsTable(winds) {
 function loadWinds() {
     var site_name = $("#siteSelect").val();
     var session_id = $("#session").val();
+    var server_select = $("#serverSelect").val();
 
     if (session_id !== "") {
         var opts = {
@@ -85,6 +87,7 @@ function loadWinds() {
             get: "ofcast_archived",
             archive: 0,
             data_type: "forecast",
+            server: server_select,
         };
 
         $.getJSON("get_winds.cgi", opts)
@@ -191,10 +194,15 @@ function htmlTable(data, fields) {
         html += "<tr>";
         fields.forEach(function (field) {
             // Check if field is 'windDir', 'fetch', or 'depth' to insert input or div accordingly
-            if (field === "windDir" || field === "fetch") {
-                html += '<td><input type="text" class="windInput" size="4" value="' + (row[field] || "") + '"></td>';
-            } else if (field === "depth") {
-                html += '<td><div class="seas">' + (row[field] || "") + "</div></td>";
+            if (field == "windDir" || field == "fetch") {
+                html += '<td><input class="windInput" value="' + (row[field] || "") + '" readonly></td>';
+            } else if (field == "depth") {
+                html +=
+                    '<td><div class="seas" value="' +
+                    (row[field] || "") +
+                    '" readonly</div>' +
+                    (row[field] || "") +
+                    "</td>";
             } else {
                 html += "<td>" + (row[field] || "") + "</td>";
             }

@@ -167,6 +167,22 @@ for i in [1, 2, 3, 4]:
         'Direction (deg)': 'swell_{}_dirn'.format(i),        
     }
 
+
+def changeServer(server):
+    """Chance the ofcast server from dev to ops
+
+    Args:
+        server (_str_): either "dev" or "ops"
+    """
+    if "dev" in server.lower():
+        SERVER = SERVER_DEV
+    else:
+        SERVER = SERVER_OP
+            
+    TABLE_URL = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=vtable&vc=2"
+    
+    return SERVER, TABLE_URL
+    
 def get_issues():
     """Returns a list of issues to be addressed."""
     return ['raw','smoothed','special_sauce']
@@ -746,7 +762,7 @@ def load(userID, forecastName, archive, data_type='forecast', issue='raw'):
     return df
 
 
-def load_archive(userID, forecastName, archive, data_type='forecast', issue='raw', **kwargs):
+def load_archive(userID, server, forecastName, archive, data_type='forecast', issue='raw', **kwargs):
     """
     Load an archived ofcast forecast
 
@@ -771,6 +787,8 @@ def load_archive(userID, forecastName, archive, data_type='forecast', issue='raw
     pandas DataFrame
         A DataFrame containing the wind and wave data from the forecast
     """
+    SERVER, TABLE_URL = changeServer(server)
+    
     try:
         sessionID,sessionString = getArchiveProductSession(userID, forecastName, archive)
         html = requests.get(TABLE_URL.format(sessionID), timeout=5).content.decode('utf-8')

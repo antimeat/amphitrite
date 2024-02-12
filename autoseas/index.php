@@ -135,7 +135,8 @@ select, input[type="text"], textarea {
 
 .btn, a {
     display: inline-block;
-    background-color: #007bff;
+    /* background-color: #007bff; */
+    background-color: #4CAF50; /* Changed to green */
     color: white;
     padding: 8px 12px;
     margin-right: 10px;
@@ -145,7 +146,8 @@ select, input[type="text"], textarea {
 }
 
 .btn:hover, a:hover {
-    background-color: #0056b3;
+    /* background-color: #0056b3; */
+    background-color: #367c39;
 }
 
 table {
@@ -202,12 +204,22 @@ th {
 
     <div class = "outer-container">    
         <div class = "inner-container">
-            <div id="session_box" class="container">
-                Session: <input type="text" size="10" id="session" style="width: 60%">
-                <button type="button" onclick="storeValues()" id="button" name="button" class="btn">Set Cookie</button>
+            <div class="container actions">
+                <div id="session_box" class="container">
+                    Session: <input type="text" size="10" id="session" style="width: 50%">
+                    <button type="button" onclick="storeValues()" id="button" name="button" class="btn">Set Cookie</button>
+                </div>
+                <div class="container actions flex" style="display: flex; align-items: right; width: 80%;">
+                    <!-- Radio buttons for algorithm choice -->
+                    <span>Server:<br> </span>
+                    <form id="serverChoice" style="display: flex; align-items: right; width: 100%;">
+                        <label><input type="radio" name="algorithm" value="op"> <b>operations</b></label>
+                        <label><input type="radio" name="algorithm" value="dev" checked> <b>develpoment</b></label>
+                    </form>
+                </div>
             </div>
             <div class="container actions">
-                <div class="container actions flex" sytle="width: 80%;">
+                <div class="container actions flex" sytle="width: 60%;">
                     Site: <select id="siteSelect"></select>
                 </div>
             
@@ -236,7 +248,7 @@ th {
                 <section>
                     <h3>Changes 2023</h3>
                     <ul>
-                        <li>implement and use the Breugem-Holthuijsen algorithm as the default. More reading: <a href="https://repository.oceanbestpractices.org/bitstream/handle/11329/121/702_en_for_approval.pdf?sequence=4&isAllowed=y" target="_blank">here</a>.</li>                    
+                        <li>implement and use the Breugem-Holthuijsen algorithm as the default.</li>                    
                     </ul>
                 </section>
 

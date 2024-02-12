@@ -30,11 +30,12 @@ def getForecastWinds(**kwargs):
     fName = kwargs.get("fName", "Woodside - Mermaid Sound 7 days")
     archive = kwargs.get("archive", 0)
     data_type = kwargs.get("data_type", "forecast")
+    server = kwargs.get("server", "dev")
     df = None
     
     #attempt to get forecast winds from ofcast
     try:
-        df = ofcast.load_archive(sessionID, fName, archive, data_type)
+        df = ofcast.load_archive(sessionID, server, fName, archive, data_type)
     
         # find time diff with previous row
         df['time_diff'] = (df['time_local'] - df['time_local'].shift()) / np.timedelta64(1, 'h')
@@ -71,6 +72,7 @@ def get_gfeWinds(**kwargs):
     fName = kwargs.get("fName", "Woodside - Mermaid Sound 7 days")
     archive = kwargs.get("archive", 0)
     data_type = kwargs.get("data_type", "forecast")
+    server = kwargs.get("server", "dev")
     
     #get winds from GFE output csv file
     file_dir = '/srv/local/web/vulture/gfe_data/point_data/'

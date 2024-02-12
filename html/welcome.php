@@ -15,14 +15,14 @@
             }
             
             .mslp {
-                position: absolute;
-                top: 150px;                
+                position: relative;
+                top: 50px;                
                 opacity: 1;
             }
             
             .welcome {
-                position: absolute;
-                top: 550px;                
+                position: relative;
+                top: 100px;                
                 opacity: 1;
             }
             
