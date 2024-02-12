@@ -42,31 +42,31 @@
                         <!-- <img src="http://www.bom.gov.au/iwk/images/small-artwork.png" class="indigenous"  style="display: block; margin-right: auto;  margin-right: auto;  width: 55%;"/img> -->
                     <h2> 
                     <div class="welcome">
-                            <h2><i> Amphitrite: Queen of Atlantis, patron of wave partitions and wife to Poseidon </i></h2>
+                            <h2><i> Autoseas: by default we use the Breugen Holthuijsen algorithm </i></h2>
                             <br>
                             <h5>
                                 <ol>
-                                    <li><h4>Config check</h4>
+                                    <li><h4>Site calculations</h4>
                                         <ul>
-                                            <li><i>check our configuration file is in line with Active sites in Ofcast</i></li>
+                                            <li><i>select an active ofcast site with sessionID</i></li>
                                         </ul>  
                                     </li>
                                     <br>                                        
-                                    <li><h4>Sites partition tables</h4>
+                                    <li><h4>Edit fetch/depth</h4>
                                         <ul>
-                                            <li><i>drill down to each site to see the current data/run-time available </i></li>
+                                            <li><i>change the fetch and depth files for each site </i></li>
                                         </ul>  
                                     </li>
                                     <br>                                        
-                                    <li><h4>Database check</h4>
+                                    <li><h4>Compare algorithms</h4>
                                         <ul>
-                                            <li><i>state of the database with site info and available run_times </i></li>
+                                            <li><i>run a comparision between defualt algorithm and the others using a default set of winds </i></li>
                                         </ul>
                                     </li>
                                     <br>
-                                    <li><h4>Activate run</h4>
+                                    <li><h4>API docs</h4>
                                         <ul>
-                                            <li><i>manually generate new partitions based on latest available data (if automation fails) </i> </li>
+                                            <li><i>README for API calls to return autoseas data </i> </li>
                                         </ul>  
                                     </li>
                                 </ol>    
