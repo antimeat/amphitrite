@@ -203,7 +203,7 @@ th {
 <body>  
 
     <div class = "outer-container">    
-        <div class = "inner-container">
+        <div class = "algorithmInfo">
             <div class="container actions">
                 <div id="session_box" class="container">
                     Session: <input type="text" size="10" id="session" style="width: 50%">
@@ -211,7 +211,7 @@ th {
                 </div>
                 <div class="container actions flex" style="display: flex; align-items: right; width: 80%;">
                     <!-- Radio buttons for algorithm choice -->
-                    <span>Server:<br> </span>
+                    <span>Ofcast server:<br> </span>
                     <form id="serverChoice" style="display: flex; align-items: right; width: 100%;">
                         <label><input type="radio" name="algorithm" value="op"> <b>operations</b></label>
                         <label><input type="radio" name="algorithm" value="dev" checked> <b>develpoment</b></label>
@@ -219,8 +219,8 @@ th {
                 </div>
             </div>
             <div class="container actions">
-                <div class="container actions flex" sytle="width: 60%;">
-                    Site: <select id="siteSelect"></select>
+                <div class="container actions flex" sytle="flex; align-items: right; width: 80%;">
+                    Site: <select id="siteSelect" style="width: 80%"></select>
                 </div>
             
                 <div class="container actions flex" style="width: 80%;">
@@ -232,8 +232,10 @@ th {
                         <label><input type="radio" name="algorithm" value="shallow"> Shallow</label>
                     </form>
                 </div>
-                <a href="javascript:loadWinds()">Load Winds</a>
-                <a href="javascript:refreshSeas()">Calc Seas</a>                
+                <div class="container actions flex" style="width: 80%;">
+                    <a href="javascript:loadWinds()">Load Winds</a>
+                    <a href="javascript:refreshSeas()">Calc Seas</a>                
+                </div>                
             </div>
             
             <!-- <div class="container actions">

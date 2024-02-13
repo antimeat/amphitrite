@@ -242,7 +242,7 @@
 
     <div class="container">
         <form name="siteEdit" method="post" action="edit_fetch_limits.php">
-            <input type="submit" value="Save"><br>
+            <input type="submit" value="Save">
             <input type="hidden" name="action" value="save">
             <p><b>Site Name: </b> <input type="text" name="site" value="<?php echo $site ?>" size="50"></p>
 

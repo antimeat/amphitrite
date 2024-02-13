@@ -721,7 +721,7 @@ def special_sauce(df,**kwargs):
 
     return df
 
-def load(userID, forecastName, archive, data_type='forecast', issue='raw'):
+def load(userID, server, forecastName, archive, data_type='forecast', issue='raw'):
     """
     Load an Ofcast forecast and return a DataFrame with the data
 
@@ -743,6 +743,8 @@ def load(userID, forecastName, archive, data_type='forecast', issue='raw'):
     pandas DataFrame
         A DataFrame containing the wind and wave data from the forecast
     """
+    SERVER, TABLE_URL = changeServer(server)
+
     sessionID,sessionString = getArchiveProductSession(userID, forecastName, archive)
 
     html = requests.get(TABLE_URL.format(sessionID), timeout=5).content.decode('utf-8')
@@ -837,7 +839,7 @@ def get_url_issueTime(sessionID, sessionString):
     
     return issue
 
-def load_view(userID, forecastName, archive, view):
+def load_view(userID, server, forecastName, archive, view):
     """
     Load the html and filename of an archived Ofcast forecast
 
@@ -857,6 +859,8 @@ def load_view(userID, forecastName, archive, view):
     dict
         A dictionary containing the URL and issue time for the forecast
     """
+    SERVER, TABLE_URL = changeServer(server)
+
     view = view.lower()
     sessionID,sessionString = getArchiveProductSession(userID, forecastName, archive)
     view_url = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=v{}"
@@ -868,14 +872,15 @@ def load_view(userID, forecastName, archive, view):
     
     return issue
 
-def get_title(userID, forecastName, archive):
+def get_title(userID, server, forecastName, archive):
     """
 
     Return
     ------
         The tile of the Ofcast forecast
     """
-    
+    SERVER, TABLE_URL = changeServer(server)
+
     sessionID = getArchiveProductSession(userID, forecastName, archive)[0]
     view_url = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=vhtml&vc=2"
 
