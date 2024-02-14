@@ -172,8 +172,11 @@ def changeServer(server):
     """Chance the ofcast server from dev to ops
 
     Args:
-        server (_str_): either "dev" or "ops"
+        server (_str_): either "dev" or "op"
     """
+    # Declare SERVER and TABLE_URL as global
+    global SERVER, TABLE_URL  
+
     if "dev" in server.lower():
         SERVER = SERVER_DEV
     else:

@@ -104,13 +104,15 @@ def get_gfeWinds(**kwargs):
                    
     print(wind_string)    
     
-def print_headers():
-    print("Content-Type: application/json")
-    print("Access-Control-Allow-Origin: *\n")
+def print_headers(content_type="application/json"):
+    print(f"Content-Type: {content_type}")
+    print("Access-Control-Allow-Origin: *")
+    print("Access-Control-Allow-Methods: POST, GET, OPTIONS")
+    print("Access-Control-Allow-Headers: Content-Type\n")
     
 def main():
 
-    print_headers()
+    print_headers("application/json")
     
     q = cgi.FieldStorage()
     keys = q.keys()
