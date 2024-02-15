@@ -281,7 +281,13 @@ class PartitionSmusher(object):
         """
         try: 
             # get the partitions from database
-            partitions = db.get_site_partitions_from_db(site_name)["data"]
+            response = db.get_site_partitions_from_db(site_name)
+            
+            if not response["success"]:
+                print(response["message"])
+                exit()
+                
+            partitions = response["data"]
             sea_partition = partitions[0][1]
             num_swells = len(partitions)         
             
@@ -306,6 +312,9 @@ class PartitionSmusher(object):
                 "sea_dir[degree]": "swell_1_dir",
                 "sea_pd[s]": "swell_1_pd"
             }, axis=1, inplace=True)
+            
+            #reorganise the order in the df to match autoseas output
+            df_table_seas = df_table_seas[["swell_1_ht","swell_1_pd","swell_1_dir"]]
                     
             return df_table_seas, sea_partition        
         

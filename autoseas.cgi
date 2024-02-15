@@ -23,8 +23,15 @@ def transform_site_name(site_name):
     site_name = site_name.replace(" ","_")
     return site_name
     
-def get_request_parameters():
-    """Decode URL-encoded strings"""
+def get_request_parameters(required_params):
+    """Decode URL-encoded strings and validate required parameters.
+    Args:
+        required_params (list): A list of strings representing required parameter names.
+    Returns:
+        dict: Parameters extracted from the request.
+    Raises:
+        ValueError: If a required parameter is missing.
+    """
     field_storage = cgi.FieldStorage()
     params = {}
     for key in field_storage.keys():
@@ -32,6 +39,12 @@ def get_request_parameters():
         if isinstance(value, str):
             value = urllib.parse.unquote(value)
         params[key] = value
+
+    # Check for missing required parameters
+    for param in required_params:
+        if param not in params or not params[param]:
+            raise ValueError(f"missing parameter required: {param}")
+
     return params
 
 def fetch_table_exists(site):
@@ -43,7 +56,10 @@ def parse_winds(wind_string):
     for wind in wind_string.split(','):
         direction, speed, duration = wind.split('/')
         if direction != "NaN":
-            winds.append((float(direction), float(speed), int(duration)))
+            if (direction != '' and speed != ''):
+                winds.append((float(direction), float(speed), int(duration)))
+            else:
+                winds.append((0, 0, 0))
     return winds
 
 def calculate_seas(kwargs):
@@ -87,14 +103,28 @@ def format_seas_data(seas, site_name, return_dir, return_pd_dir):
 def main():
     print_headers()
     
-    #process passed params
-    kwargs = get_request_parameters()
-    time_step_str = kwargs.get("first_time_step", "2024011800")
+    # Define required parameters
+    required_params = ['site', 'winds', 'src', 'first_time_step']
+
+    try:
+        # Attempt to get and validate request parameters
+        kwargs = get_request_parameters(required_params)
+        # Further processing...
+    except ValueError as e:
+        # If a required parameter is missing, return an error response
+        response = {"success": False, "message": str(e)}
+        print(json.dumps(response))
+        return
+    
+    #process required params
+    winds = parse_winds(kwargs.get('winds'))
+    site_name = kwargs.get('site')
+    time_step_str = kwargs.get("first_time_step")
     first_time_step = datetime.datetime.strptime(time_step_str, "%Y%m%d%H")
     source = kwargs.get("src", "autoseas")
+    
+    #optional params
     calc_type = kwargs.get("type","new")
-    winds = parse_winds(kwargs.get('winds', DEFAULT_WINDS))
-    site_name = kwargs.get('site', DEFAULT_SITE)
     return_dir = kwargs.get('returnDir', '0') != '0'
     return_pd_dir = kwargs.get('returnPdDir', '1') != '0'
     
@@ -169,7 +199,10 @@ def main():
 
 def print_headers():
     print("Content-Type: application/json")
-    print("Access-Control-Allow-Origin: *\n")
+    print("Access-Control-Allow-Origin: *")
+    print("Access-Control-Allow-Methods: POST, GET, OPTIONS")
+    print("Access-Control-Allow-Headers: Content-Type\n")
+
     # print("Access-Control-Allow-Origin: http://wa-vw-er\n")
 
 if __name__ == "__main__":

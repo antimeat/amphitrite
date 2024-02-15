@@ -177,23 +177,19 @@ def main():
 
     # Check if site_name is 'list' to list all sites as links
     if get == 'list_html':
-        print("Content-Type: text/html")
-        print()
+        print_headers("text/html")
         print(list_sites_as_html())
     
     elif get == 'database':
-        print("Content-Type: text/html")
-        print()
+        print_headers("text/html")
         database_check()
     
     elif get == 'list_json':
-        print("Content-Type: application/json")
-        print()
+        print_headers("application/json")
         print(list_sites_as_json())    
     
     elif get == 'exclusion':
-        print("Content-Type: application/json")
-        print()
+        print_headers("application/json")
         print(list_exclusion_as_json())    
     
     elif get == "site":
@@ -204,13 +200,17 @@ def main():
         result = db.get_wavetable_from_db(site_name, run_time) if run_time else db.get_wavetable_from_db(site_name)
         
         # Set the HTTP header for JSON content
-        print("Content-Type: application/json")
-        print()
+        print_headers("application/json")
         print(result["data"])
     else:
-        print("Content-Type: text/html")
-        print()
+        print_headers("text/html")
         print(list_sites_as_html())
+
+def print_headers(content_type="application/json"):
+    print(f"Content-Type: {content_type}")
+    print("Access-Control-Allow-Origin: *")
+    print("Access-Control-Allow-Methods: POST, GET, OPTIONS")
+    print("Access-Control-Allow-Headers: Content-Type\n")
         
 if __name__ == "__main__":
     main()

@@ -308,35 +308,35 @@ def main():
     # Check if site_name is 'list' to list all sites as links
     if "json_sites" in get.lower():
         # Set the HTTP header for JSON content
-        print("Content-Type: application/json")
-        print()
+        print_headers("application/json")
         print(get_json_sites())
     
     elif "json_tables" in get.lower():
         # Set the HTTP header for JSON content
-        print("Content-Type: application/json")
-        print()
+        print_headers("application/json")
         print(get_json_tables())
     
     elif "html_sites" in get.lower(): 
-        print("Content-Type: text/html")
-        print()
+        print_headers("text/html")
         get_html_sites()
     
     elif "compare" in get.lower(): 
-        print("Content-Type: text/html")
-        print()
+        print_headers("text/html")
         compare_sites_and_config()
     
     elif "active_sites" in get.lower(): 
-        print("Content-Type: application/json")
-        print()
+        print_headers("application/json")
         print(get_active_partition_names())
     
     else: 
-        print("Content-Type: text/html")
-        print()
+        print_headers("text/html")
         get_html_tables()
            
+def print_headers(content_type="application/json"):
+    print(f"Content-Type: {content_type}")
+    print("Access-Control-Allow-Origin: *")
+    print("Access-Control-Allow-Methods: POST, GET, OPTIONS")
+    print("Access-Control-Allow-Headers: Content-Type\n")
+
 if __name__ == "__main__":
     main()
