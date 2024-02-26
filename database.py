@@ -20,7 +20,7 @@ import datetime
 import models
 
 # Database setup
-DATABASE_URL = "sqlite:///wave_data.db" 
+DATABASE_URL = "sqlite:///wave_data.sqlite" 
 Base = declarative_base()
 
 engine = create_engine(DATABASE_URL)

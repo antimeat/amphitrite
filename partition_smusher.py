@@ -264,8 +264,8 @@ class PartitionSmusher(object):
         try: 
             # get the partitions from database
             df_table_seas, sea_partition = self.seas_partition_df(site_name)
+            df_table_seas = self.zero_pad_df(df_table_seas)            
             filtered_df = df_table_seas.loc[df_table_seas.index.intersection(self.df_index)]
-            
             return filtered_df
         
         except Exception as e:
@@ -321,6 +321,27 @@ class PartitionSmusher(object):
         except Exception as e:
             logging.info(f"Error getting sesa partition dataframe: {e}")
             raise
+        
+    def zero_pad_df(self,df):
+        """If first_time_step is before the first time step of the seas partition, prepend the seas with zeros
+        Parameters:
+            df (DataFrame): dataframe of the partitioned seas
+            first_time_step (datetime): the first time step
+        Returns:
+            df (DataFrame): dataframe of the partitioned seas with the first time step prepended
+        """
+        first_time_step = self.first_time_step
+        
+        if first_time_step < df.index[0]:
+            try:
+                time_index = pd.date_range(start=first_time_step, end=df.index[0], freq="1H")
+                df_new = pd.DataFrame(index=time_index, columns=df.columns)
+                df_new = df_new.fillna(0)
+                df = pd.concat([df_new, df])
+            except Exception as e:
+                return df
+        return df
+        
 def main():
     
     parser = argparse.ArgumentParser()

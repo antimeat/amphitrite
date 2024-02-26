@@ -497,11 +497,9 @@ def dirIndex(windDir):
     return int(round(windDir / 10.0)) % 36
 
 
-
-#
+#############################################################
 # Fetch and depth information
-#
-
+#############################################################
 def loadFetchAndDepthTables_old(siteName, maxFetch):
     """Load the fetch and depth tables from csv. Return None if no fetch information."""
 

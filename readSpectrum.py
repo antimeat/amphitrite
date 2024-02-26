@@ -14,8 +14,16 @@ import numpy as np
 import wavespectra
 
 import os
-os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
-os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
+# Set the Numba cache directory
+numba_cache_dir = '/tmp/numba_cache'
+os.environ['NUMBA_CACHE_DIR'] = numba_cache_dir
+
+# Create the directory if it doesn't exist
+if not os.path.exists(numba_cache_dir):
+    os.makedirs(numba_cache_dir)
+
+# Set directory permissions (read/write/execute for user, group, others)
+os.chmod(numba_cache_dir, 0o777)
 
 def clip(ds, boundary = {'min_lon':110.88, 'min_lat':-25.68, 'max_lon':121.47,'max_lat':-16.38}):
     # clip dataset my lats and lons
