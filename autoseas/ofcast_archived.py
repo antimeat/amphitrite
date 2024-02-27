@@ -34,12 +34,12 @@ import re
 DEBUG = False
 
 #setup for op/dev servers
-SERVER_OP = "http://wa-cws-op.bom.gov.au"
-SERVER_DEV = "http://cws-01.bom.gov.au"
-SERVER = SERVER_DEV
+SERVER_OP = "http://wa-cws-op.bom.gov.au/ofcast"
+SERVER_BACKUP = "http://cws-01.bom.gov.au/ofcast.wa"
+SERVER = SERVER_OP
 
 # Set URL for the table
-TABLE_URL = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=vtable&vc=2"
+TABLE_URL = SERVER + "/cgi-bin/pct_view.pl?s={}&v=vtable&vc=2"
 
 # Set time zones
 TIME_ZONES = {
@@ -178,11 +178,11 @@ def changeServer(server):
     global SERVER, TABLE_URL  
 
     if "dev" in server.lower():
-        SERVER = SERVER_DEV
+        SERVER = SERVER_BACKUP
     else:
         SERVER = SERVER_OP
             
-    TABLE_URL = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=vtable&vc=2"
+    TABLE_URL = SERVER + "/cgi-bin/pct_view.pl?s={}&v=vtable&vc=2"
     
     return SERVER, TABLE_URL
     
@@ -207,7 +207,7 @@ def getProductsPrevious(userID, label):
     #print(pid)
     
     # label is the forecast name in the OfCast product page.
-    url = SERVER + "/ofcast/cgi-bin/ctl_productdetail.pl?pid={}&l={}".format(pid,userID)		
+    url = SERVER + "/cgi-bin/ctl_productdetail.pl?pid={}&l={}".format(pid,userID)		
 
     #get the htmlpage
     html = requests.get(url, timeout=5).content.decode('utf-8')
@@ -248,7 +248,7 @@ def getProductFileAndTime(userID, label):
         tuple: A tuple containing the file name and the 'current' issue time.
     """
     # label is the forecast name in the OfCast product page.
-    url = SERVER + "/ofcast/cgi-bin/ctl_products.pl?l={}".format(userID)		
+    url = SERVER + "/cgi-bin/ctl_products.pl?l={}".format(userID)		
 
     page = requests.get(url, timeout=5).content.decode('utf-8')
         
@@ -332,7 +332,7 @@ def getProductSession(userID, label):
     if DEBUG:
         print(fileName, productTime)
 
-    url = SERVER + "/ofcast/cgi-bin/pct_open.pl?p={}/{}&l={}".format(fileName, productTime, userID)
+    url = SERVER + "/cgi-bin/pct_open.pl?p={}/{}&l={}".format(fileName, productTime, userID)
 
     if DEBUG:
         print('url', url)
@@ -376,7 +376,7 @@ def getArchiveProductSession(userID, label, archive):
     if DEBUG:
         print(fileName, productTime)
 
-    url = SERVER + "/ofcast/cgi-bin/pct_open.pl?p={}/{}&l={}".format(fileName, productTime, userID)
+    url = SERVER + "/cgi-bin/pct_open.pl?p={}/{}&l={}".format(fileName, productTime, userID)
 
     if DEBUG:
         print('url', url)
@@ -420,7 +420,7 @@ def getArchiveProductUrl(userID, label, archive):
     if DEBUG:
         print(fileName, productTime)
 
-    url = SERVER + "/ofcast/cgi-bin/pct_open.pl?p={}/{}&l={}".format(fileName, productTime, userID)
+    url = SERVER + "/cgi-bin/pct_open.pl?p={}/{}&l={}".format(fileName, productTime, userID)
 
     if DEBUG:
         print('url', url)
@@ -751,7 +751,7 @@ def load(userID, server, forecastName, archive, data_type='forecast', issue='raw
     sessionID,sessionString = getArchiveProductSession(userID, forecastName, archive)
 
     html = requests.get(TABLE_URL.format(sessionID), timeout=5).content.decode('utf-8')
-    view_url = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=vpdf"
+    view_url = SERVER + "/cgi-bin/pct_view.pl?s={}&v=vpdf"
     url = view_url.format(sessionID)
     
 
@@ -797,12 +797,13 @@ def load_archive(userID, server, forecastName, archive, data_type='forecast', is
     try:
         sessionID,sessionString = getArchiveProductSession(userID, forecastName, archive)
         html = requests.get(TABLE_URL.format(sessionID), timeout=5).content.decode('utf-8')
-        view_url = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=vpdf"
+        view_url = SERVER + "/cgi-bin/pct_view.pl?s={}&v=vpdf"
         url = view_url.format(sessionID)
     
     except:
-        print('Session ID timed out ?')
-        return {'wnd_spd':'no session id', 'total_ht': 'no session id'}
+        # print('Session ID timed out ?')
+        # return {'response': False, 'status': 'fail', 'message': 'no session id', 'wnd_spd':'no session id', 'total_ht': 'no session id'}
+        return None
     
     if "System Error" not in html:
         df = extractData(html,data_type)
@@ -836,7 +837,7 @@ def get_url_issueTime(sessionID, sessionString):
     str
         The issue time for the forecast
     """
-    view_url = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=vpdf"
+    view_url = SERVER + "/cgi-bin/pct_view.pl?s={}&v=vpdf"
     url = view_url.format(sessionID)
     issue = sessionString
     
@@ -866,7 +867,7 @@ def load_view(userID, server, forecastName, archive, view):
 
     view = view.lower()
     sessionID,sessionString = getArchiveProductSession(userID, forecastName, archive)
-    view_url = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=v{}"
+    view_url = SERVER + "/cgi-bin/pct_view.pl?s={}&v=v{}"
 
     #html = requests.get(view_url.format(sessionID), timeout=5).content.decode('utf-8')
     html = None
@@ -885,7 +886,7 @@ def get_title(userID, server, forecastName, archive):
     SERVER, TABLE_URL = changeServer(server)
 
     sessionID = getArchiveProductSession(userID, forecastName, archive)[0]
-    view_url = SERVER + "/ofcast/cgi-bin/pct_view.pl?s={}&v=vhtml&vc=2"
+    view_url = SERVER + "/cgi-bin/pct_view.pl?s={}&v=vhtml&vc=2"
 
     html = requests.get(view_url.format(sessionID), timeout=5).content.decode('utf-8')
 

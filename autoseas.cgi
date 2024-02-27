@@ -16,7 +16,7 @@ HT_DECIMAL_PLACES = {
 }
 DEFAULT_WINDS = "330/10/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3"
 DEFAULT_SITE = 'Woodside - Scarborough 10 Days'
-FETCH_DIR = "autoseas/fetchLimits/"
+FETCH_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite/autoseas/fetchLimits/"
 
 def transform_site_name(site_name):
     """Reformat the site name to api friendly"""
@@ -49,6 +49,7 @@ def get_request_parameters(required_params):
 
 def fetch_table_exists(site):
     fetch_file = f"{FETCH_DIR}{site}.csv"
+    fetch_file = transform_site_name(fetch_file)
     return os.path.exists(fetch_file)
 
 def parse_winds(wind_string):
@@ -101,7 +102,6 @@ def format_seas_data(seas, site_name, return_dir, return_pd_dir):
     return [round(s, ht_places) for s in seas]
 
 def main():
-    print_headers()
     
     # Define required parameters
     required_params = ['site', 'winds', 'src', 'first_time_step']
@@ -113,8 +113,8 @@ def main():
     except ValueError as e:
         # If a required parameter is missing, return an error response
         response = {"success": False, "message": str(e)}
-        print(json.dumps(response))
-        return
+        print_error(response)
+        exit(0)
     
     #process required params
     winds = parse_winds(kwargs.get('winds'))
@@ -131,8 +131,9 @@ def main():
     #work out what we want to do ["autoseas","smush","partition"]        
     #cant do much without a depth and fetch table however
     if not fetch_table_exists(site_name):
-        response = {'error': f"Fetch Limits for '{site_name}' doesn't exist. Create a new site with the following name."}
-    
+        print_error(site_name)
+        exit(0)
+        
     # lets go smushing
     if "smush" in source:
     
@@ -195,15 +196,25 @@ def main():
     if 'callback' in kwargs:
         response = f"{kwargs['callback']}({json.dumps(response)})"
         
+    print_headers()
     print(json.dumps(response))
 
+def print_error(response):
+    print("Status: 404 Not Found")  
+    print_headers()
+    
+    response = {
+        'error': f"Fetch Limits failed: '{response}'."
+    }
+
+    print(json.dumps(response))
+        
 def print_headers():
     print("Content-Type: application/json")
     print("Access-Control-Allow-Origin: *")
     print("Access-Control-Allow-Methods: POST, GET, OPTIONS")
     print("Access-Control-Allow-Headers: Content-Type\n")
-
-    # print("Access-Control-Allow-Origin: http://wa-vw-er\n")
+   
 
 if __name__ == "__main__":
     main()

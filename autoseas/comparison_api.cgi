@@ -9,6 +9,7 @@ import json
 import cgi
 import cgitb
 import requests
+import datetime
 
 cgitb.enable()
 
@@ -87,7 +88,7 @@ def generate_wind_sea_table(winds, seas, algorithm_name):
 
 def call_autoseas(params):
     # Path to the original CGI script
-    url = 'http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/autoseas.cgi'
+    url = 'http://wa-vw-er.bom.gov.au/webapps/er_ml_projects/davink/amphitrite/autoseas.cgi'
     
     # Convert params dictionary to URL-encoded string
     # Assuming params is a dictionary
@@ -99,7 +100,8 @@ def call_autoseas(params):
         if response.status_code == 200:
             return response.text
         else:
-            return json.dumps({'error': f'Failed to fetch data. Status code: {response.status_code}'})
+            print_error(params['site'])
+            exit()
     except json.JSONDecodeError:
         # Handle the case where response is not JSON
         return {'error': 'The response is not in JSON format'}
@@ -140,10 +142,12 @@ def get_ofcast_winds(params):
         else:
             return json.dumps({'error': f'Failed to fetch data. Status code: {response.status_code}'})
     except requests.exceptions.RequestException as e:
-        # Handle connection errors
         return json.dumps({'error': 'Failed to connect to the original CGI script.'})
 
 def get_cgi_params():
+    
+    #midnight for the first time step
+    midnight = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).strftime('%Y%m%d%H')
     
     form = cgi.FieldStorage()
     params = {}
@@ -153,6 +157,8 @@ def get_cgi_params():
     
     #default settings here
     params['site'] = form.getvalue('site',"Woodside - Mermaid Sound 7 days")
+    params['first_time_step'] = form.getvalue('first_time_step',midnight)
+    params['src'] = form.getvalue('src','partition')
     # params['sessionID'] = form.getvalue('sessionID',"_blah")
     # params['get'] = form.getvalue('get',"ofcast_archived")
     # params['data_type'] = form.getvalue('data_type',"forecast")
@@ -169,7 +175,6 @@ def fetch_algorithm_data(algo, params):
     return call_autoseas(params)
 
 def main():
-    print_headers()
     params = get_cgi_params()
     site_name = params['site']
     
@@ -189,20 +194,20 @@ def main():
     wind_sea_tables = []
     
     for algo in algorithms:
-        # Fetch algorithm data
         alg_data = fetch_algorithm_data(algo, params)
-        
-        # Calculate differences (implement this based on your data structure)
-        differences = calculate_differences(original_data, alg_data)
-        
-        # Generate comparison table
-        comparison_table = generate_comparison_table(differences, original_algo, algo)
-        comparison_tables.append(comparison_table)
-    
         wind_sea_table = generate_wind_sea_table(winds[1], alg_data, algo)
         wind_sea_tables.append(wind_sea_table)
     
+        if original_algo != algo:
+            # Calculate differences (implement this based on your data structure)
+            differences = calculate_differences(original_data, alg_data)
+            
+            # Generate comparison table
+            comparison_table = generate_comparison_table(differences, original_algo, algo)
+            comparison_tables.append(comparison_table)
+        
     # Output HTML with CSS for centered, side-by-side tables without gaps
+    print_headers()
     print("<html><head><style>")
     print(".body { display: flex; justify-content: center; flex-wrap: nowrap; }")  # Center flex items and ensure no wrapping
     print(".table-container { display: flex; justify-content: center; flex-wrap: nowrap; }")  # Center flex items and ensure no wrapping
@@ -229,10 +234,25 @@ def main():
     
     
     print("</body></html>")
-        
+
+def print_error(site_name):
+    print("Status: 404 Not Found")  
+    print("Content-Type: text/html")
+    print("Access-Control-Allow-Origin: *")
+    print("Access-Control-Allow-Methods: POST, GET, OPTIONS")
+    print("Access-Control-Allow-Headers: Content-Type\n")
+    
+    response = {
+        'error': f"Fetch Limits for '{site_name}' doesn't exist. Create new fetch - depth file for the site."
+    }
+
+    print(json.dumps(response))
+    
 def print_headers():
     print("Content-Type: text/html")
-    print("Access-Control-Allow-Origin: *\n")
-
+    print("Access-Control-Allow-Origin: *")
+    print("Access-Control-Allow-Methods: POST, GET, OPTIONS")
+    print("Access-Control-Allow-Headers: Content-Type\n")
+    
 if __name__ == "__main__":
     main()

@@ -13,7 +13,7 @@ import os
 import logging
 import sys
 
-ACTIVE_STIES_URL = "http://wa-cws-op.bom.gov.au/web/forecastChecker/activeSites.cgi?include_vw_name=1"
+ACTIVE_STIES_URL = "http://wa-vw-er.bom.gov.au/webapps/er_ml_projects/vulture/activeSites.cgi?include_vw_name=1&server=op"
 CONFIG_SITES_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_json"
 EXCLUSION_SITES_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=exclusion"
 BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
