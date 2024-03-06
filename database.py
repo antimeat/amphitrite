@@ -104,17 +104,24 @@ def get_all_wave_data():
         site_names = [site.site_name for site in sites]
         tables = [site.table for site in sites]
         partitions = [site.get_partitions() for site in sites]
-        run_times = [
-            session.query(models.WaveData.run_time)
-            .filter(models.WaveData.site_id == site.site_id)
-            .order_by(desc(models.WaveData.run_time))
-            .first()[0].strftime("%Y/%m/%d %H") if session.query(models.WaveData.run_time)
-            .filter(models.WaveData.site_id == site.site_id)
-            .order_by(desc(models.WaveData.run_time))
-            .first()[0] is not None else None for site in sites
-        ]
-        # run_times = [rt.strftime("%Y/%m/%d %H") if rt is not None else None for rt in run_times]        
+        run_times = []
+        for site in sites:
+            try:
+                query_result = session.query(models.WaveData.run_time) \
+                    .filter(models.WaveData.site_id == site.site_id) \
+                    .order_by(desc(models.WaveData.run_time)) \
+                    .first()
+                if query_result:
+                    run_times.append(query_result[0].strftime("%Y/%m/%d %H"))
+                else:
+                    run_times.append(None)
+            except Exception as e:
+                # Log the error along with the site that caused it
+                print(f"Error processing site {site.site_id}: {e}")
+                run_times.append(None)
+                
         return {"success": True, "message": "All wave data returned", "data":[site_names,tables,partitions,run_times]}
+
     except Exception as e:
         return {"success": False, "message": str(e)}
 

@@ -1,3 +1,8 @@
-2024022212
-Email sent successfully
-Deleted 0 old records.
+Traceback (most recent call last):
+  File "/cws/op/webapps/er_ml_projects/davink/amphitrite/partitionSplitter.py", line 18, in <module>
+    import partition
+  File "/cws/op/webapps/er_ml_projects/davink/amphitrite/partition.py", line 13, in <module>
+    import readSpectrum
+  File "/cws/op/webapps/er_ml_projects/davink/amphitrite/readSpectrum.py", line 26, in <module>
+    os.chmod(numba_cache_dir, 0o777)
+PermissionError: [Errno 1] Operation not permitted: '/tmp/numba_cache'
