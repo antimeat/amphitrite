@@ -17,25 +17,34 @@
 # Chevron Barrow Island AFS ML, WRB-B, 0.001-9, 9-40
 # Santos - Van Gogh 4 days, Van-Gogh, 0.001-9, 9-40
 
+Abbot Point, Abbot_Poin, 0.001-9, 9-40
 BHP - Pyrenees, Pyrenees, 0.001-9, 9-40
 Boskalis - Scarborough 7 Days, Scarb_new, 0.001-9, 9-40
 Boskalis - Dampier 7 Days, Dampier_Po, 0.001-9, 9-40
 Chevron - Gorgon, Gorgon, 0.001-10, 10-40
+Chevron - North Whites Beach, Whites_Bea, 0.001-10, 10-40
 Chevron - Jansz, Jansz_PTS, 0.001-10, 10-40
 Chevron - Wheatstone LNG Plant, Ashburton_, 0.001-10, 10-40
+Chevron - Wheatstone Platform, PLA, 0.001-10, 10-40
 Citic Pacific - Cape Preston Area, Cape_prest, 0.001-9, 9-40
 Dampier Salt - Cape Cuvier 7 days, Cuvier, 0.001-9, 9-40
 INPEX - Ichthys 7 days, Ichthys, 0.001-9, 9-40
 Jadestone Energy - Stag, Stag, 0.001-9, 9-40
 Jadestone Energy - Montara, Montara, 0.001-9, 9-40
+Nexans -Midroute 7 days, BUP_midway, 0.001-9, 9-40
+Nexans - HDD Exit Barrow Island 7 days, Whites_Bea, 0.001-9, 9-40
+Mineral Resources - Anchorage Point, Onslow_Anc, 0.001-9, 9-40
+Mineral Resources - Wharf Approach, Wheatstone, 0.001-9, 9-40
 Pilbara Ports Authority - Ashburton, Ashburton_, 0.001-9, 9-40
 Pilbara Ports Authority - Port Hedland, PH_Beacon1, 0.001-9, 9-40
 Pilbara Ports Authority - Dampier, Dampier_Po, 0.001-9, 9-40
 Petrofac - Northern Endeavour 7 days, Bayu_Undan, 0.001-9, 9-40
 Santos - Barossa, Barossa, 0.001-9, 9-40
 Santos - Barossa KP40, Barossa, 0.001-9, 9-40
+Santos - Barossa KP200, West_Darwi, 0.001-9, 9-40
 Santos ABUW - Bayu-Undan, Bayu_Undan, 0.001-9, 9-40
 Santos - John Brookes 4 days, John_Brook, 0.001-9, 9-40
+Santos - MEFF 7 days, MEFF, 0.001-9, 9-40
 Santos - Reindeer 4 days, Reindeer, 0.001-9, 9-40
 Santos - Varanus 4 days, Varanus, 0.001-9, 9-40
 Santos - Spartan-2 4 days, Spartan-2, 0.001-9, 9-40

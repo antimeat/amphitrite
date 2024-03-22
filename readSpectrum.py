@@ -12,18 +12,18 @@
 import xarray as xr
 import numpy as np
 import wavespectra
-
 import os
+import pandas as pd
+
 # Set the Numba cache directory
 numba_cache_dir = '/tmp/numba_cache'
 os.environ['NUMBA_CACHE_DIR'] = numba_cache_dir
+os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
 
 # Create the directory if it doesn't exist
 if not os.path.exists(numba_cache_dir):
     os.makedirs(numba_cache_dir)
-
-# Set directory permissions (read/write/execute for user, group, others)
-os.chmod(numba_cache_dir, 0o777)
+    os.chmod(numba_cache_dir, 0o777)
 
 def clip(ds, boundary = {'min_lon':110.88, 'min_lat':-25.68, 'max_lon':121.47,'max_lat':-16.38}):
     # clip dataset my lats and lons
@@ -125,8 +125,10 @@ def onePartition(filename, period = 9):
     #get sea and swell split
     sea = ws.spec.split(fmin=1/period).chunk({"freq": -1})
     sea_stats = sea.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
+    # sea_stats["tp"].values = get_tp(sea.spec.oned().to_dataframe('efth').reset_index()).values        
     swell = ws.spec.split(fmax=1/period).chunk({"freq": -1})
     swell_stats = swell.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
+    # swell_stats["tp"].values = get_tp(swell.spec.oned().to_dataframe('efth').reset_index()).values        
     
     ws['hs'] = ws_total.hs
     ws['hmax'] = ws_total.hmax
@@ -144,7 +146,10 @@ def onePartition(filename, period = 9):
     ws.hs_sea.attrs['standard_name'] = ws.hs_sea.attrs['standard_name']+'_sea_partition'
     ws['hmax_sea'] = sea_stats.hmax
     ws.hmax_sea.attrs['standard_name'] = ws.hmax_sea.attrs['standard_name']+'_sea_partition'
+    
+    # ws['tp_sea'] = sea_stats.tp
     ws['tp_sea'] = sea.spec.tp(smooth=False).fillna(1 / sea.freq.min())
+
     ws.tp_sea.attrs['standard_name'] = ws.tp_sea.attrs['standard_name']+'_sea_partition'
     ws['tm01_sea'] = sea_stats.tm01
     ws.tm01.attrs['standard_name'] = ws.tm01.attrs['standard_name']+'_sea_partition'
@@ -163,7 +168,10 @@ def onePartition(filename, period = 9):
     ws.hs_sw.attrs['standard_name'] = ws.hs_sw.attrs['standard_name']+'_swell_partition'
     ws['hmax_sw'] = swell_stats.hmax
     ws.hmax_sw.attrs['standard_name'] = ws.hmax_sw.attrs['standard_name']+'_swell_partition'
+    
+    # ws['tp_sw'] = swell_stats.tp
     ws['tp_sw'] = swell.spec.tp(smooth=False).fillna(1 / swell.freq.max())
+
     ws.tp_sw.attrs['standard_name'] = ws.tp_sw.attrs['standard_name']+'_swell_partition'
     ws['tm01_sw'] = swell_stats.tm01
     ws.tm01_sw.attrs['standard_name'] = ws.tm01_sw.attrs['standard_name']+'_swell_partition'
@@ -180,7 +188,7 @@ def onePartition(filename, period = 9):
     
     # print(f"ws_sea: {ws['hs_sea']}, ws_sw: {ws['hs_sw']}")
     return ws
-    
+
 def rangePartition(filename, start, end):
     """
     Customer single partition split function
@@ -208,7 +216,7 @@ def rangePartition(filename, start, end):
     """
     # a fudge factor that was discovered through trial and error to match hs from def onePartition()
     if start > 5:
-        start += 0.59
+        start += 0.1
         
     #read in file
     ws = amendVariablesNames(filename)
@@ -228,6 +236,87 @@ def rangePartition(filename, start, end):
     params['station_name'] = ws.station_name
     
     return params
+    
+def rangePartition_new(filename, start, end):
+    """
+    Customer single partition split function
+    
+    Parameters
+    ----------
+    filename : str
+        A string for the netCDF spectral file.
+    start : int
+        start of the range partition period (min)
+    end : int
+        end of the range partition period (max)
+        
+    Returns
+    -------
+    xarray
+        An xarray object with the partitioned and total wave paramters, and spectrum
+        
+        
+    Example
+    -------
+    
+    rangePartition(filename, 8, 16)
+    
+    """
+    # a fudge factor that was discovered through trial and error to match hs from def onePartition()
+    if start > 5:
+        start += 0.1
+        
+    try: 
+        #read in file
+        ws = amendVariablesNames(filename)
+            
+        #get sea and swell split
+        part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
+        params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dpm", "dp", "dm", "dspr","tp"])
+        params["tp"].values = get_tp(part.spec.oned().to_dataframe('efth').reset_index()).values
+        
+        #if its a swell partition push low energy tp to the start
+        tp = 0
+        if start > 5:
+            tp = part.spec.tp(smooth=False).fillna(1 / part.freq.max())
+        else:
+            #we do a fudge with tp depending on which end of the partition to push low energy
+            tp = part.spec.tp(smooth=False).fillna(1 / part.freq.min())
+        
+        params['station_name'] = ws.station_name
+        
+    except Exception as e:
+        print(f"Error in rangePartition: {e}")
+        return None
+    
+    return params
+
+def get_tp(df, group_col='time', x_col='efth', y_col='freq'):
+    """
+    Get the energy with the highest value for each timestep
+    and extract the corresponding frequency, then invert to seconds and create dataframe.
+
+    Args:
+        df (pd.DataFrame): Dataframe of 1D spectrum for a single site.
+        group_col (str): Name of the column to group by (default: 'group').
+        x_col (str): Name of the column with values to compare (default: 'x').
+        y_col (str): Name of the column to extract values from (default: 'y').
+
+    Returns:
+        pd.DataFrame: Dataframe containing Tp
+    """
+    try: 
+        max_x_rows = df.loc[df.groupby(group_col)[x_col].idxmax()]
+        result = max_x_rows[y_col]
+        tp = pd.DataFrame(np.round(1/result, 2))
+        tp.index = df[group_col].unique()
+        tp.columns = ['tp']
+        
+    except Exception as e:
+        print(f"Error in get_tp: {e}")
+        return None
+    
+    return tp
 
 def singlePartition(filename, period):
     """Placeholder"""

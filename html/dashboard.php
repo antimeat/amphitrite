@@ -93,7 +93,10 @@
 				    fileName = 'edit-exclusion.php';
 					$("#imageContainer").load(fileName);
 				}
-				
+				else if (input == 'readme') {
+				    fileName = 'readme.php';
+					$("#imageContainer").load(fileName);
+				}
 			}
 
 		</script>

@@ -14,16 +14,16 @@ import readSpectrum
 import xarray as xr
 import pandas as pd
 import numpy as np
-import glob, os
+import glob
+import os
 import time
 import warnings
 import datetime
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-import os
-os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
-os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
+# os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
+# os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
 
 class Partitions(object):   
     """Class of methods for bespoke swell partitions and transformations"""

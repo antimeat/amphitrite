@@ -9,12 +9,6 @@ Classes:
 Functions:    
 """
 import os
-os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
-os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
-
-# os.environ[ 'CONDA_DEFAULT_ENV' ] = 'mlenv'
-
-# import swellSmusher
 import partition
 import pandas as pd
 from tabulate import tabulate
@@ -26,6 +20,9 @@ from datetime import datetime, timedelta
 import database as db
 import models
 import emails
+
+# os.environ[ 'NUMBA_CACHE_DIR' ] = '/tmp/numba_cache'
+# os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
 
 BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
 
