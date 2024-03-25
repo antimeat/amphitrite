@@ -50,7 +50,9 @@ class Partitions(object):
         with open(output_file, "w") as file:
             for table in table_names:
                 file.write(table + "\n")
-            
+        
+        return table_names
+        
     def table_names_from_netcdf(self,file_name):
         """Return all the table names from the netcdf file"""
         ds = xr.open_dataset(file_name)
@@ -169,7 +171,7 @@ class Partitions(object):
         except Exception as e:
             print(f"Problem combining model runs from files: {latest_file_string} and {previous_file_string}: {str(e)}")
         
-    def single_part(self,*parts):
+    def single_part(self, site, *parts):
         """Split the spectrum across a single partion
         
         Paramaters:
@@ -181,12 +183,12 @@ class Partitions(object):
         filename = self.filename
         
         #get the full spectrum data
-        ws = readSpectrum.noPartition(filename)
+        ws = readSpectrum.noPartition(filename,site)
 
         #append data variables back in
         #loop through intermediate swell partitions        
         i = 1
-        part = readSpectrum.rangePartition(filename, parts[i-1][0], parts[i-1][1])
+        part = readSpectrum.rangePartition(filename, parts[i-1][0], site, parts[i-1][1])
 
         ws['swell_{}_hs'.format(i)] = part.hs
         ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -209,7 +211,7 @@ class Partitions(object):
         
         return ws
 
-    def multi_parts(self,*parts):
+    def multi_parts(self, site, *parts):
         """Split the spectrum across multiple partions
         
         Paramaters:
@@ -221,12 +223,12 @@ class Partitions(object):
         filename = self.filename
         
         #get the full spectrum data
-        ws = readSpectrum.noPartition(filename)
+        ws = readSpectrum.noPartition(filename,site)
         
         #append data variables back in
         #loop through intermediate swell partitions        
         for i in range(1,len(parts)+1):
-            part = readSpectrum.rangePartition(filename, parts[i-1][0], parts[i-1][1])
+            part = readSpectrum.rangePartition(filename, site, parts[i-1][0], parts[i-1][1])
         
             ws['swell_{}_hs'.format(i)] = part.hs
             ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -249,7 +251,7 @@ class Partitions(object):
         
         return ws
     
-    def multi_parts_sw(self,*parts):
+    def multi_parts_sw(self, site, *parts):
         """Split the spectrum across multiple partions
         
         Paramaters:
@@ -261,11 +263,11 @@ class Partitions(object):
         filename = self.filename
         
         #get the full spectrum data
-        ws = readSpectrum.noPartition(filename)
+        ws = readSpectrum.noPartition(filename,site)
 
         #append data variables back in
         #go through and first partition (seas)
-        part = readSpectrum.onePartition(filename, parts[0][1])
+        part = readSpectrum.onePartition(filename, site, parts[0][1])
         i = 0
         ws['swell_{}_hs'.format(i)] = part.hs_sea
         ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -288,7 +290,7 @@ class Partitions(object):
         
         #loop through intermediate swell partitions        
         for i in range(1,len(parts)-1):
-            part = readSpectrum.rangePartition(filename, parts[i][0], parts[i][1])
+            part = readSpectrum.rangePartition(filename, site, parts[i][0], parts[i][1])
             ws['swell_{}_hs'.format(i)] = part.hs
             ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
             ws['swell_{}_hmax'.format(i)] = part.hmax
@@ -309,7 +311,7 @@ class Partitions(object):
             ws['swell_{}_dspr'.format(i)].attrs['standard_name'] = ws['swell_{}_dspr'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         
         #go through the last swell partition
-        part = readSpectrum.onePartition(filename, parts[-1][0])
+        part = readSpectrum.onePartition(filename, site, parts[-1][0])
         i = len(parts) - 1
         ws['swell_{}_hs'.format(i)] = part.hs_sw
         ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -332,14 +334,14 @@ class Partitions(object):
         
         return ws
     
-    def mermaidSound(self):
+    def mermaidSound(self,site="Woodside - Mermaid Sound 7 days"):
         """Mermaid sound specific partitions"""
         
         #pass an list of tuples for each period range in the required splits
         #avoid divide by zero on the first
         parts = [(0.1,7),(7,13),(13,18),(16.5,40)]
         
-        ws = self.multi_parts_test(*parts)
+        ws = self.multi_parts_test(site,*parts)
         return ws   
     
 if __name__ == "__main__":

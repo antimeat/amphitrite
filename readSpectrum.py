@@ -36,12 +36,12 @@ def clip(ds, boundary = {'min_lon':110.88, 'min_lat':-25.68, 'max_lon':121.47,'m
     
     return cropped_ds
 
-def amendVariablesNames_old(filename):
+def amendVariablesNames_old(filename,site):
     """changes the 'dir' variable name as it clashes with model internal names
     """
     #print(filename)
     try:
-        ds = xr.open_dataset(filename)
+        ds = xr.open_dataset(filename,site)
         #ds = clip(ds)
     except:
         ds = filename
@@ -57,11 +57,14 @@ def amendVariablesNames_old(filename):
     ds['station_name'] = me
     ws = wavespectra.read_dataset(ds)
     ws['station_name'] = ds.rename({'station':'site'}).station_name
+    ws = ws.where(ws.station_name == site, drop=True)
+
     return ws
 
-def amendVariablesNames(filename):
+def amendVariablesNames(filename,site):
     """changes the 'dir' variable name as it clashes with model internal names
     """
+    
     try:
         ds = xr.open_dataset(filename)
     except:
@@ -76,14 +79,16 @@ def amendVariablesNames(filename):
     ds['station_name'] = me
     ws = wavespectra.read_dataset(ds)
     ws['station_name'] = ds.rename({'station':'site'}).station_name
+    ws = ws.where(ws.station_name == site, drop=True)
+    
     return ws
 
-def noPartition(filename):
+def noPartition(filename,site):
     """no partition wave statistics
     """
     
     #read in file
-    ws = amendVariablesNames(filename)
+    ws = amendVariablesNames(filename,site)
     ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     
     ws['hs'] = ws_total.hs
@@ -100,7 +105,7 @@ def noPartition(filename):
     return ws
     
 
-def onePartition(filename, period = 9):
+def onePartition(filename, site, period):
     """
     Customer single partition split function
     
@@ -119,7 +124,7 @@ def onePartition(filename, period = 9):
     # print(f"one_partition period: {period}")
     
     #read in file
-    ws = amendVariablesNames(filename)
+    ws = amendVariablesNames(filename,site)
     ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     
     #get sea and swell split
@@ -189,7 +194,7 @@ def onePartition(filename, period = 9):
     # print(f"ws_sea: {ws['hs_sea']}, ws_sw: {ws['hs_sw']}")
     return ws
 
-def rangePartition(filename, start, end):
+def rangePartition_old(filename, site, start, end):
     """
     Customer single partition split function
     
@@ -219,7 +224,7 @@ def rangePartition(filename, start, end):
         start += 0.1
         
     #read in file
-    ws = amendVariablesNames(filename)
+    ws = amendVariablesNames(filename, site)
         
     #get sea and swell split
     part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
@@ -236,8 +241,8 @@ def rangePartition(filename, start, end):
     params['station_name'] = ws.station_name
     
     return params
-    
-def rangePartition_new(filename, start, end):
+
+def rangePartition(filename, site, start, end):
     """
     Customer single partition split function
     
@@ -268,12 +273,13 @@ def rangePartition_new(filename, start, end):
         
     try: 
         #read in file
-        ws = amendVariablesNames(filename)
+        ws = amendVariablesNames(filename, site)
             
         #get sea and swell split
         part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
         params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dpm", "dp", "dm", "dspr","tp"])
         params["tp"].values = get_tp(part.spec.oned().to_dataframe('efth').reset_index()).values
+        params["dp"].values = get_dp(part.to_dataframe('efth').reset_index()).values
         
         #if its a swell partition push low energy tp to the start
         tp = 0
@@ -318,7 +324,34 @@ def get_tp(df, group_col='time', x_col='efth', y_col='freq'):
     
     return tp
 
-def singlePartition(filename, period):
+def get_dp(df, group_col='time', x_col='efth', y_col='dir'):
+    """
+    Get the energy with the highest value for each timestep
+    and extract the corresponding frequency, then invert to seconds and create dataframe.
+
+    Args:
+        df (pd.DataFrame): Dataframe of 1D spectrum for a single site.
+        group_col (str): Name of the column to group by (default: 'group').
+        x_col (str): Name of the column with values to compare (default: 'x').
+        y_col (str): Name of the column to extract values from (default: 'y').
+
+    Returns:
+        pd.DataFrame: Dataframe containing Tp
+    """
+    try:
+        max_x_rows = df.loc[df.groupby(group_col)[x_col].idxmax()]
+        result = max_x_rows[y_col]
+        dp = pd.DataFrame(np.round(result, 2))
+        dp.index = df[group_col].unique()
+        dp.columns = ['Dp']
+
+    except Exception as e:
+        print(f"Error in get_dp: {e}")
+        return None
+   
+    return dp
+
+def singlePartition(filename, site, period):
     """Placeholder"""
     return
     

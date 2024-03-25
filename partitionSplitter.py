@@ -274,7 +274,7 @@ class PartitionSplitter(object):
         
         return df
     
-    def get_api_site(self,ws,site_name):
+    def get_api_site(self, ws, site_name):
         """Return unique site names from the spectra
         Parameters:
             ws (xarray): wave spectra file
@@ -288,7 +288,7 @@ class PartitionSplitter(object):
         
         return df_site
     
-    def get_site_partitions_df(self,site,*parts):
+    def get_site_partitions_df(self, site, *parts):
         """Return the wave spectra partions from site
         Paramaters:
             site (str): Ofcast site name
@@ -296,12 +296,12 @@ class PartitionSplitter(object):
         Returns:
             df (DataFrame): dataframe ready to merge with an Ofcast forecast
          """
-        ws = self.partition.multi_parts(*parts)
+        ws = self.partition.multi_parts(site, *parts)
         df = self.get_api_site(ws,site)
         
         return df
     
-    def format_df(self,df, location, *parts):
+    def format_df(self, df, location, *parts):
         """
         Formats a DataFrame into a custom table format for forecast data.
 
