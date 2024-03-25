@@ -11,7 +11,7 @@
 	<body>
 
 		<?php
-			$dir = "/cws/op/webapps/er_ml_projects/davink/amphitrite/";
+			$dir = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/";
 			$outputFile = $dir . "test_output.txt";  // Concatenating the directory with the filename
 			putenv("NUMBA_CACHE_DIR=/tmp/numba_cache");
 			

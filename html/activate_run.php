@@ -42,7 +42,7 @@
                     <form action='run_script.php' method="POST" onsubmit="showLoader()">
                         <div id = "loading" style = "display: none;">
                             <div>
-                                <img src = "http://wa-vw-er.bom.gov.au/webapps/er_ml_projects/davink/amphitrite/html/img/loading_icon.gif" width = 150 height = 100 />
+                                <img src = "http://wa-vw-er.bom.gov.au/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/html/img/loading_icon.gif" width = 150 height = 100 />
                             </div>
                         </div>
                         <fieldset  class="fieldset" id="table" >    

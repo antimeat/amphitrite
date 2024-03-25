@@ -13,7 +13,7 @@
                     <h1 style="text-align: left;"><i>Site summary:</i></h1>
                     <hr><br><br>
                     <div class="embed-responsive embed-responsive-1by1">
-                        <iframe class="embed-responsive-item" style="max-height:900px;" src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_html"></iframe>
+                        <iframe class="embed-responsive-item" style="max-height:900px;" src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/api.cgi?get=list_html"></iframe>
                     </div>
                 </div>
             </div>

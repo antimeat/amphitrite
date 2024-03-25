@@ -14,7 +14,7 @@
                     <hr>
                     
                     <div class="embed-responsive embed-responsive-1by1">
-		                <iframe class="embed-responsive-item" src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=html_sites"></iframe>
+		                <iframe class="embed-responsive-item" src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/sites_api.cgi?get=html_sites"></iframe>
                     </div>
                                                               
                     

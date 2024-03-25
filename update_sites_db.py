@@ -3,7 +3,7 @@ import models
 import os
 import argparse
 
-DIR_PATH = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
+DIR_PATH = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite"
 CONFIG_FILE = os.path.join(DIR_PATH,'site_config.txt')
         
 def initialise_sites_from_config():

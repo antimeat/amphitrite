@@ -28,7 +28,7 @@ import gfe
 import database as db
 import models
 
-BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite"
+BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite"
 
 # Configure logging
 LOG_FILENAME = os.path.join(BASE_DIR,"autoseas_logfile.log")

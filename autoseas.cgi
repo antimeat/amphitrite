@@ -16,7 +16,7 @@ HT_DECIMAL_PLACES = {
 }
 DEFAULT_WINDS = "330/10/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3"
 DEFAULT_SITE = 'Woodside - Scarborough 10 Days'
-FETCH_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite/autoseas/fetchLimits/"
+FETCH_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/autoseas/fetchLimits/"
 
 def transform_site_name(site_name):
     """Reformat the site name to api friendly"""
