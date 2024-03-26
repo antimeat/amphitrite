@@ -12,11 +12,12 @@ from io import StringIO
 import os
 import logging
 import sys
+import amphitrite_configs as configs
 
 ACTIVE_STIES_URL = "http://wa-vw-er.bom.gov.au/webapps/er_ml_projects/vulture/activeSites.cgi?include_vw_name=1&server=op"
-CONFIG_SITES_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_json"
-EXCLUSION_SITES_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=exclusion"
-BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite"
+CONFIG_SITES_URL = os.path.join(configs.BASE_HTML_URL,"api.cgi?get=list_json")
+EXCLUSION_SITES_URL = os.path.join(configs.BASE_HTML_URL,"api.cgi?get=exclusion")
+BASE_DIR = configs.BASE_DIR
 LOG_FILE = os.path.join(BASE_DIR,'sites_api.log')
 
 try:

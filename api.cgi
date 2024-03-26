@@ -12,9 +12,10 @@ import pandas as pd
 import json
 import sys
 import logging
+import amphitrite_configs as configs
 
-BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite"
-BASE_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite"
+BASE_DIR = configs.BASE_DIR
+BASE_URL = configs.BASE_HTML_URL
 LOG_FILE = os.path.join(BASE_DIR,'api.log')
 
 try:

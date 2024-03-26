@@ -8,6 +8,7 @@ import os
 import urllib.parse
 import cgi
 import cgitb
+import amphitrite_configs as configs
 cgitb.enable()
 
 # Constants
@@ -16,7 +17,8 @@ HT_DECIMAL_PLACES = {
 }
 DEFAULT_WINDS = "330/10/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3"
 DEFAULT_SITE = 'Woodside - Scarborough 10 Days'
-FETCH_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/autoseas/fetchLimits/"
+BASE_DIR = configs.BASE_DIR
+FETCH_DIR = os.path.join(BASE_DIR,"autoseas/fetchLimits/")
 
 def transform_site_name(site_name):
     """Reformat the site name to api friendly"""

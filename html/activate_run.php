@@ -73,7 +73,7 @@
             }
 
             $(document).ready(function() {
-                $.getJSON("http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=active_sites", function(data) {
+                $.getJSON("http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/sites_api.cgi?get=active_sites", function(data) {
                     var sitesDropdown = $("#sites");
                     $.each(data, function(index, siteName) {
                         console.log(siteName);

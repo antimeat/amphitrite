@@ -2,8 +2,9 @@ import database as db
 import models
 import os
 import argparse
+import amphitrite_configs as configs
 
-DIR_PATH = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite"
+DIR_PATH = configs.BASE_DIR
 CONFIG_FILE = os.path.join(DIR_PATH,'site_config.txt')
         
 def initialise_sites_from_config():
