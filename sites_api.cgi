@@ -95,7 +95,7 @@ def get_html_sites():
     """Return site titles with lat lon"""
     try:
         df = load()
-        df = df[["shift","name","days","lat","lon"]]
+        df = df[["name","days","lat","lon"]]
         df = df.sort_values(by='name')
             
         # Convert DataFrame to HTML table with centered headings and applying siteTable style

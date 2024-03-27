@@ -442,7 +442,7 @@ def main():
     try: 
         if args.site_name.strip().lower() == 'all':
             toolbox.generate_all_sites_to_db()
-            message = f"<b>run-time:</b> {toolbox.latest_run_time} <br><b>for:</b> all sites. <br> <a href={os.path.join(configs.BASE_HTML_URL,"/html/dashboard.php")} target=amphitrite>Amphitrite (dev)</a>"
+            message = f"<b>run-time:</b> {toolbox.latest_run_time} <br><b>for:</b> all sites. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite (dev)</a>"
             emails.send_email(message=message)
         else:
             wave_table = toolbox.generate_site_to_db(site_name=args.site_name)
@@ -451,7 +451,7 @@ def main():
             if wave_table is not None and "data" in wave_table:
                 table = wave_table["data"]
                 print(table)
-                message = f"<b>run-time:</b> {toolbox.latest_run_time} <br> <b>for:</b> {args.site_name}. <br> <a href={os.path.join(configs.BASE_HTML_URL,"/html/dashboard.php")} target=amphitrite>Amphitrite (dev)</a>"
+                message = f"<b>run-time:</b> {toolbox.latest_run_time} <br> <b>for:</b> {args.site_name}. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite</a>"
                 emails.send_email(message=message)
             else:
                 print(f"No data available for site '{args.site_name}'.")     

@@ -10,7 +10,8 @@ import cgi
 import cgitb
 import requests
 import datetime
-
+import os
+import autoseas_configs as configs
 cgitb.enable()
 
 # Function to calculate directional difference
@@ -88,7 +89,7 @@ def generate_wind_sea_table(winds, seas, algorithm_name):
 
 def call_autoseas(params):
     # Path to the original CGI script
-    url = 'http://wa-vw-er.bom.gov.au/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/autoseas.cgi'
+    url = os.path.join(configs.BASE_URL,"autoseas.cgi")
     
     # Convert params dictionary to URL-encoded string
     # Assuming params is a dictionary
@@ -119,7 +120,7 @@ def get_ofcast_winds(params):
         _str_: list to string
     """
     # Path to CGI script
-    url = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/autoseas/get_winds.cgi"
+    url = os.path.join(configs.BASE_URL,"autoseas/get_winds.cgi")
     
     params["get"] = "ofcast_archived"
     params["data_type"] = "forecast"
