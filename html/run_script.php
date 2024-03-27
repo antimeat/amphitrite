@@ -1,5 +1,7 @@
 <html lang="en">
 	<head>
+		<?php include('configs.php');?>
+
 		<!-- Required meta tags -->
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -11,7 +13,7 @@
 	<body>
 
 		<?php
-			$dir = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/";
+			$dir = $BASE_DIR;
 			$outputFile = $dir . "test_output.txt";  // Concatenating the directory with the filename
 			putenv("NUMBA_CACHE_DIR=/tmp/numba_cache");
 			
@@ -19,7 +21,7 @@
 			
 			chdir($dir);
 
-			$pythonPath = "/cws/anaconda/envs/mlenv/bin/python";
+			$pythonPath = $PYTHON_PATH;
 			$scriptPath = $dir . "partitionSplitter.py";
 			// $escapedSite = escapeshellarg("");
 

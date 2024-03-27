@@ -3,7 +3,7 @@
     <?php include('configs.php');?>
 
     <head>
-        <title><?php echo $title; ?></title>
+        <title><?php echo $TITLE; ?></title>
         
         <style type="text/css">
             fieldset {
@@ -42,7 +42,7 @@
                     <form action='run_script.php' method="POST" onsubmit="showLoader()">
                         <div id = "loading" style = "display: none;">
                             <div>
-                                <img src = "http://wa-vw-er.bom.gov.au/webapps/er_ml_projects/davink/amphitrite/html/img/loading_icon.gif" width = 150 height = 100 />
+                                <img src = <?php echo($BASE_URL . "autoseas/html/img/loading_icon.gif"); ?> width = 150 height = 100 />
                             </div>
                         </div>
                         <fieldset  class="fieldset" id="table" >    
@@ -73,7 +73,7 @@
             }
 
             $(document).ready(function() {
-                $.getJSON("http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=active_sites", function(data) {
+                $.getJSON(<?php echo($BASE_URL + "sites_api.cgi?get=active_sites");?>, function(data) {
                     var sitesDropdown = $("#sites");
                     $.each(data, function(index, siteName) {
                         console.log(siteName);

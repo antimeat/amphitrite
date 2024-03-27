@@ -3,7 +3,7 @@
     <?php include('configs.php');?>
 
 	<head>
-	    <title><?php echo $title; ?></title>
+	    <title><?php echo $TITLE; ?></title>
 	   
         <style>
             
@@ -38,7 +38,7 @@
                 
                     <h1 style="text-align: left;"><i><p style="text-align: right;"></font></p>Welcome</i></h1>
                     <hr><br>
-                        <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/autoseas/html/img/ocean_robot.jpg" class="mslp" style="border-radius: 30px; display: block; margin-right: auto;  margin-right: auto;  width: 20%;"></img>
+                        <img src=<?php echo($BASE_URL . "autoseas/html/img/ocean_robot.jpg");?> class="mslp" style="border-radius: 30px; display: block; margin-right: auto;  margin-right: auto;  width: 20%;"></img>
                         <!-- <img src="http://www.bom.gov.au/iwk/images/small-artwork.png" class="indigenous"  style="display: block; margin-right: auto;  margin-right: auto;  width: 55%;"/img> -->
                     <h2> 
                     <div class="welcome">

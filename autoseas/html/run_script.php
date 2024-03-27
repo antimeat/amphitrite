@@ -17,7 +17,7 @@
 	if(isset($_REQUEST["sites"])) {
 	 	$site = $_REQUEST["sites"];
 		$encodedSite = urlencode($site);
-	 	$url = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/autoseas/comparison_api.cgi?site=" . $encodedSite;
+	 	$url = $BASE_URL . "autoseas/comparison_api.cgi?site=" . $encodedSite;
 
 	 	// Use file_get_contents to make the GET request
 	 	$options = array(

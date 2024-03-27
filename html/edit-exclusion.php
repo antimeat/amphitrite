@@ -2,7 +2,7 @@
     <?php include('configs.php');?>
 
     <head>
-        <title><?php echo $title; ?></title>
+        <title><?php echo $TITLE; ?></title>
     </head>
     
     <script type="text/javascript">

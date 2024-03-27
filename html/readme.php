@@ -2,7 +2,7 @@
     <?php include('configs.php');?>
 
     <head>
-	    <title><?php echo $title; ?></title>
+	    <title><?php echo $TITLE; ?></title>
 	</head>
 	
     <body>
@@ -13,7 +13,7 @@
                     <h1 style="text-align: left;"><i>README for Autoaseas API:</i></h1>
                     <hr><br><br>
                     <div class="embed-responsive embed-responsive-1by1">
-                        <iframe class="embed-responsive-item" style="max-height:900px;" src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/docs/README.html"></iframe>
+                        <iframe class="embed-responsive-item" style="max-height:900px;" src=<?php echo($BASE_URL . "docs/README.html");?>></iframe>
                     </div>
                 </div>
             </div>
