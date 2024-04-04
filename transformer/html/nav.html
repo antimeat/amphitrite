@@ -1,0 +1,42 @@
+<style>
+	.sidebar {
+		position: fixed;
+		top: 40px;
+		bottom: 0;
+		left: 0;
+		z-index: 1000;
+		display: block;
+		padding: 20px;
+		overflow-x: hidden;
+		overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+		background-color: #f5f5f5;
+		border-right: 1px solid #eee;
+    	max-width: 280px;
+	}
+</style>
+	
+
+<nav class="sidebar sticky-left col-lg-2 bg-dark">
+	<div class="sidebar-sticky p-0">	
+		
+		<a href="http://www.bom.gov.au" target="bom"><img class="img-responsive" src="img/bom_black.png"></img></a>									
+		
+		<ul class="nav sidebar-nav flex-column">
+			
+			<li><a class="nav-link text-secondary h7 font-italic" href="#" onclick="changeLink('welcome')">Welcome</a></li>
+			<li><a class="nav-link text-secondary h7 font-italic" href="#" onclick="changeLink('transformer')">Transformer</a></li>
+			<li><a class="nav-link text-secondary h7 font-italic" href="#" onclick="changeLink('readme')">Docs</a></li>
+            <!-- <li><a class="nav-link text-secondary h6" id="clients" data-toggle="collapse" aria-expanded="true" aria-controls="collapseClients" href="#collapseClients">Clients</a></li>
+	        <div id="collapseClients" class="collapse multi-collapse">
+                <ul>
+                    <li><a class="nav-link text-secondary h6 font-italic" href='http://ssuweb.bom.gov.au/ssu_internal/ssuindex.pl?p=0&login=cws&pwd=cws' target='repository'>Customer/forecast repository</a></li>
+				    <li><a class="nav-link text-secondary h6 font-italic" href='https://bom365.sharepoint.com/:x:/s/ERG/EZBgZtypvkNDstFKulr3mZcBYkZMGmyQTfgPEdVE8WghkA?e=1WaTeV' target='client_contacts'>Client contacts</a></li>
+                    <li><a class="nav-link text-secondary h6 font-italic" href="http://aifs-wa.bom.gov.au/comms/cgi/index.search2.wa.html" target="kr">Product archive</a></li>
+			    </ul>
+            </div>			 -->
+
+		</ul>
+		
+	</div>
+	
+</nav>

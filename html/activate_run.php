@@ -73,7 +73,7 @@
             }
 
             $(document).ready(function() {
-                $.getJSON(<?php echo($BASE_URL . "sites_api.cgi?get=active_sites"); ?>, function(data) {
+                $.getJSON("<?php echo($BASE_URL . "sites_api.cgi?get=active_sites"); ?>", function(data) {
                     var sitesDropdown = $("#sites");
                     $.each(data, function(index, siteName) {
                         console.log(siteName);

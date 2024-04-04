@@ -18,9 +18,10 @@ import datetime
 
 # Local imports
 import models
+import amphitrite_configs as configs
 
 # Database setup
-DATABASE_URL = "sqlite:///wave_data_dev.sqlite" 
+DATABASE_URL = configs.DATABASE_URL
 Base = declarative_base()
 
 engine = create_engine(DATABASE_URL)
@@ -149,7 +150,7 @@ def add_site_to_db(site_name, location, partition_list):
 def update_site_to_db(site_name, table, partition_list):
     """Update a site's details in the database."""
     session = get_session()
-    try:
+    try:        
         site = session.query(models.Site).filter(models.Site.site_name == site_name).first()
         if site:
             site.table = table
@@ -160,12 +161,35 @@ def update_site_to_db(site_name, table, partition_list):
             return {"success": False, "message": "Site not found"}
     except Exception as e:
         session.rollback()
-        # Log the exception as needed
         return {"success": False, "message": str(e)}
     finally:
         session.close()
         Session.remove() 
-        
+
+def update_wave_data(site_name, run_time, updated_table):
+    """Update WaveData record with new formatted_table."""
+    session = get_session()
+    try:
+        site = session.query(models.Site).filter(models.Sites.site_name == site_name).first()
+        if not site:
+            return {"success": False, "message": "Site not found: {}".format(site_name)}
+
+        wave_table = session.query(models.WaveData).filter(models.WaveData.site_id == site.site_id, models.WaveData.run_time == run_time).first()
+
+        if wave_table:
+            wave_table.formatted_table = updated_table
+            session.commit()
+            return {"success": True, "message": "WaveData updated successfully for site: {}".format(site_name)}
+        else:
+            return {"success": False, "message": "No WaveData records found for site: {}".format(site_name)}
+      
+    except Exception as e:
+        session.rollback()
+        return {"success": False, "message": str(e)}
+    finally:
+        session.close()
+        Session.remove()
+                
 def get_site_partitions_from_db(site_name):
     """Retrieve the partitions for a given site."""
     session = get_session()

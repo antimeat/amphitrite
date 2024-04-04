@@ -7,51 +7,105 @@ Author: Daz Vink
 """
 import os
 import pandas as pd
+import numpy as np
 import argparse
 import amphitrite_configs as configs
-import requests
-import pandas as pd
-import argparse
+import database as db
 
 BASE_DIR = configs.BASE_DIR
 
-class WaveTable:
+class Transformer:
     """
     Class for generating modified wave/swell tables from an API source.
     """
     
     def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', table_name='Cape_Cuvier_Offshore', 
-                 theta_1=260, theta_2=20, multiplier=1.0, attenuation=1.0, model='long', 
-                 thresholds=[0.3, 0.2, 0.15]):
+                 theta_1=260, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
         """
         Initialize the WaveTable object with site details and processing parameters.
         """
         self.site_name = site_name
         self.table_name = table_name
-        self.theta_1 = theta_1
-        self.theta_2 = theta_2
-        self.multiplier = multiplier
-        self.attenuation = attenuation
-        self.model = model
-        self.thresholds = thresholds
-        self.api_url = f"{os.path.join(BASE_DIR,"api.cgi?get=site&site_name=",self.site_name.replace(' ', '%20'))}"
+        self.theta_1 = float(theta_1)
+        self.theta_2 = float(theta_2)
+        self.multiplier = float(multiplier)
+        self.attenuation = float(attenuation)
+        self.thresholds = [float(x) for x in thresholds]
         
         # Output file setup from configurations would go here
         self.output_file = 'path_to_save/{}_data.csv'.format(self.site_name.replace(' ', '_').replace('-', ''))
 
-    def get_wave_table(self):
+    def transform_output(self, df):
         """
-        Fetches wave table data from the API and processes it into a pandas DataFrame.
+        Applies a transformation to each wave height column based on peak wave direction, updates the individual
+        height columns in the DataFrame with their transformed values, and adds a new column for the combined
+        significant wave height data.
+
+        Parameters:
+            df (pd.DataFrame): DataFrame containing wave data with height and direction columns.
+
+        Returns:
+            pd.DataFrame: Updated DataFrame including the individual transformed wave heights and the combined
+                        significant wave height data.
+        """
+        transformed_df = df.copy()
+
+        # Identify columns related to wave heights and their corresponding direction
+        hs_columns = [col for col in transformed_df.columns if "ht" in col]
+        transformed_hs_list = []
+
+        for hs_col in hs_columns:
+            #ignore the total hs column
+            if hs_col == "seasw_ht[m]":
+                continue
+            peak_dir_col = hs_col.split("_")[0] + "_dir[degree]"
+            hs = transformed_df[hs_col]
+            peak_dir = transformed_df[peak_dir_col]
+
+            # Convert peak direction to radians for accurate trigonometric calculations
+            rad_peak_dir = np.radians(peak_dir)
+
+            # Apply cosine adjustments based on direction
+            adjusted_hs = np.where(
+                (rad_peak_dir < np.radians(self.theta_1)) & (rad_peak_dir >= np.pi),
+                np.cos(rad_peak_dir - np.radians(self.theta_1)) * hs, hs
+            )
+
+            adjusted_hs = np.where(
+                (rad_peak_dir > np.radians(self.theta_2)) & (rad_peak_dir < np.pi),
+                np.cos(rad_peak_dir - np.radians(self.theta_2)) * adjusted_hs, adjusted_hs
+            )
+
+            # Update the DataFrame with transformed wave heights for each column
+            transformed_df[hs_col] = np.round(adjusted_hs,2)
+            transformed_hs_list.append(pd.Series(np.round(adjusted_hs,2), index=hs.index))
+
+        # Combine transformed heights to calculate the combined wave height metric
+        hs_combined = pd.concat(transformed_hs_list, axis=1)
+
+        # Calculate the sum of squares of transformed heights, take the square root, and apply the multiplier
+        transformed_df["seasw_ht[m]"] = np.round((hs_combined.pow(2).sum(axis=1).pow(0.5)) * self.multiplier,2)
+
+        return transformed_df
+
+    def get_wave_table(self,run_time=None):
+        """
+        Fetches wave data from the database and returns the formatted table data.
+        """
+        result = db.get_wavetable_from_db(self.site_name, run_time) if run_time else db.get_wavetable_from_db(self.site_name)
+        data = result["data"]
+        
+        return data
+    
+    def process_wave_table(self,formatted_table):
+        """
+        Processes a formatted wave data table from the database and passes to a pandas DataFrame.
         Handles a dynamic number of swells (sw#) in the data.
         """
-        response = requests.get(self.api_url)
-        if response.status_code != 200:
-            raise Exception("API request failed with status code {}".format(response.status_code))
-
         # Process the text output into a DataFrame
-        lines = response.text.split("\n")[9:]  # Skip headers
+        lines = formatted_table.split("\n")[9:]  # Skip headers
         data = [line.split(",") for line in lines if line]
-
+        
         # Assuming the data starts with certain columns before dynamic swell columns
         initial_columns = ["time[hrs]", "time[UTC]", "time[WST]", "wind_dir[degrees]", 
                         "wind_spd[kn]", "seasw_ht[m]", "seasw_dir[degree]", "seasw_pd[s]",
@@ -97,7 +151,6 @@ def parse_arguments():
     parser.add_argument('--theta_2', type=str, default='020', help='Theta 2')
     parser.add_argument('--multiplier', type=float, default=1.0, help='Multiplier')
     parser.add_argument('--attenuation', type=float, default=1.0, help='Attenuation')
-    parser.add_argument('--model', type=str, default='long', help='Model')
     parser.add_argument('--thresholds', type=str, default="3,2.5,1.5", help='Thresholds')
 
     args = parser.parse_args()
@@ -110,20 +163,21 @@ def parse_arguments():
 def main():
     args = parse_arguments()  # Ensure this function is updated to use the refactored class attributes
     
-    wave_table = WaveTable(
+    wave_table = Transformer(
         site_name=args.siteName,
         table_name=args.tableName,
         theta_1=args.theta_1,
         theta_2=args.theta_2,
         multiplier=args.multiplier,
         attenuation=args.attenuation,
-        model=args.model,
         thresholds=args.thresholds
     )
 
-    df = wave_table.get_wave_table()
-    wave_table.save_to_file(df)
-    
+    table = wave_table.get_wave_table()
+    df = wave_table.process_wave_table(table)
+    transformed_df = wave_table.transform_output(df)
+    print(df)        
+    print(transformed_df)        
             
 if __name__ == '__main__':
     main()
