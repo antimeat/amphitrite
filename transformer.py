@@ -11,6 +11,7 @@ import numpy as np
 import argparse
 import amphitrite_configs as configs
 import database as db
+from tabulate import tabulate
 
 BASE_DIR = configs.BASE_DIR
 
@@ -19,7 +20,7 @@ class Transformer:
     Class for generating modified wave/swell tables from an API source.
     """
     
-    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', table_name='Cape_Cuvier_Offshore', 
+    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', table_name='Cuvier', 
                  theta_1=260, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
         """
         Initialize the WaveTable object with site details and processing parameters.
@@ -35,7 +36,31 @@ class Transformer:
         # Output file setup from configurations would go here
         self.output_file = 'path_to_save/{}_data.csv'.format(self.site_name.replace(' ', '_').replace('-', ''))
 
-    def transform_output(self, df):
+    def transform_table(self, df, header):
+        """
+        Transforms the DataFrame into a formatted table for output.
+
+        Args:
+            df (DataFrame): the transfomed DataFrame
+            header (list(str)): the header information from the original table
+        """
+        #take the first 9 lines of the header and join them together
+        header = "\n".join(header) + "\n"
+        
+        #insert commas and remove the last comma
+        formatted_df = df.astype(str)
+        formatted_df = formatted_df.apply(lambda x: x + ", ", axis=1)
+        formatted_df.iloc[:,-1] = formatted_df.iloc[:,-1].str.rstrip(", ")
+        
+        # Creating table body
+        table_body = tabulate(formatted_df, headers=[], tablefmt='plain', showindex=False)
+    
+        # Concatenating the header, table body, and footer
+        final_output = header + table_body
+
+        return final_output
+    
+    def transform_df(self, df):
         """
         Applies a transformation to each wave height column based on peak wave direction, updates the individual
         height columns in the DataFrame with their transformed values, and adds a new column for the combined
@@ -55,9 +80,7 @@ class Transformer:
         transformed_hs_list = []
 
         for hs_col in hs_columns:
-            #ignore the total hs column
-            if hs_col == "seasw_ht[m]":
-                continue
+            
             peak_dir_col = hs_col.split("_")[0] + "_dir[degree]"
             hs = transformed_df[hs_col]
             peak_dir = transformed_df[peak_dir_col]
@@ -65,20 +88,35 @@ class Transformer:
             # Convert peak direction to radians for accurate trigonometric calculations
             rad_peak_dir = np.radians(peak_dir)
 
-            # Apply cosine adjustments based on direction
-            adjusted_hs = np.where(
+            # Apply adjustments for directions based on the same criteria
+            adjusted_dir = np.where(
                 (rad_peak_dir < np.radians(self.theta_1)) & (rad_peak_dir >= np.pi),
-                np.cos(rad_peak_dir - np.radians(self.theta_1)) * hs, hs
+                self.theta_1, peak_dir
             )
-
-            adjusted_hs = np.where(
+            adjusted_dir = np.where(
                 (rad_peak_dir > np.radians(self.theta_2)) & (rad_peak_dir < np.pi),
-                np.cos(rad_peak_dir - np.radians(self.theta_2)) * adjusted_hs, adjusted_hs
+                self.theta_2, adjusted_dir
             )
 
             # Update the DataFrame with transformed wave heights for each column
-            transformed_df[hs_col] = np.round(adjusted_hs,2)
-            transformed_hs_list.append(pd.Series(np.round(adjusted_hs,2), index=hs.index))
+            transformed_df[peak_dir_col] = np.array(adjusted_dir, dtype=int)
+            
+            #ignore the total hs column
+            if hs_col != "seasw_ht[m]":
+            
+                # Apply cosine adjustments based on direction
+                adjusted_hs = np.where(
+                    (rad_peak_dir < np.radians(self.theta_1)) & (rad_peak_dir >= np.pi),
+                    np.cos(rad_peak_dir - np.radians(self.theta_1)) * hs, hs
+                )
+
+                adjusted_hs = np.where(
+                    (rad_peak_dir > np.radians(self.theta_2)) & (rad_peak_dir < np.pi),
+                    np.cos(rad_peak_dir - np.radians(self.theta_2)) * adjusted_hs, adjusted_hs
+                )
+                
+                transformed_df[hs_col] = np.round(adjusted_hs,2)
+                transformed_hs_list.append(pd.Series(np.round(adjusted_hs,2), index=hs.index))
 
         # Combine transformed heights to calculate the combined wave height metric
         hs_combined = pd.concat(transformed_hs_list, axis=1)
@@ -94,7 +132,6 @@ class Transformer:
         """
         result = db.get_wavetable_from_db(self.site_name, run_time) if run_time else db.get_wavetable_from_db(self.site_name)
         data = result["data"]
-        
         return data
     
     def process_wave_table(self,formatted_table):
@@ -103,6 +140,7 @@ class Transformer:
         Handles a dynamic number of swells (sw#) in the data.
         """
         # Process the text output into a DataFrame
+        header = formatted_table.split("\n")[0:9] # Get the header information
         lines = formatted_table.split("\n")[9:]  # Skip headers
         data = [line.split(",") for line in lines if line]
         
@@ -129,7 +167,7 @@ class Transformer:
         df["time[UTC]"] = pd.to_datetime(df["time[UTC]"], format='%Y-%m-%d %H:%M', errors='coerce')
         df["time[WST]"] = pd.to_datetime(df["time[WST]"], format='%Y-%m-%d %H:%M', errors='coerce')
 
-        return df
+        return df, header
     
     def save_to_file(self, df):
         """
@@ -146,7 +184,7 @@ def parse_arguments():
     
     # Add all of your parameters here as arguments.
     parser.add_argument('--siteName', type=str, default='Dampier Salt - Cape Cuvier 7 days', help='Site Name')
-    parser.add_argument('--tableName', type=str, default='Cape_Cuvier_Offshore', help='Table Name')
+    parser.add_argument('--tableName', type=str, default='Cuvier', help='Table Name')
     parser.add_argument('--theta_1', type=str, default='260', help='Theta 1')
     parser.add_argument('--theta_2', type=str, default='020', help='Theta 2')
     parser.add_argument('--multiplier', type=float, default=1.0, help='Multiplier')
@@ -174,10 +212,14 @@ def main():
     )
 
     table = wave_table.get_wave_table()
-    df = wave_table.process_wave_table(table)
-    transformed_df = wave_table.transform_output(df)
-    print(df)        
-    print(transformed_df)        
+    df,header = wave_table.process_wave_table(table)
+    transformed_df = wave_table.transform_df(df)
+    transformed_table = wave_table.transform_table(transformed_df, header)
+    print(transformed_table)
+    
+    # print(df)        
+    # print(table)
+    # print(transformed_df.head(50))        
             
 if __name__ == '__main__':
     main()
