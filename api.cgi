@@ -198,23 +198,24 @@ def main():
         run_time = form.getvalue('run_time', None)
         
         # Fetch wavetable data from the database
-        # result = db.get_wavetable_from_db(site_name, run_time) if run_time else db.get_wavetable_from_db(site_name)
-        table = transform.load_from_config(site_name, run_time) if run_time else transform.load_from_config(site_name)
+        table = transform.load_from_config(site_name, run_time, transformed=True)
         
         # Set the HTTP header for JSON content
         print_headers("application/json")
         print(table)
     
-    elif get == "transform":
+    elif get == "notrans":
         site_name = form.getvalue('site_name', "Woodside - Mermaid Sound 7 days") 
         run_time = form.getvalue('run_time', None)
         
         # Fetch wavetable data from the database and transform it
-        transformed_table = transform.load_from_config(site_name)
+        table = transform.load_from_config(site_name, run_time, transformed=False)
         
         # Set the HTTP header for JSON content
         print_headers("application/json")
-        print(transformed_table)
+        print(table)
+    
+    
     else:
         print_headers("text/html")
         print(list_sites_as_html())

@@ -1,4 +1,7 @@
 <!-- As a heading -->
+<?php
+  include('configs.php');
+?>
 <style>
     .form {
         margin-top: 15px;
@@ -7,7 +10,7 @@
 
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0">
     <a class="navbar-brand col-md-2 p-3" id="head" href="#" onclick="parent.location = 'dashboard.php'"
-        ><i>Autoseas dashboard</i></a
+        ><i><?php echo($TITLE);?></i></a
     >
     <!-- <ul class="nav">
         <li><a class="nav-link navbar-nav navbar-right text-secondary h6" href="#" onclick="changeLink('edit-config')"><i>edit-config</i></a></li>
