@@ -5,14 +5,11 @@ Name:
 
 Author: Daz Vink
 """
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parent.parent))
 import os
 import pandas as pd
 import numpy as np
 import argparse
-import transformer_configs as configs
+from transformer import transformer_configs as configs
 import database as db
 from tabulate import tabulate
 
@@ -125,24 +122,23 @@ class Transform:
 
         return transformed_df
 
-    def get_wave_table(self,run_time=None):
-        """
-        Fetches wave data from the database and returns the formatted table data.
-        """
-        result = db.get_wavetable_from_db(self.site_name, run_time) if run_time else db.get_wavetable_from_db(self.site_name)
-        data = result["data"]
-        return data
-    
     def process_wave_table(self,formatted_table):
         """
         Processes a formatted wave data table from the database and passes to a pandas DataFrame.
         Handles a dynamic number of swells (sw#) in the data.
         """
-        # Process the text output into a DataFrame
-        header = formatted_table.split("\n")[0:9] # Get the header information
-        lines = formatted_table.split("\n")[9:]  # Skip headers
-        data = [line.split(",") for line in lines if line]
+        lines = formatted_table.split("\n")
         
+        # Separate header and data based on the "#" at the start of header lines
+        header = [line for line in lines if line.startswith("#")]
+        
+        #inject some transformed header information
+        header_text = f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multiplier: {self.multiplier}, attenuation: {self.attenuation}" 
+        header = [line + header_text if "Table:" in line else line for line in header]
+
+        data_lines = [line for line in lines if not line.startswith("#") and line.strip()]
+        data = [line.split(",") for line in data_lines if data_lines]
+       
         # Assuming the data starts with certain columns before dynamic swell columns
         initial_columns = ["time[hrs]", "time[UTC]", "time[WST]", "wind_dir[degrees]", 
                         "wind_spd[kn]", "seasw_ht[m]", "seasw_dir[degree]", "seasw_pd[s]",
@@ -163,9 +159,6 @@ class Transform:
             if "dir" in col or "spd" in col or "ht" in col or "pd" in col:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
         
-        df["time[UTC]"] = pd.to_datetime(df["time[UTC]"], format='%Y-%m-%d %H:%M', errors='coerce')
-        df["time[WST]"] = pd.to_datetime(df["time[WST]"], format='%Y-%m-%d %H:%M', errors='coerce')
-
         return df, header
     
     def save_to_file(self, df):
@@ -175,12 +168,18 @@ class Transform:
         df.to_csv(self.output_file, index=False)
         print(f"Data saved to {self.output_file}")    
 
-def load_from_config(site_name):
+def load_from_config(site_name, run_time=None):
     """
     Load the configuration parameters from the configuration file.
     """
-    try:
-        sites_info = read_config()
+    sites_info = read_config()
+    table = get_standard_wave_table(site_name, run_time)
+    
+    # if the site is not in the config return the standard table
+    if site_name not in sites_info:
+        return table
+    
+    try: 
         site_data = sites_info[site_name]
         transformer = Transform(
             site_name, 
@@ -194,7 +193,7 @@ def load_from_config(site_name):
                 site_data["low_threshold"]
             ]
         )
-        table = transformer.get_wave_table()
+        
         df,header = transformer.process_wave_table(table)
         transformed_df = transformer.transform_df(df)
         transformed_table = transformer.transform_to_table(transformed_df, header)
@@ -212,7 +211,7 @@ def read_config():
     try: 
         config_file = os.path.join(BASE_DIR, "transformer_site_config.txt")
         with open(config_file, "r") as f:
-            config = f.readlines()
+            config = [line.strip() for line in f if line.strip() and not line.strip().startswith("#")]
         
         #create a json object from each line of the config file
         sites = {
@@ -231,6 +230,18 @@ def read_config():
         return sites
     except Exception as e:
         print(f"Error reading configuration file: {e}")
+        return None
+    
+def get_standard_wave_table(site_name, run_time=None):
+    """
+    Fetches wave data from the database and returns the formatted table data.
+    """
+    try:
+        result = db.get_wavetable_from_db(site_name, run_time) if run_time else db.get_wavetable_from_db(site_name)
+        data = result["data"]
+        return data
+    except Exception as e:
+        print(f"Error fetching wave data from the database: {e}")
         return None
     
 def parse_arguments():
@@ -257,24 +268,25 @@ def parse_arguments():
 def main():
     args = parse_arguments()  # Ensure this function is updated to use the refactored class attributes
     
-    transformer = Transform(
-        site_name=args.siteName,
-        theta_1=args.theta_1,
-        theta_2=args.theta_2,
-        multiplier=args.multiplier,
-        attenuation=args.attenuation,
-        thresholds=args.thresholds
-    )
+    # transformer = Transform(
+    #     site_name=args.siteName,
+    #     theta_1=args.theta_1,
+    #     theta_2=args.theta_2,
+    #     multiplier=args.multiplier,
+    #     attenuation=args.attenuation,
+    #     thresholds=args.thresholds
+    # )
 
-    table = transformer.get_wave_table()
-    print(table)
-    df,header = transformer.process_wave_table(table)
-    transformed_df = transformer.transform_df(df)
-    transformed_table = transformer.transform_to_table(transformed_df, header)
-    print(transformed_table)
+    table = load_from_config(args.siteName)
+    # table = transformer.get_standard_wave_table()
+    # print(table)
+    # df,header = transformer.process_wave_table(table)
+    # transformed_df = transformer.transform_df(df)
+    # transformed_table = transformer.transform_to_table(transformed_df, header)
+    # print(transformed_table)
     
     # print(df)        
-    # print(table)
+    print(table)
     # print(transformed_df.head(50))        
             
 if __name__ == '__main__':

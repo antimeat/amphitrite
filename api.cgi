@@ -12,7 +12,7 @@ import json
 import sys
 import logging
 import amphitrite_configs as configs
-from transformer import transformer
+import transform
 
 BASE_DIR = configs.BASE_DIR
 BASE_URL = configs.BASE_URL
@@ -198,21 +198,23 @@ def main():
         run_time = form.getvalue('run_time', None)
         
         # Fetch wavetable data from the database
-        result = db.get_wavetable_from_db(site_name, run_time) if run_time else db.get_wavetable_from_db(site_name)
+        # result = db.get_wavetable_from_db(site_name, run_time) if run_time else db.get_wavetable_from_db(site_name)
+        table = transform.load_from_config(site_name, run_time) if run_time else transform.load_from_config(site_name)
         
         # Set the HTTP header for JSON content
         print_headers("application/json")
-        print(result["data"])
+        print(table)
+    
     elif get == "transform":
         site_name = form.getvalue('site_name', "Woodside - Mermaid Sound 7 days") 
         run_time = form.getvalue('run_time', None)
         
         # Fetch wavetable data from the database and transform it
-        transformer.read_config()
+        transformed_table = transform.load_from_config(site_name)
         
         # Set the HTTP header for JSON content
         print_headers("application/json")
-        print(result["data"])
+        print(transformed_table)
     else:
         print_headers("text/html")
         print(list_sites_as_html())
