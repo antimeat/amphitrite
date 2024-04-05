@@ -51,7 +51,7 @@
         }
         
         // Use the new function to load the site configurations and comments
-        $configData = loadConfigFile($config_file_name);
+        $configData = loadConfigFile($CONFIG_FILE_NAME);
         $siteTables = $configData["sites"];
         $comments = $configData["comments"];
 

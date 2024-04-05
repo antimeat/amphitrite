@@ -5,38 +5,37 @@ Name:
 
 Author: Daz Vink
 """
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 import os
 import pandas as pd
 import numpy as np
 import argparse
-import amphitrite_configs as configs
+import transformer_configs as configs
 import database as db
 from tabulate import tabulate
 
 BASE_DIR = configs.BASE_DIR
 
-class Transformer:
+class Transform:
     """
     Class for generating modified wave/swell tables from an API source.
     """
     
-    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', table_name='Cuvier', 
-                 theta_1=260, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
+    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', theta_1=260, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
         """
         Initialize the WaveTable object with site details and processing parameters.
         """
         self.site_name = site_name
-        self.table_name = table_name
         self.theta_1 = float(theta_1)
         self.theta_2 = float(theta_2)
         self.multiplier = float(multiplier)
         self.attenuation = float(attenuation)
         self.thresholds = [float(x) for x in thresholds]
-        
-        # Output file setup from configurations would go here
-        self.output_file = 'path_to_save/{}_data.csv'.format(self.site_name.replace(' ', '_').replace('-', ''))
+        self.output_file = os.path.join(BASE_DIR,'tables/{}_data.csv'.format(self.site_name.replace(' ', '_').replace('-', '')))
 
-    def transform_table(self, df, header):
+    def transform_to_table(self, df, header):
         """
         Transforms the DataFrame into a formatted table for output.
 
@@ -176,6 +175,64 @@ class Transformer:
         df.to_csv(self.output_file, index=False)
         print(f"Data saved to {self.output_file}")    
 
+def load_from_config(site_name):
+    """
+    Load the configuration parameters from the configuration file.
+    """
+    try:
+        sites_info = read_config()
+        site_data = sites_info[site_name]
+        transformer = Transform(
+            site_name, 
+            site_data["western_theta"], 
+            site_data["eastern_theta"], 
+            site_data["multiplier"], 
+            site_data["attenuation"], 
+            [   
+                site_data["high_threshold"], 
+                site_data["medium_threshold"], 
+                site_data["low_threshold"]
+            ]
+        )
+        table = transformer.get_wave_table()
+        df,header = transformer.process_wave_table(table)
+        transformed_df = transformer.transform_df(df)
+        transformed_table = transformer.transform_to_table(transformed_df, header)
+        
+        return transformed_table
+    except Exception as e:
+        print(f"Error loading from config: {e}")
+        return None
+                
+def read_config():
+    """
+    Read the configuration file from "transformer_site_config.txt".
+    """
+    
+    try: 
+        config_file = os.path.join(BASE_DIR, "transformer_site_config.txt")
+        with open(config_file, "r") as f:
+            config = f.readlines()
+        
+        #create a json object from each line of the config file
+        sites = {
+            parts[0].strip(): {  # Use the "site" value as the key
+                "western_theta": parts[1].strip(),
+                "eastern_theta": parts[2].strip(),
+                "multiplier": parts[3].strip(),
+                "attenuation": parts[4].strip(),
+                "high_threshold": parts[5].strip(),
+                "medium_threshold": parts[6].strip(),
+                "low_threshold": parts[7].strip(),
+            }
+            for line in config
+            for parts in [line.split(",")]  # Split once and use multiple times, then strip whitespace
+        }
+        return sites
+    except Exception as e:
+        print(f"Error reading configuration file: {e}")
+        return None
+    
 def parse_arguments():
     '''
     Parse args from the command line and provide some defaults
@@ -184,7 +241,6 @@ def parse_arguments():
     
     # Add all of your parameters here as arguments.
     parser.add_argument('--siteName', type=str, default='Dampier Salt - Cape Cuvier 7 days', help='Site Name')
-    parser.add_argument('--tableName', type=str, default='Cuvier', help='Table Name')
     parser.add_argument('--theta_1', type=str, default='260', help='Theta 1')
     parser.add_argument('--theta_2', type=str, default='020', help='Theta 2')
     parser.add_argument('--multiplier', type=float, default=1.0, help='Multiplier')
@@ -201,9 +257,8 @@ def parse_arguments():
 def main():
     args = parse_arguments()  # Ensure this function is updated to use the refactored class attributes
     
-    wave_table = Transformer(
+    transformer = Transform(
         site_name=args.siteName,
-        table_name=args.tableName,
         theta_1=args.theta_1,
         theta_2=args.theta_2,
         multiplier=args.multiplier,
@@ -211,10 +266,11 @@ def main():
         thresholds=args.thresholds
     )
 
-    table = wave_table.get_wave_table()
-    df,header = wave_table.process_wave_table(table)
-    transformed_df = wave_table.transform_df(df)
-    transformed_table = wave_table.transform_table(transformed_df, header)
+    table = transformer.get_wave_table()
+    print(table)
+    df,header = transformer.process_wave_table(table)
+    transformed_df = transformer.transform_df(df)
+    transformed_table = transformer.transform_to_table(transformed_df, header)
     print(transformed_table)
     
     # print(df)        

@@ -38,7 +38,7 @@
         }
         
         // Use the new function to load the site configurations
-        $configData = loadConfigFile($exclusion_file_name);
+        $configData = loadConfigFile($EXCLUSION_FILE_NAME);
         $siteTables = $configData["sites"];
         $comments = $configData["comments"];
         

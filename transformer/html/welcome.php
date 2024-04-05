@@ -42,21 +42,20 @@
                         <!-- <img src="http://www.bom.gov.au/iwk/images/small-artwork.png" class="indigenous"  style="display: block; margin-right: auto;  margin-right: auto;  width: 55%;"/img> -->
                     <h2> 
                     <div class="welcome">
-                            <h2><i> T-R-A-N-S-F-O-R-M! </i></h2>
-                            <br>
                             <h5>
                                 <ol>
+                                    <li><h4>Edit config</h4>
+                                        <ul>
+                                            <li><i>edit the config file to change transformer defaults for each site</i></li>
+                                        </ul>  
+                                    </li>    
+                                    <br>
                                     <li><h4>Transformer interface</h4>
                                         <ul>
-                                            <li><i>select an active ofcast site to transform</i></li>
+                                            <li><i>select an active ofcast site to view the transform</i></li>
                                         </ul>  
-                                    </li>
-                                    <br>                                        
-                                    <li><h4>Docs</h4>
-                                        <ul>
-                                            <li><i>README for backend details</i> </li>
-                                        </ul>  
-                                    </li>
+                                    </li>                                    
+                                    
                                 </ol>    
                             </h5>
                             <br>                            

@@ -8,11 +8,11 @@ date: 2023-11-14
 import cgi
 import database as db
 import os
-import pandas as pd
 import json
 import sys
 import logging
 import amphitrite_configs as configs
+from transformer import transformer
 
 BASE_DIR = configs.BASE_DIR
 BASE_URL = configs.BASE_URL
@@ -199,6 +199,16 @@ def main():
         
         # Fetch wavetable data from the database
         result = db.get_wavetable_from_db(site_name, run_time) if run_time else db.get_wavetable_from_db(site_name)
+        
+        # Set the HTTP header for JSON content
+        print_headers("application/json")
+        print(result["data"])
+    elif get == "transform":
+        site_name = form.getvalue('site_name', "Woodside - Mermaid Sound 7 days") 
+        run_time = form.getvalue('run_time', None)
+        
+        # Fetch wavetable data from the database and transform it
+        transformer.read_config()
         
         # Set the HTTP header for JSON content
         print_headers("application/json")

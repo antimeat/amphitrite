@@ -64,6 +64,10 @@
 				else if (input == 'readme') {
 				    fileName = 'readme.php';
 					$("#imageContainer").load(fileName);
+				}
+				else if (input == 'edit-config') {
+				    fileName = 'edit-config.php';
+					$("#imageContainer").load(fileName);
 				}				
 			}
 

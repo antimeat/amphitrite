@@ -10,7 +10,6 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 import os
-import json
 from tabulate import tabulate
 import pandas as pd
 import argparse

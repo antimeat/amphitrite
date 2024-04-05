@@ -1,6 +1,6 @@
 <?php
-    include 'configs.php';
-    $dir = $baseDir;
+    include('configs.php');
+    $dir = $BASE_DIR;
 
     $sites = $_REQUEST["sites"];            
     $sites = str_replace("'", "&apos;", $sites);
@@ -8,7 +8,7 @@
     $comments = str_replace("'", "&apos;", $comments);
     
     ob_start();
-    passthru("cd $dir && $dir" . "save_config.py '$sites' '$comments' $config_file_name");
+    passthru("cd $dir && $dir" . "save_config.py '$sites' '$comments' $CONFIG_FILE_NAME");
     $buffer = ob_get_contents();
     $htmlBuffer = str_replace("\n", "<br>", $buffer);
 
