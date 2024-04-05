@@ -37,13 +37,11 @@
             <div style="position: relative; top: 100px">
                 
                     <h1 style="text-align: left;"><i><p style="text-align: right;"></font></p>Welcome</i></h1>
-                    <hr><br>
+                    <hr>
                         <img src=<?php echo($BASE_URL . "html/img/neptune_amphitrite.png");?> class="mslp" style="border-radius: 20px; display: block; margin-right: auto;  margin-right: auto;  width: 30%;"></img>
                         <!-- <img src="http://www.bom.gov.au/iwk/images/small-artwork.png" class="indigenous"  style="display: block; margin-right: auto;  margin-right: auto;  width: 55%;"/img> -->
                     <h2> 
                     <div class="welcome">
-                            <h2><i> Amphitrite: Queen of Atlantis, patron of wave partitions and wife to Poseidon </i></h2>
-                            <br>
                             <h5>
                                 <ol>
                                     <li><h4>Config check</h4>
