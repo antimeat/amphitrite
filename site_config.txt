@@ -30,15 +30,18 @@ Citic Pacific - Cape Preston Area, Cape_prest, 0.001-9, 9-40
 Dampier Salt - Cape Cuvier 7 days, Cuvier, 0.001-9, 9-40
 Dampier Salt - Cape Cuvier Transformed, Cape_Cuvie, 0.001-9, 9-40
 INPEX - Ichthys 7 days, Ichthys, 0.001-9, 9-40
+INPEX - Darwin Outer Pilot Boarding 7 days, Darwin_OPB, 0.001-9, 9-40
 Jadestone Energy - Stag, Stag, 0.001-9, 9-40
 Jadestone Energy - Montara, Montara, 0.001-9, 9-40
-Nexans -Midroute 7 days, BUP_midway, 0.001-9, 9-40
-Nexans - HDD Exit Barrow Island 7 days, Whites_Bea, 0.001-9, 9-40
-Nexans - GorgonCDU 7 days, Gorgon, 0.001-9, 9-40
 Mineral Resources - Anchorage Point, Onslow_Anc, 0.001-9, 9-40
 Mineral Resources - Wharf Approach, Wheatstone, 0.001-9, 9-40
+Nexans - MidRoute 7 days, BUP_midway, 0.001-9, 9-40
+Nexans - HDD Exit Barrow Island 7 days, Whites_Bea, 0.001-9, 9-40
+Nexans - GorgonCDU 7 days, Gorgon, 0.001-9, 9-40
+Onslow Salt - Onslow Jetty, Onslow_Sal, 0.001-9, 9-40
 Pilbara Ports Authority - Ashburton, Ashburton_, 0.001-9, 9-40
 Pilbara Ports Authority - Port Hedland, PH_Beacon1, 0.001-9, 9-40
+Pilbara Port Authority - Port Hedland, PH_Beacon1, 0.001-9, 9-40
 Pilbara Ports Authority - Dampier, Dampier_Po, 0.001-9, 9-40
 Petrofac - Northern Endeavour 7 days, Bayu_Undan, 0.001-9, 9-40
 Santos - Barossa, Barossa, 0.001-9, 9-40
@@ -51,10 +54,12 @@ Santos - Reindeer 4 days, Reindeer, 0.001-9, 9-40
 Santos - Varanus 4 days, Varanus, 0.001-9, 9-40
 Santos - Spartan-2 4 days, Spartan-2, 0.001-9, 9-40
 Santos - MS1Standby 4 days, MS-1_Stand, 0.001-9, 9-40
+Santos - Van Gogh 4 days, Enfield, 0.001-9, 9-40
+Santos - Kumul Marine Terminal, Kumul_Plat, 0.001-9, 9-40
 Vermilion - Wandoo, Wando, 0.001-9, 9-40
 Woodside - Dampier Port dps1 10 days, Dampier_Po, 0.001-9, 9-40
 Woodside - Balnaves 7 days, Balnaves, 0.001-9, 9-40
-Woodside - Mermaid Sound 7 days, Dampier_Po, 0.001-7, 7-13, 13-18, 16.5-40
+Woodside - Mermaid Sound 7 days, Dampier_Ne, 0.001-7, 7-13, 13-18, 16.5-40
 Woodside - Mermaid Sound Transformed, Dampier_Po, 0.001-7, 7-13, 13-18, 16.5-40
 Woodside - Enfield and Vincent 7 days, Enfield, 0.001-9, 9-40
 Woodside - Enfield and Vincent 10 days, Enfield, 0.001-9, 9-40
