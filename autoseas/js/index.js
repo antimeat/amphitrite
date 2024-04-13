@@ -132,7 +132,7 @@ function siteToFileName(site) {
 }
 
 function transformSiteName(site) {
-    var siteName = str.replace(/_/g, " ").slice(0, -4);
+    var siteName = str.replace(/_/g, " ").trim();
     console.log(siteName);
     return siteName;
 }
@@ -146,10 +146,10 @@ function loadFetchTable() {
         siteTypes[site] = "mixed";
         $("#fetchTable").html("Uses fully developed seas table.");
     } else {
-        var base_url = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/autoseas/fetchLimits";
         var file_name = siteToFileName(site);
-
-        Papa.parse(base_url + "/" + file_name, {
+        var base_url = BASE_URL + "autoseas/fetchLimits/" + file_name;
+        console.log(base_url);
+        Papa.parse(base_url, {
             download: true,
             header: true,
             complete: function (results) {
@@ -218,7 +218,31 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function getDateString() {
+    //format a date string from midnight of the current day using format 'YYYYMMDDHH'
+    var date = new Date();
+    date.setHours(0, 0, 0, 0);
+
+    // Helper function to pad numbers to two digits
+    const padToTwoDigits = (num) => num.toString().padStart(2, "0");
+
+    // Extracting year, month, day, and hour from the date
+    const year = date.getFullYear();
+    const month = padToTwoDigits(date.getMonth() + 1); // getMonth() returns month from 0-11
+    const day = padToTwoDigits(date.getDate());
+    const hour = padToTwoDigits(date.getHours());
+
+    // Constructing the formatted string
+    return `${year}${month}${day}${hour}`;
+}
+
+// Example usage:
+let midnight = new Date();
+console.log(formatDateToYYYYMMDDHH(midnight)); // Outputs: YYYYMMDDHH
+
 function refreshSeas() {
+    midnight = getDateString();
+
     // get the site and seas algo
     var site = $("#siteSelect").val();
     var algo_form = document.getElementById("algorithmChoice");
@@ -281,6 +305,8 @@ function refreshSeas() {
             site: site,
             returnPdDir: 1,
             type: "new",
+            src: "autoseas",
+            first_time_step: midnight,
         };
 
         // algorithm
@@ -291,7 +317,7 @@ function refreshSeas() {
 
         console.log(opts);
 
-        $.getJSON("http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/autoseas.cgi", opts, function (data) {
+        $.getJSON(BASE_URL + "autoseas.cgi", opts, function (data) {
             //console.log(data);
             data = data["seas"];
             seasData[name] = data;
@@ -338,18 +364,19 @@ function calcAutoSeas(site, winds, opts, callback) {
         var thisOpts = {
             winds: windStr,
             site: site,
-
+            src: "autoseas",
+            first_time_step: midnight,
             returnDir: 1,
         };
 
         if (opts != undefined) $.extend(thisOpts, opts);
 
-        $.getJSON("autoseas.cgi", thisOpts, function (data) {
+        $.getJSON(BASE_URL + "autoseas.cgi", thisOpts, function (data) {
             callback(data["seas"]);
         });
     }
 }
 
 function fileToSiteName(str) {
-    return str.replace(/_/g, " ").slice(0, -4);
+    return str.replace(/_/g, " ").trim();
 }

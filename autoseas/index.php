@@ -39,8 +39,24 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script type="text/javascript" src="js/index.js?<?php echo time(); ?>"></script>
     <script type="text/javascript" src="js/cookie_stuff.js"></script>
+    <?php
+        // Include your configuration settings
+        include('html/configs.php');
+    ?>
 
     <script>
+        // Declare JavaScript variables and assign PHP values to them
+        var BASE_DIR = "<?php echo $BASE_DIR; ?>";
+        var BASE_URL = "<?php echo $BASE_URL; ?>";
+        var BASE_HTML = "<?php echo $HTML_DIR; ?>";
+        var TITLE = "<?php echo $TITLE; ?>";
+
+        // Now you can use these variables in your JavaScript code
+        console.log(BASE_DIR, BASE_URL, BASE_HTML, TITLE);
+    </script>
+    
+    <script>
+
         function setCookie(name, value)
         {
             var today = new Date();
