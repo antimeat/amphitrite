@@ -23,6 +23,7 @@ new_files=$(find "$WATCH_DIR" -type f -newer "$LAST_RUN_FILE" 2>> "$LOG_FILE")
 # Change directory to script directory and run your script if new files are found
 if [[ ! -z "$new_files" ]]; then
     cd "$SCRIPT_DIR/" || { echo "$(date) - Failed to change directory to $SCRIPT_DIR." >> "$LOG_FILE"; exit 1; }
+    echo "$(date) - Splitting has commenced." >> "$LOG_FILE"
     "./$SCRIPT" 2>> "$LOG_FILE"
 fi
 

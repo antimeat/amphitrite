@@ -9,6 +9,7 @@ Functions:
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import IntegrityError
 import os
 from tabulate import tabulate
 import pandas as pd
@@ -165,6 +166,30 @@ def update_site_to_db(site_name, table, partition_list):
         session.close()
         Session.remove() 
 
+def update_site_name_to_db(site_name, new_site_name):
+    """Update a site's name in the database or delete it if the new name causes a uniqueness conflict."""
+    session = get_session()
+    try:
+        site = session.query(models.Site).filter(models.Site.site_name == site_name).first()
+        if site:
+            site.site_name = new_site_name
+            try:
+                session.commit()
+                return {"success": True, "message": "Site name updated successfully"}
+            except IntegrityError:
+                session.rollback()
+                session.delete(site)  # Delete the original entry if updating causes a unique constraint conflict
+                session.commit()
+                return {"success": True, "message": "Original site deleted due to uniqueness conflict on update"}
+        else:
+            return {"success": False, "message": "Site not found"}
+    except Exception as e:
+        session.rollback()
+        return {"success": False, "message": str(e)}
+    finally:
+        session.close()
+        Session.remove()
+        
 def update_wave_data(site_name, run_time, updated_table):
     """Update WaveData record with new formatted_table."""
     session = get_session()

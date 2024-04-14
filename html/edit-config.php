@@ -73,12 +73,17 @@
         <div class="container-fluid">
             <form class="col-lg-10" style="top:200px" action="run_edit_config_script.php" method="POST">
                 <div class="form-group row">
+                    <label for="comments" class="col-sm-1 col-form-label">Comments</label>
+                    <div class="col-sm-11">
+                        <textarea class="form-control" name="comments" id="comments" cols="10" rows="10"><?php echo htmlspecialchars($commentsDisplay); ?></textarea>
+                    </div>
+                    
                     <label for="sites" class="col-sm-1 col-form-label">Sites</label>
                     <div class="col-sm-11">
-                        <textarea class="form-control" name="sites" id="sites" cols="10" rows="30"><?php echo htmlspecialchars($sitesDisplay); ?></textarea>
+                        <textarea class="form-control" name="sites" id="sites" cols="10" rows="25"><?php echo htmlspecialchars($sitesDisplay); ?></textarea>
                     </div>
                     <!-- Hidden div for comments -->
-                    <textarea style="display: none;" name="comments" id="comments"><?php echo htmlspecialchars($commentsDisplay); ?></textarea>
+                    <!-- <textarea style="display: none;" name="comments" id="comments"><?php echo htmlspecialchars($commentsDisplay); ?></textarea> -->
                 </div>
                 
                 <div class="form-group row">

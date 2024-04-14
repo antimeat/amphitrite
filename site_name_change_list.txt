@@ -1,0 +1,34 @@
+# Site name change list
+# Format: Site Name, new site name
+# Example of a line: Woodside - Mermaid Sound 7 days, Woodside - Mermaid Sound
+# Please follow the format strictly while editing
+
+Boskalis - Scarborough 7 Days, Boskalis - Scarborough
+Boskalis - Dampier 7 Days, Boskalis - Dampier
+Dampier Salt - Cape Cuvier 7 days, Dampier Salt - Cape Cuvier
+INPEX - Ichthys 7 days, INPEX - Ichthys
+INPEX - Darwin Outer Pilot Boarding 7 days, INPEX - Darwin Outer Pilot Boarding
+Nexans - MidRoute 7 days, Nexans - MidRoute
+Nexans - HDD Exit Barrow Island 7 days, Nexans - HDD Exit Barrow Island
+Nexans - GorgonCDU 7 days, Nexans - GorgonCDU
+Petrofac - Northern Endeavour 7 days, Petrofac - Northern Endeavour
+Santos - John Brookes 4 days, Santos - John Brookes
+Santos - MEFF 7 days, Santos - MEFF
+Santos - Reindeer 4 days, Santos - Reindeer
+Santos - Varanus 4 days, Santos - Varanus
+Santos - Spartan-2 4 days, Santos - Spartan-2
+Santos - MS1Standby 4 days, Santos - MS1Standby
+Santos - Van Gogh 4 days, Santos - Van Gogh
+Woodside - Dampier Port DPS1 10 days, Woodside - Dampier Port DPS1
+Woodside - Dampier Port dps1 10 days, Woodside - Dampier Port dps1
+Woodside - Balnaves 7 days, Woodside - Balnaves
+Woodside - Mermaid Sound 7 days, Woodside - Mermaid Sound
+Woodside - Enfield and Vincent 7 days, Woodside - Enfield and Vincent
+Woodside - Enfield and Vincent 10 days, Woodside - Enfield and Vincent
+Woodside - North Rankin 10 days, Woodside - North Rankin
+Woodside - North Rankin 7 days, Woodside - North Rankin
+Woodside - Pluto 7 days, Woodside - Pluto
+Woodside - Pluto 10 days, Woodside - Pluto
+Woodside - Stybarrow 10 Days, Woodside - Stybarrow
+Woodside - Scarborough 7 days, Woodside - Scarborough
+Woodside - Scarborough 10 days, Woodside - Scarborough

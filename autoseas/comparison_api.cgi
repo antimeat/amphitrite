@@ -159,7 +159,7 @@ def get_cgi_params():
     #default settings here
     params['site'] = form.getvalue('site',"Woodside - Mermaid Sound 7 days")
     params['first_time_step'] = form.getvalue('first_time_step',midnight)
-    params['src'] = form.getvalue('src','partition')
+    params['src'] = form.getvalue('src','autoseas')
     # params['sessionID'] = form.getvalue('sessionID',"_blah")
     # params['get'] = form.getvalue('get',"ofcast_archived")
     # params['data_type'] = form.getvalue('data_type',"forecast")
