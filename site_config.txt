@@ -47,6 +47,7 @@ Petrofac - Northern Endeavour 7 days, Bayu_Undan, 0.001-9, 9-40
 Santos - Barossa, Barossa, 0.001-9, 9-40
 Santos - Barossa KP40, Barossa, 0.001-9, 9-40
 Santos - Barossa KP200, West_Darwi, 0.001-9, 9-40
+Santos - Barossa KP250, West_Darwi, 0.001-9, 9-40
 Santos ABUW - Bayu-Undan, Bayu_Undan, 0.001-9, 9-40
 Santos - John Brookes 4 days, John_Brook, 0.001-9, 9-40
 Santos - MEFF 7 days, MEFF, 0.001-9, 9-40
