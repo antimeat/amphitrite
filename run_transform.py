@@ -13,6 +13,32 @@ import database as db
 
 BASE_DIR = configs.BASE_DIR
 
+def print_html_from_args(args):
+    """
+    Print out an html table from the given args.
+    """
+    try:
+        transformer = transform.Transform(
+            site_name=args.siteName,
+            theta_1=args.theta_1,
+            theta_2=args.theta_2,
+            multiplier=args.multiplier,
+            attenuation=args.attenuation,
+            thresholds=args.thresholds
+        )
+
+        # print_html_from_config(args.siteName)
+        table = get_standard_wave_table(args.siteName)
+        df,header = transformer.process_wave_table(table)
+        transformed_df = transformer.transform_df(df)
+        status = transformer.save_to_file(transformed_df)
+        html_table = transformer.transform_to_html_table(transformed_df)
+        transformer.print_html_table(html_table)        
+        
+    except Exception as e:
+        print(f"Error transforming to html output: {e}")
+        return None
+
 def print_html_from_config(site_name, run_time=None, transformed=True):
     """
     Load the configuration parameters from the configuration file.
@@ -131,9 +157,9 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Process WaveTable parameters.')
     
     # Add all of your parameters here as arguments.
-    parser.add_argument('--siteName', type=str, default='Woodside - Mermaid Sound 7 days', help='Site Name')
-    parser.add_argument('--theta_1', type=str, default='330', help='Theta 1')
-    parser.add_argument('--theta_2', type=str, default='30', help='Theta 2')
+    parser.add_argument('--siteName', type=str, default='Dampier Salt - Cape Cuvier 7 days', help='Site Name')
+    parser.add_argument('--theta_1', type=str, default='262', help='Theta 1')
+    parser.add_argument('--theta_2', type=str, default='20', help='Theta 2')
     parser.add_argument('--multiplier', type=float, default=0.42, help='Multiplier')
     parser.add_argument('--attenuation', type=float, default=1.0, help='Attenuation')
     parser.add_argument('--thresholds', type=str, default="3,2.5,1.5", help='Thresholds')
@@ -148,27 +174,9 @@ def parse_arguments():
 def main():
     args = parse_arguments()  # Ensure this function is updated to use the refactored class attributes
     
-    # transformer = transform.Transform(
-    #     site_name=args.siteName,
-    #     theta_1=args.theta_1,
-    #     theta_2=args.theta_2,
-    #     multiplier=args.multiplier,
-    #     attenuation=args.attenuation,
-    #     thresholds=args.thresholds
-    # )
-
-    print_html_from_config(args.siteName)
-    # table = get_standard_wave_table(args.siteName)
-    # print(table)
-    # df,header = transformer.process_wave_table(table)
-    # transformed_df = transformer.transform_df(df)
-    # print(transformed_df)
-    # transformed_table = transformer.transform_to_table(transformed_df, header)
-    # print(transformed_table)
+    print_html_from_args(args)
+    # print_html_from_config(args.siteName)
     
-    # print(df)        
-    # print(table)
-    # print(transformed_df.head(50))        
             
 if __name__ == '__main__':
     main()

@@ -24,7 +24,7 @@
     <body>
     
         <div class="container-fluid" id="index">
-            <div style="position: relative; top: 100px; height:2500px">
+            <div style="position: relative; top: 100px; width: 100%;">
                 <div class="embed-responsive embed-responsive-1by1">
                     <!-- <iframe class="embed-responsive-item" src="http://wa-aifs-local.bom.gov.au/vulture/dev/index.php"></iframe> -->
                     <iframe class="embed-responsive-item" src="index.php"></iframe>

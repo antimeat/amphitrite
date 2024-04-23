@@ -10,21 +10,11 @@
     <title><?php echo $TITLE; ?></title>
 
     <style align="center" type="text/css">
-        .container {
-            text-align: center;		
-	        width: 500;
-	        clear: both;		
-        }
-        .container input {
-	        text-align: left;		
-	        width: 100%;
-	        clear: both;
-        }
-
         fieldset {
 	        text-align: left;
 	        display: inline-block;
 	        vertical-align: middle;
+            width: 50%;
         }
         input[type="radio"] {
 	        vertical-align: left;
@@ -47,7 +37,8 @@
     <link rel="stylesheet" media="all" type="text/css" href="../js/jquery-ui-timepicker-addon.css" />
 </head>
 
-<h2 align="center">Modified wave tables</h2>
+<h2 align="center">Transform site</h2>
+<h3 align="center">(partition table is the site table defined in Amphitrite)</h3>
 
 <div class="content" align="center">
     
@@ -65,7 +56,7 @@
                             <div id="sites" style: "display:inline-block;"></div>
                         </td>
                     </tr>    
-                    <tr>
+                    <!-- <tr>
                         <td>
                             Table:
                         </td>
@@ -73,7 +64,7 @@
                             <div id="tables" style: "display:inline-block;">
                             </div>
                         </td>
-                    </tr>    
+                    </tr>     -->
                     <tr>
 	                    <td><label for="theta1">Angle for western side: </label></td>
 	                    <td><input type="number" id=theta1 name=theta1 size="5" min="0" max="360" value="180"></td>
@@ -91,7 +82,7 @@
 	                    <td><input type="number" id=attenuation name=attenuation step="0.05" min="0.50" max="2" value="1.0"></td>
                     </tr>		
                     
-                    <tr>
+                    <!-- <tr>
                         <td>
                             <label name="modelLabel">Model: </label>
                         </td>
@@ -102,7 +93,7 @@
                                 <option value="ec">EC wave</option>		                            
                             </select>
                         </td>
-                    </tr>
+                    </tr> -->
                     <tr>
 	                    <td><label for="criteria_1">Threshold criteria (m) (colour highlights): </label></td>
 	                    <td>

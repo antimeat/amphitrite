@@ -31,7 +31,7 @@ var SITE_TABLES = {
         crit_3: 0.15,
     },
     "Dampier Salt - Cape Cuvier 7 days": {
-        table: "Cape_Cuvier_Offshore",
+        table: "Cape_Cuvie",
         w_max: 262,
         e_max: 20,
         multi: 1,
@@ -428,7 +428,7 @@ var TABLES = {
     Barossa: { w_max: 180, e_max: 180, multi: 1, period: 1, crit_1: 3, crit_2: 2.5, crit_3: 2 },
     Barrow_Island: { w_max: 180, e_max: 180, multi: 1, period: 1, crit_1: 3, crit_2: 2.5, crit_3: 2 },
     Bayu_Undan: { w_max: 180, e_max: 180, multi: 1, period: 1, crit_1: 3, crit_2: 2.5, crit_3: 2 },
-    Cape_Cuvier_Offshore: { w_max: 262, e_max: 20, multi: 1, period: 1, crit_1: 3, crit_2: 2.5, crit_3: 2 },
+    Cape_Cuvie: { w_max: 262, e_max: 20, multi: 1, period: 1, crit_1: 3, crit_2: 2.5, crit_3: 2 },
     Cape_preston: { w_max: 180, e_max: 180, multi: 1, period: 1, crit_1: 3, crit_2: 2.5, crit_3: 2 },
     ChrisIs_N: { w_max: 180, e_max: 180, multi: 1, period: 1, crit_1: 3, crit_2: 2.5, crit_3: 2 },
     ChrisIs_W: { w_max: 180, e_max: 180, multi: 1, period: 1, crit_1: 3, crit_2: 2.5, crit_3: 2 },
@@ -467,34 +467,34 @@ var TABLES = {
 
 $(document).ready(function () {
     $("#site_select").selectmenu("destroy").selectmenu({ style: "dropdown" });
-    load_tables();
+    // load_tables();
     load_sites();
 });
 
-function load_tables(done) {
-    var select = $("<select id='table_select' name='table_select'/>").change(function (e) {
-        console.log("change site");
-        var table_key = this.value;
-        var table = TABLES[table_key];
+// function load_tables(done) {
+//     var select = $("<select id='table_select' name='table_select'/>").change(function (e) {
+//         console.log("change site");
+//         var table_key = this.value;
+//         var table = TABLES[table_key];
 
-        if (typeof table != "undefined") {
-            console.log("table: " + table["table"]);
-            $("#theta1").val(table["w_max"]);
-            $("#theta2").val(table["e_max"]);
-            $("#multiplier").val(table["multi"]);
-            $("#attenuation").val(table["period"]);
-            $("#criteria_1").val(table["crit_1"]);
-            $("#criteria_2").val(table["crit_2"]);
-            $("#criteria_3").val(table["crit_3"]);
-        }
-    });
+//         if (typeof table != "undefined") {
+//             console.log("table: " + table["table"]);
+//             $("#theta1").val(table["w_max"]);
+//             $("#theta2").val(table["e_max"]);
+//             $("#multiplier").val(table["multi"]);
+//             $("#attenuation").val(table["period"]);
+//             $("#criteria_1").val(table["crit_1"]);
+//             $("#criteria_2").val(table["crit_2"]);
+//             $("#criteria_3").val(table["crit_3"]);
+//         }
+//     });
 
-    Object.entries(TABLES).forEach(([key, value]) => {
-        $("<option />", { value: key, text: key }).appendTo(select);
-    });
+//     Object.entries(TABLES).forEach(([key, value]) => {
+//         $("<option />", { value: key, text: key }).appendTo(select);
+//     });
 
-    select.appendTo("#tables");
-}
+//     select.appendTo("#tables");
+// }
 
 function load_sites(done) {
     var select = $("#site_select");

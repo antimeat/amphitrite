@@ -1,6 +1,6 @@
 <?php
     include('configs.php');
-    $dir = $BASE_DIR;
+    $dir = $BASE_DIR . "transformer/";
 
     $sites = $_REQUEST["sites"];            
     $sites = str_replace("'", "&apos;", $sites);

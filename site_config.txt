@@ -27,8 +27,7 @@ Chevron - Jansz, Jansz_PTS, 0.001-10, 10-40
 Chevron - Wheatstone LNG Plant, Ashburton_, 0.001-10, 10-40
 Chevron - Wheatstone Platform, PLA, 0.001-10, 10-40
 Citic Pacific - Cape Preston Area, Cape_prest, 0.001-9, 9-40
-Dampier Salt - Cape Cuvier 7 days, Cuvier, 0.001-9, 9-40
-Dampier Salt - Cape Cuvier Transformed, Cape_Cuvie, 0.001-9, 9-40
+Dampier Salt - Cape Cuvier 7 days, Cape_Cuvie, 0.001-9, 9-17, 17-40
 INPEX - Ichthys 7 days, Ichthys, 0.001-9, 9-40
 INPEX - Darwin Outer Pilot Boarding 7 days, Darwin_OPB, 0.001-9, 9-40
 Jadestone Energy - Stag, Stag, 0.001-9, 9-40

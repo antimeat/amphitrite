@@ -6,12 +6,17 @@ Name:
 Author: Daz Vink
 """
 import os
+import sys
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+sys.path.append(parent_dir)
+
 import pandas as pd
 import numpy as np
 from tabulate import tabulate
+import argparse
 
 #local imports relative to amphtirite
-import transformer.transformer_configs as configs
+from transformer import transformer_configs as configs
 
 BASE_DIR = configs.BASE_DIR
 
@@ -20,7 +25,7 @@ class Transform:
     Class for generating modified wave/swell tables from an API source.
     """
     
-    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', theta_1=260, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
+    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', theta_1=262, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
         """
         Initialize the WaveTable object with site details and processing parameters.
         """
@@ -155,10 +160,10 @@ class Transform:
         Print out an HTML version of the table with styles and formatting, dynamically adjusting to the number of swells.
         '''
         # Dynamically calculate the number of swells from the column names
-        swell_height_columns = [col for col in df.columns if 'sw' in col and 'ht[m]' in col and 'seasw' not in col]
-        swell_direction_columns = [col for col in df.columns if 'sw' in col and 'dir[degree]' in col and 'seasw' not in col]
-        swell_period_columns = [col for col in df.columns if 'sw' in col and 'pd[s]' in col and 'seasw' not in col]
-        num_swells = len(swell_height_columns)
+        swell_height_columns = [col for col in df.columns if 'ht' in col]
+        swell_direction_columns = [col for col in df.columns if 'dir' in col]
+        swell_period_columns = [col for col in df.columns if 'pd' in col]
+        num_swells = len(swell_height_columns) - 2
 
         theta1 = str(self.theta_1)
         theta2 = str(self.theta_2)
@@ -202,6 +207,13 @@ class Transform:
 
     def transform_to_html_table(self, df):
         
+        # Ensure 'time[UTC]' is in datetime format and set as index
+        df['time[UTC]'] = pd.to_datetime(df['time[UTC]'])
+        df.set_index('time[UTC]', inplace=True)
+
+        # Resample the DataFrame to 3-hour intervals
+        df = df.resample('3H').first()
+        
         # Identify swell columns by pattern
         sw_ht_columns = [col for col in df.columns if 'sw' in col and 'ht[m]' in col and 'seasw' not in col]
         sw_dir_columns = [col for col in df.columns if 'sw' in col and 'dir[degree]' in col and 'seasw' not in col]
@@ -211,37 +223,53 @@ class Transform:
         # print(f"Number of swells detected: {num_swells}")
 
         # Selecting relevant columns and renaming
-        base_columns = ['time[hrs]', 'time[UTC]', 'time[WST]', 
-                        'wind_dir[degrees]', 'wind_spd[kn]', 
+        base_columns = ['wind_dir[degrees]', 'wind_spd[kn]', 
                         'sea_ht[m]', 'sea_dir[degree]', 'sea_pd[s]',
                         'seasw_ht[m]', 'seasw_dir[degree]', 'seasw_pd[s]'
                         ]
         columns_to_keep = base_columns + sw_ht_columns + sw_pd_columns + sw_dir_columns
         df = df[columns_to_keep].round(2).replace({0: np.nan}).fillna('')
+
+        # Extract day and hour from index
+        df['day'] = df.index.day.astype(str)
+        df['hour'] = df.index.hour.astype(str)
+
         # Extracting day and hour from 'time[UTC]' for instance
-        
-        df['day'] = df['time[UTC]'].apply(lambda x: x.split()[0].split('-')[2])
-        df['hour'] = df['time[UTC]'].apply(lambda x: x.split()[1].split(':')[0])
+        # df['day'] = df['time[UTC]'].apply(lambda x: x.split()[0].split('-')[2])
+        # df['hour'] = df['time[UTC]'].apply(lambda x: x.split()[1].split(':')[0])
         
         #create some blank columns        
         df['blank'] = ''
         for i in range(1, num_swells + 2):
-            df['blank' + str(i)] = ''
+            df['blank' + str(i)] = ''            
     
         #create a list of columns to use and reorder
-        columns = ['day','hour','blank',
-                    'sea_ht[m]', 'sea_dir[degree]', 'sea_pd[s]', 'blank1',
-                    'seasw_ht[m]', 'seasw_dir[degree]', 'seasw_pd[s]'
+        columns = ['day','hour',
+                    'seasw_ht[m]', 'seasw_dir[degree]', 'seasw_pd[s]', 'blank',
+                    'sea_ht[m]', 'sea_dir[degree]', 'sea_pd[s]',
                     ]
+        new_columns = ['day','hour',
+                    'seasw_ht', 'seasw_dir', 'seasw_pd', 'blank',
+                    'sea_ht', 'sea_dir', 'sea_pd',
+                    ]
+        
         for i in range(1,num_swells + 1):
-            columns.append(f'blank{i+1}')
+            columns.append(f'blank{i}')
+            new_columns.append(f'blank{i}')
             columns.append(f'sw{i}_ht[m]')
+            new_columns.append(f'sw{i}_ht')
             columns.append(f'sw{i}_pd[s]')
+            new_columns.append(f'sw{i}_pd')
             columns.append(f'sw{i}_dir[degree]')
+            new_columns.append(f'sw{i}_dir')
+
         
-        df = df[columns]
+        # Renaming columns by removing the units directly in the DataFrame
+        rename_dict = {col: col.split('[')[0] for col in df.columns if '[' in col and 'time' not in col}
+        df.rename(columns=rename_dict, inplace=True)
+        df.reset_index(inplace=True)
         
-        return df
+        return df[new_columns]
 
     def transform_df(self, df):
         """
@@ -270,12 +298,12 @@ class Transform:
             # Applying the bendage rules adjustment for theta_1 and theta_2
             adjusted_hs = np.where(
                 ((rad_peak_dir < np.radians(self.theta_1)) & (rad_peak_dir > np.pi)),
-                np.cos(rad_peak_dir - np.radians(self.theta_1)) * hs, hs
+                np.cos(rad_peak_dir - np.radians(self.theta_1)) * hs, adjusted_hs
             )
 
             adjusted_hs = np.where(
                 ((rad_peak_dir > np.radians(self.theta_2)) & (rad_peak_dir < np.pi)),
-                np.cos(rad_peak_dir - np.radians(self.theta_2)) * hs, hs
+                np.cos(rad_peak_dir - np.radians(self.theta_2)) * hs, adjusted_hs
             )
 
             #magical multiplier, attenuation
@@ -289,20 +317,35 @@ class Transform:
             #convert to transformed dir
             peak_dir = np.where(
                 ((rad_peak_dir < np.radians(self.theta_1)) & (rad_peak_dir > np.pi)),
-                int(self.theta_1), peak_dir
+                int(self.theta_1), peak_dir.astype(int)
             )
             
             peak_dir = np.where(
                 ((rad_peak_dir > np.radians(self.theta_2)) & (rad_peak_dir < np.pi)),
-                int(self.theta_2), peak_dir
+                int(self.theta_2), peak_dir.astype(int)
             )
             transformed_df[peak_dir_col] = peak_dir
             
         # Combine transformed heights to calculate the combined wave height metric
         if transformed_hs_list:
             hs_combined = np.sqrt(sum([np.power(hs,2) for hs in transformed_hs_list]))
-            transformed_df["seasw_ht[m]"] = np.round(hs_combined * self.multiplier, 2)
-
+            transformed_df["seasw_ht[m]"] = np.round(hs_combined, 2)
+            
+            #convert the seasw_dir to the transformed direction
+            peak_dir = transformed_df["seasw_dir[degree]"]    
+            rad_peak_dir = np.radians(peak_dir)
+            
+            peak_dir = np.where(
+                ((rad_peak_dir < np.radians(self.theta_1)) & (rad_peak_dir > np.pi)),
+                int(self.theta_1), peak_dir.astype(int)
+            )
+            
+            peak_dir = np.where(
+                ((rad_peak_dir > np.radians(self.theta_2)) & (rad_peak_dir < np.pi)),
+                int(self.theta_2), peak_dir.astype(int)
+            )
+            transformed_df["seasw_dir[degree]"] = peak_dir
+        
         return transformed_df
 
     def process_wave_table(self,formatted_table):
@@ -341,13 +384,17 @@ class Transform:
         for col in columns:
             if "dir" in col or "spd" in col or "ht" in col or "pd" in col:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
-        
+                
         return df, header
     
     def save_to_file(self, df):
         """
         Saves the processed DataFrame to a CSV file.
         """
-        df.to_csv(self.output_file, index=False)
-        print(f"Data saved to {self.output_file}")    
-
+        try:
+            df.to_csv(self.output_file)
+            status = f"Data saved to {self.output_file}"
+        except Exception as e:
+            status = f"Error saving data: {e}"
+        
+        return status  
