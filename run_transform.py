@@ -13,9 +13,24 @@ import database as db
 
 BASE_DIR = configs.BASE_DIR
 
-def print_html_from_args(args):
+def generate_output_all_sites(run_time=None, transformed=True):
     """
-    Print out an html table from the given args.
+    Generate html and csv output for all sites in the database.
+    """
+    try:
+        site_names = db.get_all_sites()["data"][0]
+    except Exception as e:
+        print(f"Error fetching sites from the database: {e}")
+        return None
+    for site_name in site_names:
+        try:
+            generate_output_from_config(site_name,run_time,transformed)
+        except:
+            pass
+
+def generate_output_from_args(args):
+    """
+    Print out an html table and csv output from the given args.
     """
     try:
         transformer = transform.Transform(
@@ -28,7 +43,7 @@ def print_html_from_args(args):
         )
 
         # print_html_from_config(args.siteName)
-        table = get_standard_wave_table(args.siteName)
+        table = get_standard_wave_table(args.siteName, args.run_time)
         df,header = transformer.process_wave_table(table)
         transformed_df = transformer.transform_df(df)
         status = transformer.save_to_file(transformed_df)
@@ -39,9 +54,9 @@ def print_html_from_args(args):
         print(f"Error transforming to html output: {e}")
         return None
 
-def print_html_from_config(site_name, run_time=None, transformed=True):
+def generate_output_from_config(site_name, run_time=None, transformed=True):
     """
-    Load the configuration parameters from the configuration file, if none exist print the standard table to file.
+    Load the configuration from config and output html and csv.
     """
     sites_info = read_config()
     table = get_standard_wave_table(site_name, run_time)
@@ -161,12 +176,16 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Process WaveTable parameters.')
     
     # Add all of your parameters here as arguments.
+    #--all paramater should be a switch to generate all sites output from config file, default should be off
+    parser.add_argument('--all', action='store_true', help='If used, generate all sites output from config file')
     parser.add_argument('--siteName', type=str, default='Dampier Salt - Cape Cuvier 7 days', help='Site Name')
     parser.add_argument('--theta_1', type=str, default='262', help='Theta 1')
     parser.add_argument('--theta_2', type=str, default='20', help='Theta 2')
     parser.add_argument('--multiplier', type=float, default=0.42, help='Multiplier')
     parser.add_argument('--attenuation', type=float, default=1.0, help='Attenuation')
     parser.add_argument('--thresholds', type=str, default="3,2.5,1.5", help='Thresholds')
+    parser.add_argument('--run_time', type=str, default=None, help='Run Time: YYYYMMDDHH')
+    parser.add_argument('--transformed', action='store_false', help='If used, Transformed=False')
 
     args = parser.parse_args()
     
@@ -176,10 +195,13 @@ def parse_arguments():
     return args        
 
 def main():
-    args = parse_arguments()  # Ensure this function is updated to use the refactored class attributes
+    args = parse_arguments()  
     
-    print_html_from_args(args)
-    # print_html_from_config(args.siteName)
+    if args.all:
+        generate_output_all_sites(run_time=args.run_time, transformed=args.transformed)
+    else:
+        generate_output_from_args(args)
+        # generate_output_from_config(args.siteName)
     
             
 if __name__ == '__main__':
