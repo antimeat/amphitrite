@@ -41,38 +41,42 @@ def print_html_from_args(args):
 
 def print_html_from_config(site_name, run_time=None, transformed=True):
     """
-    Load the configuration parameters from the configuration file.
+    Load the configuration parameters from the configuration file, if none exist print the standard table to file.
     """
     sites_info = read_config()
     table = get_standard_wave_table(site_name, run_time)
     
     # if the site is not in the config return the standard table
     if site_name not in sites_info or transformed is False:
-        return table
-    
-    try: 
-        site_data = sites_info[site_name]
-        transformer = transform.Transform(
-            site_name, 
-            site_data["western_theta"], 
-            site_data["eastern_theta"], 
-            site_data["multiplier"], 
-            site_data["attenuation"], 
-            [   
-                site_data["high_threshold"], 
-                site_data["medium_threshold"], 
-                site_data["low_threshold"]
-            ]
-        )
-        
+        transformer = transform.Transform(site_name, 180, 180, 1, 1, [3,2.5,2])
         df,header = transformer.process_wave_table(table)
-        transformed_df = transformer.transform_df(df)
+        transformer.save_to_file(df)
         html_table = transformer.transform_to_html_table(transformed_df)
         transformer.print_html_table(html_table)        
+    
+    else:
+        try: 
+            site_data = sites_info[site_name]
+            transformer = transform.Transform(
+                site_name, 
+                site_data["western_theta"], 
+                site_data["eastern_theta"], 
+                site_data["multiplier"], 
+                site_data["attenuation"], 
+                [   
+                    site_data["high_threshold"], 
+                    site_data["medium_threshold"], 
+                    site_data["low_threshold"]
+                ]
+            )
+            df,header = transformer.process_wave_table(table)
+            transformer.save_to_file(df)
+            transformed_df = transformer.transform_df(df)
+            html_table = transformer.transform_to_html_table(transformed_df)
+            transformer.print_html_table(html_table)        
         
-    except Exception as e:
-        print(f"Error transforming to html output: {e}")
-        return None
+        except Exception as e:
+            print(f"Error reading site transfomer info: {e}")            
 
 def load_from_config(site_name, run_time=None, transformed=True):
     """
