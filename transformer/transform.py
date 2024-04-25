@@ -274,13 +274,6 @@ class Transform:
         
         return df[new_columns]
 
-    def directional_hack(self, df):
-        """
-        Here we apply want to use cos bendage  rules to  
-
-        Args:
-            df (_type_): _description_
-        """
     def transform_df(self, df):
         """
         Applies transformations to wave height columns based on wave direction,
@@ -291,6 +284,7 @@ class Transform:
         
         # Identify columns related to wave heights and their corresponding directions
         hs_columns = [col for col in transformed_df.columns if "ht" in col and "seasw" not in col ] 
+        total_peak_dir = transformed_df["seasw_dir[degree]"].replace(0, 360)
         transformed_hs_list = []
 
         for hs_col in hs_columns:
@@ -300,18 +294,35 @@ class Transform:
             peak_dir = transformed_df[peak_dir_col]
             adjusted_hs = hs.copy()
             
-            if (peak_dir > self.theta_1) and (peak_dir < self.theta_2):
-                adjusted_hs = hs * self.multiplier
-            elif (peak_dir < self.theta_1) and (peak_dir > self.dir_land):
-                if (self.theta_1 - peak_dir) <= self.theta_min:
-                    peak_dir = self.theta_1 - self.theta_min
-                adjusted_hs = np.cos(np.radians(self.theta_1 - peak_dir)) * hs * self.multiplier
-                peak_dir = self.theta_1
-            else:
-                if (self.theta_2 + peak_dir) >= self.theta_min:
-                    peak_dir  = self.theta_min - self.theta_2
-                adjusted_hs = np.cos(np.radians(peak_dir - self.theta_2)) * hs * self.multiplier
-                peak_dir = self.theta_2
+            # Condition 1: Peak direction between theta_1 and theta_2
+            condition1 = (peak_dir > self.theta_1) | (peak_dir < self.theta_2)
+            adjusted_hs = np.where(condition1, hs * self.multiplier, adjusted_hs) 
+
+            # Condition 2: Peak direction less than theta_1 and greater than dir_land
+            condition2 = (peak_dir < self.theta_1) & (peak_dir > self.dir_land)
+            # Modify peak_dir if the condition is met and the angle difference is less than theta_min
+            peak_dir = np.where(condition2 & ((self.theta_1 - peak_dir) >= self.theta_min), 
+                                self.theta_1 - self.theta_min, 
+                                peak_dir)
+            # After possibly modifying peak_dir, apply the adjusted_hs formula
+            adjusted_hs = np.where(condition2, 
+                                    np.cos(np.radians(self.theta_1 - peak_dir)) * hs * self.multiplier, 
+                                    adjusted_hs)
+            # after setting hs, set peak_dir to theta_1 where condition2 is true
+            peak_dir = np.where(condition2, self.theta_1, peak_dir)
+
+            # Condition 3: Handles other cases
+            condition3 = ~(condition1 | condition2)
+            # Modify peak_dir if the sum is greater than theta_min
+            peak_dir = np.where(condition3 & ((self.theta_2 + peak_dir) >= self.theta_min),
+                                self.theta_min - self.theta_2,
+                                peak_dir)
+            # Apply the adjusted_hs formula
+            adjusted_hs = np.where(condition3, 
+                                    np.cos(np.radians(peak_dir - self.theta_2)) * hs * self.multiplier, 
+                                    adjusted_hs)
+            # Set peak_dir to theta_2 where condition3 is true
+            peak_dir = np.where(condition3, self.theta_2, peak_dir)
             
             # finalise the dirs
             peak_dir = peak_dir.astype(int)
@@ -325,27 +336,32 @@ class Transform:
             transformed_df[hs_col] = np.round(adjusted_hs, 2)
             transformed_hs_list.append(adjusted_hs)
             
-            
-            
         # Combine transformed heights to calculate the combined wave height metric
         if transformed_hs_list:
+            #sort out the hs total
             hs_combined = np.sqrt(sum([np.power(hs,2) for hs in transformed_hs_list]))
             transformed_df["seasw_ht[m]"] = np.round(hs_combined, 2)
             
-            #convert the seasw_dir to the transformed direction
-            peak_dir = transformed_df["seasw_dir[degree]"]    
-            rad_peak_dir = np.radians(peak_dir)
-            
-            peak_dir = np.where(
-                ((rad_peak_dir < np.radians(self.theta_1)) & (rad_peak_dir > np.pi)),
-                int(self.theta_1), peak_dir.astype(int)
-            )
-            
-            peak_dir = np.where(
-                ((rad_peak_dir > np.radians(self.theta_2)) & (rad_peak_dir < np.pi)),
-                int(self.theta_2), peak_dir.astype(int)
-            )
-            transformed_df["seasw_dir[degree]"] = peak_dir
+            # Condition 1: No change if within the limits
+            condition1 = (total_peak_dir > self.theta_1) & (total_peak_dir < self.theta_2)
+            # Nothing happens in the pass statement, so we don't need to handle this in np.where
+
+            # Condition 2: Adjust total_peak_dir if less than theta_1 and greater than dir_land
+            condition2 = (total_peak_dir < self.theta_1) & (total_peak_dir > self.dir_land)
+            # Adjust total_peak_dir to theta_1 - theta_min if the difference is less than or equal to theta_min
+            total_peak_dir = np.where(condition2 & ((self.theta_1 - total_peak_dir) >= self.theta_min),
+                                    self.theta_1 - self.theta_min, total_peak_dir)
+            # Set total_peak_dir to theta_1
+            total_peak_dir = np.where(condition2, self.theta_1, total_peak_dir)
+
+            # Condition 3: Adjust total_peak_dir for other cases
+            condition3 = ~(condition1 | condition2)
+            # Adjust total_peak_dir to theta_min - theta_2 if the sum of theta_2 and total_peak_dir is greater than or equal to theta_min
+            total_peak_dir = np.where(condition3 & ((self.theta_2 + total_peak_dir) >= self.theta_min),
+                                    self.theta_min - self.theta_2, total_peak_dir)
+            # Set total_peak_dir to theta_2
+            total_peak_dir = np.where(condition3, self.theta_2, total_peak_dir)
+            transformed_df["seasw_dir[degree]"] = total_peak_dir.astype(int)
         
         return transformed_df
 
