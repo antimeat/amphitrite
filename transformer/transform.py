@@ -25,17 +25,19 @@ class Transform:
     Class for generating modified wave/swell tables from an API source.
     """
     
-    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', theta_1=262, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
+    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', dir_land=90,theta_1=262, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
         """
         Initialize the WaveTable object with site details and processing parameters.
         """
         self.site_name = site_name
+        self.dir_land = float(dir_land)
         self.theta_1 = float(theta_1)
         self.theta_2 = float(theta_2)
         self.multiplier = float(multiplier)
         self.attenuation = float(attenuation)
         self.thresholds = [float(x) for x in thresholds]
         self.output_file = os.path.join(BASE_DIR,'tables/{}_data.csv'.format(self.site_name.replace(' ', '_').replace('-', '')))
+        self.theta_min = 80
 
     def transform_to_table(self, df, header):
         """
@@ -188,7 +190,8 @@ class Transform:
         df[swell_height_columns + swell_direction_columns + swell_period_columns] = df[swell_height_columns + swell_direction_columns + swell_period_columns].apply(pd.to_numeric, errors='coerce')
 
         # Formatting dictionaries for different column types
-        formatter = {col: "{:.2f}" for col in swell_height_columns + swell_period_columns}
+        formatter = {col: "{:.2f}" for col in swell_height_columns}
+        formatter.update({col: "{:d}" for col in swell_period_columns if pd.api.types.is_numeric_dtype(df[col])})
         formatter.update({col: "{:d}" for col in swell_direction_columns if pd.api.types.is_numeric_dtype(df[col])})
 
         # Styling and formatting the DataFrame for HTML
@@ -246,11 +249,11 @@ class Transform:
         #create a list of columns to use and reorder
         columns = ['day','hour',
                     'seasw_ht[m]', 'seasw_dir[degree]', 'seasw_pd[s]', 'blank',
-                    'sea_ht[m]', 'sea_dir[degree]', 'sea_pd[s]',
+                    'sea_ht[m]', 'sea_pd[s]', 'sea_dir[degree]',
                     ]
         new_columns = ['day','hour',
-                    'seasw_ht', 'seasw_dir', 'seasw_pd', 'blank',
-                    'sea_ht', 'sea_dir', 'sea_pd',
+                    'seasw_ht', 'seasw_pd', 'seasw_dir', 'blank',
+                    'sea_ht', 'sea_pd', 'sea_dir',
                     ]
         
         for i in range(1,num_swells + 1):
@@ -271,6 +274,13 @@ class Transform:
         
         return df[new_columns]
 
+    def directional_hack(self, df):
+        """
+        Here we apply want to use cos bendage  rules to  
+
+        Args:
+            df (_type_): _description_
+        """
     def transform_df(self, df):
         """
         Applies transformations to wave height columns based on wave direction,
@@ -278,7 +288,7 @@ class Transform:
         and adds a new column for the combined significant wave height.
         """
         transformed_df = df.copy()
-
+        
         # Identify columns related to wave heights and their corresponding directions
         hs_columns = [col for col in transformed_df.columns if "ht" in col and "seasw" not in col ] 
         transformed_hs_list = []
@@ -288,43 +298,34 @@ class Transform:
             peak_pd_col = hs_col.split("_")[0] + "_pd[s]"
             hs = transformed_df[hs_col]
             peak_dir = transformed_df[peak_dir_col]
+            adjusted_hs = hs.copy()
             
-            # Convert peak direction to radians for trigonometric calculations
-            rad_peak_dir = np.radians(peak_dir)
-
-            # Apply cosine adjustments based on direction thresholds
-            adjusted_hs = hs.copy()  # Start with original heights
+            if (peak_dir > self.theta_1) and (peak_dir < self.theta_2):
+                adjusted_hs = hs * self.multiplier
+            elif (peak_dir < self.theta_1) and (peak_dir > self.dir_land):
+                if (self.theta_1 - peak_dir) <= self.theta_min:
+                    peak_dir = self.theta_1 - self.theta_min
+                adjusted_hs = np.cos(np.radians(self.theta_1 - peak_dir)) * hs * self.multiplier
+                peak_dir = self.theta_1
+            else:
+                if (self.theta_2 + peak_dir) >= self.theta_min:
+                    peak_dir  = self.theta_min - self.theta_2
+                adjusted_hs = np.cos(np.radians(peak_dir - self.theta_2)) * hs * self.multiplier
+                peak_dir = self.theta_2
             
-            # Applying the bendage rules adjustment for theta_1 and theta_2
-            adjusted_hs = np.where(
-                ((rad_peak_dir < np.radians(self.theta_1)) & (rad_peak_dir > np.pi)),
-                np.cos(rad_peak_dir - np.radians(self.theta_1)) * hs, adjusted_hs
-            )
-
-            adjusted_hs = np.where(
-                ((rad_peak_dir > np.radians(self.theta_2)) & (rad_peak_dir < np.pi)),
-                np.cos(rad_peak_dir - np.radians(self.theta_2)) * hs, adjusted_hs
-            )
-
-            #magical multiplier, attenuation
-            adjusted_hs = adjusted_hs * self.multiplier
+            # finalise the dirs
+            peak_dir = peak_dir.astype(int)
+            transformed_df[peak_dir_col] = peak_dir
+                
+            #magical attenuation for period
             transformed_df[peak_pd_col] = transformed_df[peak_pd_col] * self.attenuation
+            transformed_df[peak_pd_col] = transformed_df[peak_pd_col].astype(int)
             
             # Update the DataFrame with transformed wave heights for each column
             transformed_df[hs_col] = np.round(adjusted_hs, 2)
             transformed_hs_list.append(adjusted_hs)
             
-            #convert to transformed dir
-            peak_dir = np.where(
-                ((rad_peak_dir < np.radians(self.theta_1)) & (rad_peak_dir > np.pi)),
-                int(self.theta_1), peak_dir.astype(int)
-            )
             
-            peak_dir = np.where(
-                ((rad_peak_dir > np.radians(self.theta_2)) & (rad_peak_dir < np.pi)),
-                int(self.theta_2), peak_dir.astype(int)
-            )
-            transformed_df[peak_dir_col] = peak_dir
             
         # Combine transformed heights to calculate the combined wave height metric
         if transformed_hs_list:

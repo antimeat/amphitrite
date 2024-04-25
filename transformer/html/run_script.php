@@ -104,26 +104,27 @@
 		    $criteria_2 = $_REQUEST["criteria_2"];
 		    $criteria_3 = $_REQUEST["criteria_3"];
 			
-			/*
-			echo $theta;
-			echo '<br>';
-			echo $modelName;
-			echo '<br>';
-			*/
-			
-			#command to execute
-			$cmd = 'cd ' . $BASE_DIR . ' && '. $BASE_DIR . 'run_transform.py';
-			
+			$save_option = "--nosave";  
+
+			if (isset($_REQUEST["save_output"])) {
+				$save_output = ""; 
+			}
+
+			# Command to execute
+			$cmd = 'cd ' . $BASE_DIR . ' && ' . $BASE_DIR . 'run_transform.py';
+
 			ob_start();
 
+			// Execute command with the conditionally determined --nosave option
 			passthru("$cmd "
-                . "--siteName '$siteName' "
-                . "--theta_1 '$theta1' "
-                . "--theta_2 '$theta2' "
-                . "--multiplier '$multiplier' "
-                . "--attenuation '$attenuation' "
-                . "--thresholds '$criteria_1,$criteria_2,$criteria_3'"
-            );
+				. "--siteName '$siteName' "
+				. "--theta_1 '$theta1' "
+				. "--theta_2 '$theta2' "
+				. "--multiplier '$multiplier' "
+				. "--attenuation '$attenuation' "
+				. "--thresholds '$criteria_1,$criteria_2,$criteria_3' "
+				. $save_option
+			);
 
 			$buffer = ob_get_contents();
 			ob_end_clean();

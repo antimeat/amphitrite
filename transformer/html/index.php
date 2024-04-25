@@ -14,7 +14,7 @@
 	        text-align: left;
 	        display: inline-block;
 	        vertical-align: middle;
-            width: 50%;
+            width: 30%;
         }
         input[type="radio"] {
 	        vertical-align: left;
@@ -48,6 +48,8 @@
             <fieldset align="center">	
 	            <legend align= "center">Input</legend>
 	            <table border=0>		
+                    <tr><td><hr></td><td><hr></td></tr>
+        
                     <tr>
                         <td>
                             Site:
@@ -55,7 +57,9 @@
                         <td>
                             <div id="sites" style: "display:inline-block;"></div>
                         </td>
-                    </tr>    
+                    </tr> 
+                    <tr><td><hr></td><td><hr></td></tr>
+   
                     <!-- <tr>
                         <td>
                             Table:
@@ -95,14 +99,20 @@
                         </td>
                     </tr> -->
                     <tr>
-	                    <td><label for="criteria_1">Threshold criteria (m) (colour highlights): </label></td>
+	                    <td><label for="criteria_1">Threshold criteria (m): </label></td>
 	                    <td>
                             <input type="number" id=criteria_1 name=criteria_1 step="0.05" min="0.1" max="5" value="3" style="background-color: red">		                        
                             <input type="number" id=criteria_2 name=criteria_2 step="0.05" min="0.1" max="4" value="2.5" style="background-color: gold">		                        
                             <input type="number" id=criteria_3 name=criteria_3 step="0.05" min="0.1" max="3" value="2.0" style="background-color: lightgreen">		                        		                    
 	                    </td>
                     </tr>		
-                       
+                    <tr>
+                    <tr><td><hr></td><td><hr></td></tr>
+                    <td><label for="save_output">Save output:</label></td>
+                        <td><input type="checkbox" id="save_output" name="save_output"></td>
+                    </tr>
+                    <tr><td><hr></td><td><hr></td></tr>
+                            
                 </table>
                
                 <table>

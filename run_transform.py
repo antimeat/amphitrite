@@ -35,6 +35,7 @@ def generate_output_from_args(args):
     try:
         transformer = transform.Transform(
             site_name=args.siteName,
+            dir_land=args.dir_land,
             theta_1=args.theta_1,
             theta_2=args.theta_2,
             multiplier=args.multiplier,
@@ -46,7 +47,10 @@ def generate_output_from_args(args):
         table = get_standard_wave_table(args.siteName, args.run_time)
         df,header = transformer.process_wave_table(table)
         transformed_df = transformer.transform_df(df)
-        status = transformer.save_to_file(transformed_df)
+        
+        if not args.nosave:
+            status = transformer.save_to_file(transformed_df)
+        
         html_table = transformer.transform_to_html_table(transformed_df)
         transformer.print_html_table(html_table)        
         
@@ -74,6 +78,7 @@ def generate_output_from_config(site_name, run_time=None, transformed=True):
             site_data = sites_info[site_name]
             transformer = transform.Transform(
                 site_name, 
+                site_data["dir_land"],
                 site_data["western_theta"], 
                 site_data["eastern_theta"], 
                 site_data["multiplier"], 
@@ -108,6 +113,7 @@ def load_from_config(site_name, run_time=None, transformed=True):
         site_data = sites_info[site_name]
         transformer = transform.Transform(
             site_name, 
+            site_data["dir_land"],
             site_data["western_theta"], 
             site_data["eastern_theta"], 
             site_data["multiplier"], 
@@ -141,13 +147,14 @@ def read_config():
         #create a json object from each line of the config file
         sites = {
             parts[0].strip(): {  # Use the "site" value as the key
-                "western_theta": parts[1].strip(),
-                "eastern_theta": parts[2].strip(),
-                "multiplier": parts[3].strip(),
-                "attenuation": parts[4].strip(),
-                "high_threshold": parts[5].strip(),
-                "medium_threshold": parts[6].strip(),
-                "low_threshold": parts[7].strip(),
+                "dir_land": parts[1].strip(),
+                "western_theta": parts[2].strip(),
+                "eastern_theta": parts[3].strip(),
+                "multiplier": parts[4].strip(),
+                "attenuation": parts[5].strip(),
+                "high_threshold": parts[6].strip(),
+                "medium_threshold": parts[7].strip(),
+                "low_threshold": parts[8].strip(),
             }
             for line in config
             for parts in [line.split(",")]  # Split once and use multiple times, then strip whitespace
@@ -179,13 +186,15 @@ def parse_arguments():
     #--all paramater should be a switch to generate all sites output from config file, default should be off
     parser.add_argument('--all', action='store_true', help='If used, generate all sites output from config file')
     parser.add_argument('--siteName', type=str, default='Dampier Salt - Cape Cuvier 7 days', help='Site Name')
+    parser.add_argument('--dir_land', type=str, default='90', help='Dirction towards land.')
     parser.add_argument('--theta_1', type=str, default='262', help='Theta 1')
     parser.add_argument('--theta_2', type=str, default='20', help='Theta 2')
     parser.add_argument('--multiplier', type=float, default=0.42, help='Multiplier')
     parser.add_argument('--attenuation', type=float, default=1.0, help='Attenuation')
     parser.add_argument('--thresholds', type=str, default="3,2.5,1.5", help='Thresholds')
     parser.add_argument('--run_time', type=str, default=None, help='Run Time: YYYYMMDDHH')
-    parser.add_argument('--transformed', action='store_false', help='If used, Transformed=False')
+    parser.add_argument('--notrans', action='store_false', help='If used, Transformed=False')
+    parser.add_argument('--nosave', action='store_false', help='If used, dont save the file to disk')
 
     args = parser.parse_args()
     
@@ -198,7 +207,7 @@ def main():
     args = parse_arguments()  
     
     if args.all:
-        generate_output_all_sites(run_time=args.run_time, transformed=args.transformed)
+        generate_output_all_sites(run_time=args.run_time, transformed=args.notrans)
     else:
         generate_output_from_args(args)
         # generate_output_from_config(args.siteName)
