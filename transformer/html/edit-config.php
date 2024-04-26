@@ -35,15 +35,16 @@
                 }
 
                 $site = $parts[0];
-                $western_theta = $parts[1];
-                $eastern_theta = $parts[2];
-                $multiplier = $parts[3];
-                $attenuation = $parts[4];
-                $high = $parts[5];
-                $mid = $parts[6];
-                $low = $parts[7];
+                $theta_split = $parts[1];
+                $theta_1 = $parts[2];
+                $theta_2 = $parts[3];
+                $multiplier = $parts[4];
+                $attenuation = $parts[5];
+                $high = $parts[6];
+                $mid = $parts[7];
+                $low = $parts[8];
                 
-                $siteData[$site] = array("western_theta" => $western_theta, "eastern_theta" => $eastern_theta, "multiplier" => $multiplier, "attenuation" => $attenuation, "high" => $high, "mid" => $mid, "low" => $low);
+                $siteData[$site] = array("theta_split" => $theta_split, "theta_1" => $theta_1, "theta_2" => $theta_2, "multiplier" => $multiplier, "attenuation" => $attenuation, "high" => $high, "mid" => $mid, "low" => $low);
             }
 
             fclose($file);
@@ -58,7 +59,7 @@
         // Prepare sites data for display in the textarea
         $sitesDisplay = '';
         foreach ($siteData as $site => $info) {
-            $sitesDisplay .= $site . ', ' . $info['western_theta'] . ', ' . $info['eastern_theta'] . ', ' . $info['multiplier'] . ', ' . $info['attenuation'] . ', ' . $info['high'] . ', ' . $info['mid'] . ', ' . $info['low'];
+            $sitesDisplay .= $site .  ', ' . $info['theta_split'] . ', ' . $info['theta_1'] . ', ' . $info['theta_2'] . ', ' . $info['multiplier'] . ', ' . $info['attenuation'] . ', ' . $info['high'] . ', ' . $info['mid'] . ', ' . $info['low'];
             $sitesDisplay .= "\n";
         }
 

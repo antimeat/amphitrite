@@ -25,12 +25,12 @@ class Transform:
     Class for generating modified wave/swell tables from an API source.
     """
     
-    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', dir_land=90,theta_1=262, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
+    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', theta_split=90,theta_1=262, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
         """
         Initialize the WaveTable object with site details and processing parameters.
         """
         self.site_name = site_name
-        self.dir_land = float(dir_land)
+        self.theta_split = float(theta_split)
         self.theta_1 = float(theta_1)
         self.theta_2 = float(theta_2)
         self.multiplier = float(multiplier)
@@ -39,6 +39,33 @@ class Transform:
         self.output_file = os.path.join(BASE_DIR,'tables/{}_data.csv'.format(self.site_name.replace(' ', '_').replace('-', '')))
         self.theta_min = 80
 
+    def check_config(self):
+        """
+        Check the configuration settings are valid for the transformer.
+        """
+        # first check form thetas = 0 (default value to bail the transformer)
+        if self.theta_1 == self.theta_2 == 0:
+            return False
+        
+        # now we set thetas to the reference setup and check if they are valid
+        theta_rot = self.rotation_theta()
+        
+        # Rotate theta_1 and theta_2, and replace 0 with 360
+        rot_theta_1 = np.mod(self.theta_1 + theta_rot, 360)
+        rot_theta_1 = 360 if rot_theta_1 == 0 else rot_theta_1
+
+        rot_theta_2 = np.mod(self.theta_2 + theta_rot, 360)
+        rot_theta_2 = 360 if rot_theta_2 == 0 else rot_theta_2
+        
+        rot_theta_split = np.mod(self.theta_split + theta_rot, 360)
+        rot_theta_split = 360 if rot_theta_split == 0 else rot_theta_split
+        
+        #check if thetas are valid
+        if (rot_theta_1 <= rot_theta_2) or (rot_theta_1 <= rot_theta_split) or (rot_theta_2 >= rot_theta_split):
+            return False       
+        
+        return True
+        
     def transform_to_table(self, df, header):
         """
         Transforms the DataFrame into a formatted table for output.
@@ -274,16 +301,53 @@ class Transform:
         
         return df[new_columns]
 
+    def rotation_theta(self):
+        """
+        Determine the angle to rotate everything such that we have a reference of theta_2 = 10 deg
+        """
+        theta = np.abs(360 - self.theta_2) + 10
+        return theta
+    
+    def rotate_dirs(self, dirs, theta_rot):
+        """
+        Take the peak directions and rotate them by the angle determined by theta_rot.
+
+        Args:
+            dirs (pd.Series): directions to rotate
+        """
+        # Rotate directions and wrap around using modulo 360
+        rot_dirs = np.mod(dirs + theta_rot, 360)
+        
+        # Replace 0 with 360 directly using numpy where function
+        rot_dirs = np.where(rot_dirs == 0, 360, rot_dirs).astype(int)
+        
+        # Rotate theta_1 and theta_2, and replace 0 with 360
+        rot_theta_1 = np.mod(self.theta_1 + theta_rot, 360)
+        rot_theta_1 = 360 if rot_theta_1 == 0 else rot_theta_1
+
+        rot_theta_2 = np.mod(self.theta_2 + theta_rot, 360)
+        rot_theta_2 = 360 if rot_theta_2 == 0 else rot_theta_2
+        
+        rot_theta_split = np.mod(self.theta_split + theta_rot, 360)
+        rot_theta_split = 360 if rot_theta_split == 0 else rot_theta_split
+        
+        return rot_dirs, rot_theta_split, rot_theta_1, rot_theta_2
+
     def transform_df(self, df):
         """
         Applies transformations to wave height columns based on wave direction,
         updates the individual height columns in the DataFrame with their transformed values,
         and adds a new column for the combined significant wave height.
         """
+        
+        # this is our last chance to bail if thetas are not valid, return the df as is if not valid
+        if not self.check_config():
+            return df
+        
         transformed_df = df.copy()
         
         # Identify columns related to wave heights and their corresponding directions
-        hs_columns = [col for col in transformed_df.columns if "ht" in col and "seasw" not in col ] 
+        hs_columns = [col for col in transformed_df.columns if "ht" in col] 
         total_peak_dir = transformed_df["seasw_dir[degree]"].replace(0, 360)
         transformed_hs_list = []
 
@@ -294,74 +358,50 @@ class Transform:
             peak_dir = transformed_df[peak_dir_col]
             adjusted_hs = hs.copy()
             
-            # Condition 1: Peak direction between theta_1 and theta_2
-            condition1 = (peak_dir > self.theta_1) | (peak_dir < self.theta_2)
-            adjusted_hs = np.where(condition1, hs * self.multiplier, adjusted_hs) 
-
-            # Condition 2: Peak direction less than theta_1 and greater than dir_land
-            condition2 = (peak_dir < self.theta_1) & (peak_dir > self.dir_land)
-            # Modify peak_dir if the condition is met and the angle difference is less than theta_min
-            peak_dir = np.where(condition2 & ((self.theta_1 - peak_dir) >= self.theta_min), 
-                                self.theta_1 - self.theta_min, 
-                                peak_dir)
-            # After possibly modifying peak_dir, apply the adjusted_hs formula
-            adjusted_hs = np.where(condition2, 
-                                    np.cos(np.radians(self.theta_1 - peak_dir)) * hs * self.multiplier, 
-                                    adjusted_hs)
-            # after setting hs, set peak_dir to theta_1 where condition2 is true
-            peak_dir = np.where(condition2, self.theta_1, peak_dir)
-
-            # Condition 3: Handles other cases
-            condition3 = ~(condition1 | condition2)
-            # Modify peak_dir if the sum is greater than theta_min
-            peak_dir = np.where(condition3 & ((self.theta_2 + peak_dir) >= self.theta_min),
-                                self.theta_min - self.theta_2,
-                                peak_dir)
-            # Apply the adjusted_hs formula
-            adjusted_hs = np.where(condition3, 
-                                    np.cos(np.radians(peak_dir - self.theta_2)) * hs * self.multiplier, 
-                                    adjusted_hs)
-            # Set peak_dir to theta_2 where condition3 is true
-            peak_dir = np.where(condition3, self.theta_2, peak_dir)
+            #rotate all the dirs to our reference setup using theta_2 = 10
+            theta_rotate = self.rotation_theta()
+            peak_dir_rotated, theta_split_rotated, theta_1_rotated, theta_2_rotated = self.rotate_dirs(peak_dir, theta_rotate)
+            
+            # Condition 1: Peak direction between theta_1 and theta_split_rotated
+            condition_1 = ((peak_dir_rotated < theta_1_rotated) & (peak_dir_rotated > theta_split_rotated))
+            peak_dir_rotated = np.where(condition_1 & ((theta_1_rotated - peak_dir_rotated) >= self.theta_min), theta_1_rotated - self.theta_min, peak_dir_rotated)
+            adjusted_hs = np.where(condition_1, np.cos(np.radians(theta_1_rotated - peak_dir_rotated)) * hs, adjusted_hs)
+            peak_dir_rotated = np.where(condition_1, theta_1_rotated, peak_dir_rotated)
+                                    
+            # Condition 2: Peak direction between theta_2 and theta_split_rotated
+            condition_2 = (peak_dir_rotated > theta_2_rotated) & (peak_dir_rotated < theta_split_rotated)
+            peak_dir_rotated = np.where(condition_2 & ((peak_dir_rotated - theta_2_rotated) >= self.theta_min), theta_2_rotated + self.theta_min, peak_dir_rotated)
+            adjusted_hs = np.where(condition_2, np.cos(np.radians(peak_dir_rotated - theta_2_rotated)) * hs, adjusted_hs)
+            peak_dir_rotated = np.where(condition_2, theta_2_rotated, peak_dir_rotated)
+            
+            #unrotate the dirs back to the original setup
+            peak_dir, theta_split, theta_1, theta_2 = self.rotate_dirs(peak_dir_rotated, -theta_rotate)
             
             # finalise the dirs
-            peak_dir = peak_dir.astype(int)
             transformed_df[peak_dir_col] = peak_dir
-                
-            #magical attenuation for period
-            transformed_df[peak_pd_col] = transformed_df[peak_pd_col] * self.attenuation
-            transformed_df[peak_pd_col] = transformed_df[peak_pd_col].astype(int)
+
+            #dont include the total_hs to a few calcs
+            if "seasw" not in hs_col:
+                #magical attenuation and multiplier for period and hs
+                transformed_df[peak_pd_col] = transformed_df[peak_pd_col] * self.attenuation
+                adjusted_hs = adjusted_hs * self.multiplier
+                transformed_df[hs_col] = np.round(adjusted_hs, 2)
+                transformed_hs_list.append(adjusted_hs)
+            else:
+                transformed_df[hs_col] = np.round(hs, 2)
             
-            # Update the DataFrame with transformed wave heights for each column
-            transformed_df[hs_col] = np.round(adjusted_hs, 2)
-            transformed_hs_list.append(adjusted_hs)
+            # finalise some rounding
+            transformed_df[peak_dir_col] = transformed_df[peak_dir_col].astype(int)
+            transformed_df[peak_pd_col] = transformed_df[peak_pd_col].astype(int)
+        
+        
             
         # Combine transformed heights to calculate the combined wave height metric
         if transformed_hs_list:
+            
             #sort out the hs total
             hs_combined = np.sqrt(sum([np.power(hs,2) for hs in transformed_hs_list]))
-            transformed_df["seasw_ht[m]"] = np.round(hs_combined, 2)
-            
-            # Condition 1: No change if within the limits
-            condition1 = (total_peak_dir > self.theta_1) & (total_peak_dir < self.theta_2)
-            # Nothing happens in the pass statement, so we don't need to handle this in np.where
-
-            # Condition 2: Adjust total_peak_dir if less than theta_1 and greater than dir_land
-            condition2 = (total_peak_dir < self.theta_1) & (total_peak_dir > self.dir_land)
-            # Adjust total_peak_dir to theta_1 - theta_min if the difference is less than or equal to theta_min
-            total_peak_dir = np.where(condition2 & ((self.theta_1 - total_peak_dir) >= self.theta_min),
-                                    self.theta_1 - self.theta_min, total_peak_dir)
-            # Set total_peak_dir to theta_1
-            total_peak_dir = np.where(condition2, self.theta_1, total_peak_dir)
-
-            # Condition 3: Adjust total_peak_dir for other cases
-            condition3 = ~(condition1 | condition2)
-            # Adjust total_peak_dir to theta_min - theta_2 if the sum of theta_2 and total_peak_dir is greater than or equal to theta_min
-            total_peak_dir = np.where(condition3 & ((self.theta_2 + total_peak_dir) >= self.theta_min),
-                                    self.theta_min - self.theta_2, total_peak_dir)
-            # Set total_peak_dir to theta_2
-            total_peak_dir = np.where(condition3, self.theta_2, total_peak_dir)
-            transformed_df["seasw_dir[degree]"] = total_peak_dir.astype(int)
+            transformed_df["seasw_ht[m]"] = np.round(hs_combined, 2)            
         
         return transformed_df
 

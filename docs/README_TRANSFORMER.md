@@ -2,45 +2,52 @@
 title: README for Transformer
 ---
 
-# Wave Transformation Package
+# Amphitrite swell table transformation
 
-This Python package is designed to scrape, transform, and save wave data tables for specified locations and conditions. It leverages BeautifulSoup for web scraping and pandas for data manipulation.
+This package sits under Amphitrite is designed pull the swell partition tables stored in the Amphitrite database and apply a transformation on the tables. Table output is used by Amphitrite on demand API as well as saved in `csv` format for ingesting to Vulture
 
 ## Features
 
--   Scrapes wave data tables from specified URLs.
+-   Dashboard for configuration and interogation of the configs and the output.
 -   Applies transformations based on user-defined parameters such as direction angles, multipliers, and attenuation.
--   Calculates significant wave heights with customizable threshold settings.
--   Outputs modified wave data to CSV files for further analysis or reporting.
+-   Outputs modified transformed swell tables to html and csv, further used form ingesting to Vulture and Amphitrite.
 
-## Requirements
+## Algorithm
 
--   Python 3.x
--   BeautifulSoup4
--   pandas
--   numpy
--   urllib
--   ssl
+<div align="left">
+    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="60%"/>
+</div>
 
 ## Usage
 
-To use the WaveTable class and its functionalities, you can run the main script from the command line with optional arguments to customize the transformation process.
+The transformer execution script sits under the root directory of the Amphitrite package
+
+-   `run_transformer.py`
 
 ### Command Line Arguments
 
+-   `--all`: If used, generate all sites output from config file (default: not used)
 -   `--siteName`: The name of the site (default: "Dampier Salt - Cape Cuvier 7 days").
--   `--tableName`: The specific table to scrape from the site (default: "Cape_Cuvier_Offshore").
--   `--theta_1` Western angle for direction transformation
--   `--theta_2`: Eastern angle for direction transformation
+-   `--dir_land`: The average dirction towards the land (default: 90)
+-   `--theta_1` Western angle for direction transformation (default: 262)
+-   `--theta_2`: Eastern angle for direction transformation (default: 20)
 -   `--multiplier`: Multiplier for the wave heights (default: 1.0).
 -   `--attenuation`: Attenuation factor for the wave periods (default: 1.0).
--   `--model`: Model type for the data scraping, can be "long" or "short" (default: "long").
 -   `--thresholds`: 3 comma-separated threshold values for significant wave heights (default: "0.3,0.2,0.15").
+-   `--run_time`: Optionally pass a run Time: YYYYMMDDHH (default: None)
+-   `--notrans`: If used, Transformed=False (default: not used)
+-   `--nosave`: If used, dont save the file to disk (default: not used)
 
 ### Running the Script
 
 ```bash
-./waveTable.py --siteName "Dampier Salt - Cape Cuvier" --tableName "Your_Table_Name" --theta_1 260 --theta_2 020 --multiplier 1.0 --attenuation 1.0 --model long --thresholds "0.3,0.2,0.15"
+./run_transformer.py --siteName "Dampier Salt - Cape Cuvier" --tableName "Your_Table_Name" --dir_land 90 --theta_1 260 --theta_2 020 --multiplier 1.0 --attenuation 1.0 --thresholds "0.3,0.2,0.15"
+```
+
+To execute transformation of all configured sites
+
+```bash
+./run_transformer.py --all
 ```
 
 ## Configuration
@@ -49,7 +56,41 @@ Edit `transformer_configs.py` to set base directories or other global settings.
 
 ## Output
 
-The script generates a CSV file with the transformed wave data in the specified output directory. It also prints an HTML table to the console for quick review.
+The script generates a CSV file with the transformed wave data in the specified output directory. It also prints an HTML table to the console for quick review. HTML output now going to the Gerling Hanson map for visulalisation
+
+### File Descriptions
+
+**api.cgi**:
+
+-   CGI script for the API.
+
+**save_transformer_config**:
+
+-   Script to handle saving editied transform configuration data from the dashboard to a config text file that is used by the transformer.
+
+**sites.py**:
+
+-   Script to return active Ofcast sites.
+
+**transform.py**:
+
+-   Module that contains the main Transfrom class
+
+**transformer_configs.py**:
+
+-   Module used for site configuration paths
+
+**transformer_site_configs.txt**:
+
+-   Text file containing the config parameters
+
+**html/**:
+
+-   Dashboard php and config files
+
+**docs/**:
+
+-   Documentation kept here
 
 ## Author
 

@@ -23,7 +23,6 @@ def pandoc_markdown_to_html(md_file_path, css_file="github-markdown.css"):
     command = [
         "pandoc", 
         "--standalone",
-        "--embed-resource",
         "--from", "gfm", 
         "--to", "html", 
         "--css", css_file, 

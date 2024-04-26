@@ -220,8 +220,8 @@ def rangePartition_old(filename, site, start, end):
     
     """
     # a fudge factor that was discovered through trial and error to match hs from def onePartition()
-    if start > 5:
-        start += 0.1
+    # if start > 5:
+    #     start += 0.1
         
     #read in file
     ws = amendVariablesNames(filename, site)
@@ -268,8 +268,8 @@ def rangePartition(filename, site, start, end):
     
     """
     # a fudge factor that was discovered through trial and error to match hs from def onePartition()
-    if start > 5:
-        start += 0.1
+    # if start > 5:
+    #     start += 0.1
         
     try: 
         #read in file
@@ -338,13 +338,16 @@ def get_dp(df, group_col='time', x_col='efth', y_col='dir'):
     Returns:
         pd.DataFrame: Dataframe containing Tp
     """
+    df_copy = df.copy()
+
     try:
-        max_x_rows = df.loc[df.groupby(group_col)[x_col].idxmax()]
-        result = max_x_rows[y_col]
-        dp = pd.DataFrame(np.round(result, 2))
+        result = df_copy.groupby([group_col, y_col])[x_col].sum().reset_index()
+        result = result.loc[result.groupby(group_col)[x_col].idxmax()]
+        
+        dp = pd.DataFrame(np.round(result['dir'].values, 2))
         dp.index = df[group_col].unique()
         dp.columns = ['Dp']
-
+    
     except Exception as e:
         print(f"Error in get_dp: {e}")
         return None

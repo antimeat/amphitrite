@@ -95,9 +95,10 @@
 		    include('configs.php');
 			$theta1 = $_REQUEST["theta1"];
 			$theta2 = $_REQUEST["theta2"];
+			$theta_split = $_REQUEST["theta_split"];
 			$multiplier = $_REQUEST["multiplier"];
 			$attenuation = $_REQUEST["attenuation"];
-			// $modelName = $_REQUEST["model"];
+			
             // $tableName = $_REQUEST["table_select"];
             $siteName = $_REQUEST["site_select"];
             $criteria_1 = $_REQUEST["criteria_1"];
@@ -120,6 +121,7 @@
 				. "--siteName '$siteName' "
 				. "--theta_1 '$theta1' "
 				. "--theta_2 '$theta2' "
+				. "--theta_split '$theta_split' "
 				. "--multiplier '$multiplier' "
 				. "--attenuation '$attenuation' "
 				. "--thresholds '$criteria_1,$criteria_2,$criteria_3' "

@@ -60,22 +60,17 @@
                     </tr> 
                     <tr><td><hr></td><td><hr></td></tr>
    
-                    <!-- <tr>
-                        <td>
-                            Table:
-                        </td>
-                        <td>
-                            <div id="tables" style: "display:inline-block;">
-                            </div>
-                        </td>
-                    </tr>     -->
                     <tr>
-	                    <td><label for="theta1">Angle for western side: </label></td>
-	                    <td><input type="number" id=theta1 name=theta1 size="5" min="0" max="360" value="180"></td>
+	                    <td><label for="theta1">Angle for &#952;<sub>1</sub>: </label></td>
+	                    <td><input type="number" id=theta1 name=theta1 size="5" min="0" max="360" value="0"></td>
                     </tr>		
                     <tr>
-	                    <td><label for="theta2">Angle for eastern side: </label></td>
-	                    <td><input type="number" id=theta2 name=theta2 size="5" min="0" max="360" value="180"></td>
+	                    <td><label for="theta2">Angle for &#952;<sub>2</sub> </label></td>
+	                    <td><input type="number" id=theta2 name=theta2 size="5" min="0" max="360" value="0"></td>
+                    </tr>		
+                    <tr>
+	                    <td><label for="theta_split">Angle for &#952;<sub>split</sub> </label></td>
+	                    <td><input type="number" id=theta_split name=theta_split size="5" min="0" max="360" value="90"></td>
                     </tr>		
                     <tr>
 	                    <td><label for="multiplier">Multiplier: </label></td>
@@ -86,18 +81,6 @@
 	                    <td><input type="number" id=attenuation name=attenuation step="0.05" min="0.50" max="2" value="1.0"></td>
                     </tr>		
                     
-                    <!-- <tr>
-                        <td>
-                            <label name="modelLabel">Model: </label>
-                        </td>
-                        <td>           
-                            <select name="model">
-                                <option value="long">Auswave long</option>		
-                                <option value="short">Auswave short</option>		                            
-                                <option value="ec">EC wave</option>		                            
-                            </select>
-                        </td>
-                    </tr> -->
                     <tr>
 	                    <td><label for="criteria_1">Threshold criteria (m): </label></td>
 	                    <td>
@@ -122,6 +105,12 @@
 	            </table>            
         
             </fieldset>
+            <br>
+            <br>
+            <div align="center">
+                <img src=<?php echo($BASE_URL . "/docs/transformer_reference_scenario_legend.png");?> alt="Algorithm" width="50%"/>
+            </div>
+
 
         </form>
 
