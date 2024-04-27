@@ -15,7 +15,7 @@ This package sits under Amphitrite is designed pull the swell partition tables s
 ## Algorithm
 
 <div align="left">
-    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="60%"/>
+    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="80%"/>
 </div>
 
 ## Usage

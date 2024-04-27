@@ -91,8 +91,6 @@ def generate_output_from_config(site_name, run_time=None, transformed=True):
             )
             df, header = transformer.process_wave_table(table)
             transformer.save_to_file(df)
-            print(df.columns)
-            
             transformed_df = transformer.transform_df(df)
             html_table = transformer.transform_to_html_table(transformed_df)
             transformer.print_html_table(html_table)        

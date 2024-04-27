@@ -415,8 +415,10 @@ class Transform:
         # Separate header and data based on the "#" at the start of header lines
         header = [line for line in lines if line.startswith("#")]
         
-        #inject some transformed header information
-        header_text = f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multiplier: {self.multiplier}, attenuation: {self.attenuation}" 
+        #inject some transformed header information if config is valid
+        header_text = ""
+        if self.check_config():
+            header_text = f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multiplier: {self.multiplier}, attenuation: {self.attenuation}" 
         header = [line + header_text if "Table:" in line else line for line in header]
 
         data_lines = [line for line in lines if not line.startswith("#") and line.strip()]
