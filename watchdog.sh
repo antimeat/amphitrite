@@ -9,14 +9,25 @@ LAST_RUN_FILE="$SCRIPT_DIR/.last_check"
 SCRIPT="partitionSplitter.py"
 OUTPUT_SCRIPT="run_transform.py"
 
-# Check if the lock file exists
+# Function to check if the PID in the lock file is still running
+check_pid() {
+    local pid=$1
+    [ -d "/proc/$pid" ] && return 0 || return 1
+}
+
+# Check if the lock file exists and the process is still running
 if [ -f "$LOCK_FILE" ]; then
-    echo "$(date) - Another instance of the script is running. Exiting." >> "$LOG_FILE"
-    exit 1
+    read lock_pid < "$LOCK_FILE"
+    if check_pid "$lock_pid"; then
+        echo "$(date) - Another instance of the script (PID: $lock_pid) is running. Exiting." >> "$LOG_FILE"
+        exit 1
+    else
+        echo "$(date) - Found stale lock file. Overwriting." >> "$LOG_FILE"
+    fi
 fi
 
-# Create a lock file
-touch "$LOCK_FILE" 2>> "$LOG_FILE"
+# Create or overwrite the lock file with the current PID
+echo $$ > "$LOCK_FILE"
 
 # Find new files since last run
 new_files=$(find "$WATCH_DIR" -type f -newer "$LAST_RUN_FILE" 2>> "$LOG_FILE")

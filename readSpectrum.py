@@ -194,54 +194,6 @@ def onePartition(filename, site, period):
     # print(f"ws_sea: {ws['hs_sea']}, ws_sw: {ws['hs_sw']}")
     return ws
 
-def rangePartition_old(filename, site, start, end):
-    """
-    Customer single partition split function
-    
-    Parameters
-    ----------
-    filename : str
-        A string for the netCDF spectral file.
-    start : int
-        start of the range partition period (min)
-    end : int
-        end of the range partition period (max)
-        
-    Returns
-    -------
-    xarray
-        An xarray object with the partitioned and total wave paramters, and spectrum
-        
-        
-    Example
-    -------
-    
-    rangePartition(filename, 8, 16)
-    
-    """
-    # a fudge factor that was discovered through trial and error to match hs from def onePartition()
-    # if start > 5:
-    #     start += 0.1
-        
-    #read in file
-    ws = amendVariablesNames(filename, site)
-        
-    #get sea and swell split
-    part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
-    params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
-    
-    #we do a fudge with tp depending on which end of the partition to push low energy
-    tp = part.spec.tp(smooth=False).fillna(1 / part.freq.min())
-    
-    #if its a swell partition push low energy tp to the start
-    if start > 5:
-        tp = part.spec.tp(smooth=False).fillna(1 / part.freq.max())
-        
-    params['tp'] = tp
-    params['station_name'] = ws.station_name
-    
-    return params
-
 def rangePartition(filename, site, start, end):
     """
     Customer single partition split function
@@ -268,8 +220,9 @@ def rangePartition(filename, site, start, end):
     
     """
     # a fudge factor that was discovered through trial and error to match hs from def onePartition()
-    # if start > 5:
-    #     start += 0.1
+    if start > 5:
+        start -= 0.4
+        end -= 0.6 
         
     try: 
         #read in file
