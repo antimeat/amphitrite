@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>README for Transformer</title>
+  <title>Amphitrite swell table transformation</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -89,29 +89,22 @@
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">README for Transformer</h1>
+<h1 class="title">Amphitrite swell table transformation</h1>
 </header>
-<h1 id="amphitrite-swell-table-transformation">Amphitrite swell table
-transformation</h1>
-<p>This package sits under Amphitrite is designed pull the swell
-partition tables stored in the Amphitrite database and apply a
-transformation on the tables. Table output is used by Amphitrite on
-demand API as well as saved in <code>csv</code> format for ingesting to
-Vulture</p>
+<p>This package sits under Amphitrite. It retrieves the swell partition
+tables stored in the Amphitrite database and applies a transformation.
+Table output is used by Amphitrite on demand API. Output is also saved
+in <code>csv</code> format for ingesting to Vulture, and html format for
+view.</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>Dashboard for configuration and interogation of the configs and the
 output.</li>
-<li>Applies transformations based on user-defined parameters such as
-direction angles, multipliers, and attenuation.</li>
+<li>Applies transformations based on user-defined parameters for window
+angles, multiplier, and attenuation.</li>
 <li>Outputs modified transformed swell tables to html and csv, further
-used form ingesting to Vulture and Amphitrite.</li>
+used for ingesting to Vulture and Amphitrite.</li>
 </ul>
-<h2 id="algorithm">Algorithm</h2>
-<div align="left">
-    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="80%"/>
-</div>
-
 <h2 id="usage">Usage</h2>
 <p>The transformer execution script sits under the root directory of the
 Amphitrite package</p>
@@ -124,11 +117,11 @@ Amphitrite package</p>
 file (default: not used)</li>
 <li><code>--siteName</code>: The name of the site (default: "Dampier
 Salt - Cape Cuvier 7 days").</li>
-<li><code>--dir_land</code>: The average dirction towards the land
-(default: 90)</li>
-<li><code>--theta_1</code> Western angle for direction transformation
+<li><code>--theta_split</code>: The angle that splits theat_1 and
+theta_2 (default: 90)</li>
+<li><code>--theta_1</code> 1st angle for direction transformation
 (default: 262)</li>
-<li><code>--theta_2</code>: Eastern angle for direction transformation
+<li><code>--theta_2</code>: 2nd angle for direction transformation
 (default: 20)</li>
 <li><code>--multiplier</code>: Multiplier for the wave heights (default:
 1.0).</li>
@@ -144,8 +137,9 @@ used)</li>
 not used)</li>
 </ul>
 <h3 id="running-the-script">Running the Script</h3>
+<p>Run transformer on an indivual site</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./run_transformer.py</span> <span class="at">--siteName</span> <span class="st">&quot;Dampier Salt - Cape Cuvier&quot;</span> <span class="at">--tableName</span> <span class="st">&quot;Your_Table_Name&quot;</span> <span class="at">--dir_land</span> 90 <span class="at">--theta_1</span> 260 <span class="at">--theta_2</span> 020 <span class="at">--multiplier</span> 1.0 <span class="at">--attenuation</span> 1.0 <span class="at">--thresholds</span> <span class="st">&quot;0.3,0.2,0.15&quot;</span></span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./run_transformer.py</span> <span class="at">--siteName</span> <span class="st">&quot;Dampier Salt - Cape Cuvier&quot;</span> <span class="at">--theta_split</span> 90 <span class="at">--theta_1</span> 260 <span class="at">--theta_2</span> 020 <span class="at">--multiplier</span> 1.0 <span class="at">--attenuation</span> 1.0 <span class="at">--thresholds</span> <span class="st">&quot;0.3,0.2,0.15&quot;</span></span></code></pre></div>
 <p>To execute transformation of all configured sites</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./run_transformer.py</span> <span class="at">--all</span></span></code></pre></div>

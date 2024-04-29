@@ -38,6 +38,7 @@ class Transform:
         self.thresholds = [float(x) for x in thresholds]
         self.output_file = os.path.join(BASE_DIR,'tables/{}_data.csv'.format(self.site_name.replace(' ', '_').replace('-', '')))
         self.theta_min = 80
+        self.config = self.check_config()
 
     def check_config(self):
         """
@@ -341,7 +342,7 @@ class Transform:
         """
         
         # this is our last chance to bail if thetas are not valid, return the df as is if not valid
-        if not self.check_config():
+        if not self.config:
             return df
         
         transformed_df = df.copy()
@@ -416,8 +417,8 @@ class Transform:
         header = [line for line in lines if line.startswith("#")]
         
         #inject some transformed header information if config is valid
-        header_text = ""
-        if self.check_config():
+        header_text = f", Transform ignored and standard table returned."
+        if self.config:
             header_text = f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multiplier: {self.multiplier}, attenuation: {self.attenuation}" 
         header = [line + header_text if "Table:" in line else line for line in header]
 

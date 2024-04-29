@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Transformer algorithm</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="github-markdown.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Transformer algorithm</h1>
+</header>
+<p>The transform algorithm is fairly blunt instrument to say the least.
+Essentially we take an existing swell partition table and apply a window
+where we allow energy to penetrate unaffected by any refraction effects.
+The window is defined by two angles <span
+class="math inline"><em>θ</em><sub>1</sub></span> and <span
+class="math inline"><em>θ</em><sub>2</sub></span>. For the remainder of
+the directions outside the window we assume a refraction effect. Here we
+define an angle <span
+class="math inline"><em>θ</em><sub><em>s</em><em>p</em><em>l</em><em>i</em><em>t</em></sub></span>
+that splits the two angles (<span
+class="math inline"><em>θ</em><sub>1</sub></span> and <span
+class="math inline"><em>θ</em><sub>2</sub></span>), hence dividing the
+choice where incoming swells will be bent to either <span
+class="math inline"><em>θ</em><sub>1</sub></span> or <span
+class="math inline"><em>θ</em><sub>2</sub></span>, depending which side
+of <span
+class="math inline"><em>θ</em><sub><em>s</em><em>p</em><em>l</em><em>i</em><em>t</em></sub></span>
+the incoming direction is. For the refraction formula where we have an
+incoming swell magnitude of <span
+class="math inline"><em>h</em><em>s</em></span> and direction of <span
+class="math inline"><em>θ</em></span> that is between <span
+class="math inline"><em>θ</em><sub>1</sub></span> and <span
+class="math inline"><em>θ</em><sub><em>s</em><em>p</em><em>l</em><em>i</em><em>t</em></sub></span>,
+we apply the following: <span
+class="math inline"><em>θ</em><sub><em>d</em><em>i</em><em>f</em><em>f</em></sub> = <em>θ</em><sub>1</sub> − <em>θ</em></span>,
+where if <span
+class="math inline"><em>θ</em><sub>1</sub> − <em>θ</em> ≥ 80<sup><em>o</em></sup>,  =  &gt; <em>θ</em><sub><em>d</em><em>i</em><em>f</em><em>f</em></sub> = 80<sup><em>o</em></sup></span>
+and <span
+class="math inline"><em>h</em><em>s</em><sub><em>b</em><em>e</em><em>n</em><em>t</em></sub> = cos (<em>θ</em><sub><em>d</em><em>i</em><em>f</em><em>f</em></sub>) * <em>h</em><em>s</em></span>.
+For any given direction of <span class="math inline"><em>θ</em></span>
+in or outside the window we also apply a multiplication factor and
+attenuation factor where <span
+class="math inline"><em>h</em><em>s</em><sub><em>f</em><em>i</em><em>n</em><em>a</em><em>l</em></sub> = <em>h</em><em>s</em> * <em>m</em><em>u</em><em>l</em><em>t</em><em>i</em><em>p</em><em>l</em><em>i</em><em>e</em><em>r</em></span>
+and <span
+class="math inline"><em>p</em><em>e</em><em>r</em><em>i</em><em>o</em><em>d</em><sub><em>f</em><em>i</em><em>n</em><em>a</em><em>l</em></sub> = <em>p</em><em>e</em><em>r</em><em>i</em><em>o</em><em>d</em> * <em>a</em><em>t</em><em>t</em><em>e</em><em>n</em><em>u</em><em>a</em><em>t</em><em>i</em><em>o</em><em>n</em></span>,
+where both <span
+class="math inline"><em>m</em><em>u</em><em>l</em><em>i</em><em>p</em><em>l</em><em>i</em><em>e</em><em>r</em></span>
+and <span
+class="math inline"><em>a</em><em>t</em><em>t</em><em>e</em><em>n</em><em>u</em><em>a</em><em>t</em><em>i</em><em>o</em><em>n</em></span>
+are between <span class="math inline">[0,1]</span>. Finally, for <span
+class="math inline"><em>θ</em></span> between <span
+class="math inline"><em>θ</em><sub>1</sub></span> and <span
+class="math inline"><em>θ</em><sub><em>s</em><em>p</em><em>l</em><em>i</em><em>t</em></sub></span>,
+<span
+class="math inline"><em>θ</em><sub><em>b</em><em>e</em><em>n</em><em>t</em></sub> = <em>θ</em><sub>1</sub></span>.
+Similarly for <span class="math inline"><em>θ</em></span> between <span
+class="math inline"><em>θ</em><sub>2</sub></span> and <span
+class="math inline"><em>θ</em><sub><em>s</em><em>p</em><em>l</em><em>i</em><em>t</em></sub></span>,
+<span
+class="math inline"><em>θ</em><sub><em>b</em><em>e</em><em>n</em><em>t</em></sub> = <em>θ</em><sub>2</sub></span></p>
+<h2 id="assumptions">Assumptions</h2>
+<ul>
+<li>maximum refraction amount of <span
+class="math inline"><em>θ</em><sub><em>d</em><em>i</em><em>f</em><em>f</em></sub> = 80<sup><em>o</em></sup></span>,
+where <span
+class="math inline">cos (<em>θ</em><sub><em>d</em><em>i</em><em>f</em><em>f</em></sub>) ≈ 0.1736</span>
+and hence a maximum reduction of <span
+class="math inline"><em>h</em><em>s</em> * 0.1736</span></li>
+<li><span
+class="math inline"><em>θ</em><sub>2</sub> = 10<sup><em>o</em></sup></span>,
+<span class="math inline"><em>θ</em><sub>2</sub></span> clockwise of
+<span class="math inline"><em>θ</em><sub>1</sub></span>, <span
+class="math inline"><em>θ</em><sub>1</sub></span> clockwise of <span
+class="math inline"><em>θ</em><sub><em>s</em><em>p</em><em>l</em><em>i</em><em>t</em></sub></span>,
+<span
+class="math inline"><em>θ</em><sub><em>s</em><em>p</em><em>l</em><em>i</em><em>t</em></sub></span>
+clockwise of <span
+class="math inline"><em>θ</em><sub>2</sub></span></li>
+</ul>
+<h2 id="graphical-representation">Graphical representation</h2>
+<div align="left">
+    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="95%"/>
+</div>
+
+<h2 id="reference-cos-table">Reference cos table</h2>
+<div align="left">
+    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/docs/cos_table.png" alt="Algorithm" width="50%"/>
+</div>
+
+<h2 id="author">Author</h2>
+<p>Daz Vink: <a
+href="mailto:daz.vink@bom.gov.au">daz.vink@bom.gov.au</a></p>
+</body>
+</html>

@@ -1,22 +1,14 @@
 ---
-title: README for Transformer
+title: Amphitrite swell table transformation
 ---
 
-# Amphitrite swell table transformation
-
-This package sits under Amphitrite is designed pull the swell partition tables stored in the Amphitrite database and apply a transformation on the tables. Table output is used by Amphitrite on demand API as well as saved in `csv` format for ingesting to Vulture
+This package sits under Amphitrite. It retrieves the swell partition tables stored in the Amphitrite database and applies a transformation. Table output is used by Amphitrite on demand API. Output is also saved in `csv` format for ingesting to Vulture, and html format for view.
 
 ## Features
 
 -   Dashboard for configuration and interogation of the configs and the output.
--   Applies transformations based on user-defined parameters such as direction angles, multipliers, and attenuation.
--   Outputs modified transformed swell tables to html and csv, further used form ingesting to Vulture and Amphitrite.
-
-## Algorithm
-
-<div align="left">
-    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="80%"/>
-</div>
+-   Applies transformations based on user-defined parameters for window angles, multiplier, and attenuation.
+-   Outputs modified transformed swell tables to html and csv, further used for ingesting to Vulture and Amphitrite.
 
 ## Usage
 
@@ -28,9 +20,9 @@ The transformer execution script sits under the root directory of the Amphitrite
 
 -   `--all`: If used, generate all sites output from config file (default: not used)
 -   `--siteName`: The name of the site (default: "Dampier Salt - Cape Cuvier 7 days").
--   `--dir_land`: The average dirction towards the land (default: 90)
--   `--theta_1` Western angle for direction transformation (default: 262)
--   `--theta_2`: Eastern angle for direction transformation (default: 20)
+-   `--theta_split`: The angle that splits theat_1 and theta_2 (default: 90)
+-   `--theta_1` 1st angle for direction transformation (default: 262)
+-   `--theta_2`: 2nd angle for direction transformation (default: 20)
 -   `--multiplier`: Multiplier for the wave heights (default: 1.0).
 -   `--attenuation`: Attenuation factor for the wave periods (default: 1.0).
 -   `--thresholds`: 3 comma-separated threshold values for significant wave heights (default: "0.3,0.2,0.15").
@@ -40,8 +32,10 @@ The transformer execution script sits under the root directory of the Amphitrite
 
 ### Running the Script
 
+Run transformer on an indivual site
+
 ```bash
-./run_transformer.py --siteName "Dampier Salt - Cape Cuvier" --tableName "Your_Table_Name" --dir_land 90 --theta_1 260 --theta_2 020 --multiplier 1.0 --attenuation 1.0 --thresholds "0.3,0.2,0.15"
+./run_transformer.py --siteName "Dampier Salt - Cape Cuvier" --theta_split 90 --theta_1 260 --theta_2 020 --multiplier 1.0 --attenuation 1.0 --thresholds "0.3,0.2,0.15"
 ```
 
 To execute transformation of all configured sites

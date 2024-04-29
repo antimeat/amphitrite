@@ -61,6 +61,10 @@
 				    fileName = 'index_wrapper.php';
 					$("#imageContainer").load(fileName);
 				}
+				else if (input == 'readme_algorithm') {
+				    fileName = 'readme_algorithm.php';
+					$("#imageContainer").load(fileName);
+				}
 				else if (input == 'readme') {
 				    fileName = 'readme.php';
 					$("#imageContainer").load(fileName);
