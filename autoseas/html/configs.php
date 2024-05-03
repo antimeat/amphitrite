@@ -1,7 +1,6 @@
 <?php
-    $BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/autoseas";
-    $BASE_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/";
+    $BASE_DIR = dirname(dirname(__FILE__)) . "/";
+    $BASE_URL = str_replace("/cws/op","http://wa-vw-er", dirname($BASE_DIR)); 
     $HTML_DIR = "html/";
-    $TITLE = "Autoseas (dev)";
+    $TITLE = "Autoseas (dev)";    
 ?>
-

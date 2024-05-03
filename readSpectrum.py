@@ -219,10 +219,10 @@ def rangePartition(filename, site, start, end):
     rangePartition(filename, 8, 16)
     
     """
-    # a fudge factor that was discovered through trial and error to match hs from def onePartition()
+    # here we make a minor tweaks to start and end to ensure we dont end with crossover values between partitions
+    end -= 0.51 
     if start > 5:
-        start -= 0.4
-        end -= 0.6 
+        start -= 0.49        
         
     try: 
         #read in file
@@ -231,8 +231,14 @@ def rangePartition(filename, site, start, end):
         #get sea and swell split
         part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
         params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dpm", "dp", "dm", "dspr","tp"])
-        params["tp"].values = get_tp(part.spec.oned().to_dataframe('efth').reset_index()).values
-        params["dp"].values = get_dp(part.to_dataframe('efth').reset_index()).values
+        
+        #derive peak stats for period and dir
+        peak_stats = get_peak_stats(part)
+        params["tp"].values = peak_stats.tp.values.reshape(-1,1)
+        params["dp"].values = peak_stats.dp.values.reshape(-1,1)
+        
+        # params["tp"].values = get_tp(part.spec.oned().to_dataframe('efth').reset_index()).values
+        # params["dp"].values = get_dp(part.to_dataframe('efth').reset_index()).values
         
         #if its a swell partition push low energy tp to the start
         tp = 0
@@ -249,6 +255,18 @@ def rangePartition(filename, site, start, end):
         return None
     
     return params
+
+def get_peak_stats(partition):
+    """
+    Take the partition and calculate peak stats (Tp and Dp) from the 2d Spectrum
+    """
+    max_dir = partition.max(dim="freq").idxmax(dim="dir")
+    max_freq = partition.max(dim="dir").idxmax(dim="freq")
+    new = pd.DataFrame([1/max_freq.values.flatten(), max_dir.values.flatten()]).T
+    new.columns = ['tp','dp']
+    new.index = partition.time
+    
+    return new.round(2)
 
 def get_tp(df, group_col='time', x_col='efth', y_col='freq'):
     """
@@ -300,7 +318,7 @@ def get_dp(df, group_col='time', x_col='efth', y_col='dir'):
         dp = pd.DataFrame(np.round(result['dir'].values, 2))
         dp.index = df[group_col].unique()
         dp.columns = ['Dp']
-    
+            
     except Exception as e:
         print(f"Error in get_dp: {e}")
         return None

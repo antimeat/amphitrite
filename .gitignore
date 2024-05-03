@@ -6,6 +6,9 @@ __pycache__/
 #all the output files
 output/
 
+#more output files
+transformer/tables/
+
 #plotting
 plots/
 

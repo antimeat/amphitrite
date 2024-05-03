@@ -25,7 +25,7 @@ class Transform:
     Class for generating modified wave/swell tables from an API source.
     """
     
-    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', theta_split=90,theta_1=262, theta_2=20, multiplier=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
+    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', theta_split=90,theta_1=262, theta_2=20, multi_upper=1.0, multi_lower=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
         """
         Initialize the WaveTable object with site details and processing parameters.
         """
@@ -33,7 +33,8 @@ class Transform:
         self.theta_split = float(theta_split)
         self.theta_1 = float(theta_1)
         self.theta_2 = float(theta_2)
-        self.multiplier = float(multiplier)
+        self.multi_upper = float(multi_upper)
+        self.multi_lower = float(multi_lower)
         self.attenuation = float(attenuation)
         self.thresholds = [float(x) for x in thresholds]
         self.output_file = os.path.join(BASE_DIR,'tables/{}_data.csv'.format(self.site_name.replace(' ', '_').replace('-', '')))
@@ -334,6 +335,24 @@ class Transform:
         
         return rot_dirs, rot_theta_split, rot_theta_1, rot_theta_2
 
+    def get_num_swells(self, columns):
+        """
+        Get the number of swells in the DataFrame based on the column names.
+        """
+        num_swells = len([col for col in columns if "ht" in col and "seasw" not in col])
+        return num_swells
+    
+    def get_interpolated_multiplier(self, num_swells, swell_index):
+        """
+        Calculate the interpolated multiplier based on the upper and lower bounds,
+        """
+        if swell_index == 0:
+            return self.multi_upper
+        
+        swell_index -= 1  # Convert 1-based index to 0-based index for internal calculation
+        multiplier = self.multi_upper + (self.multi_lower - self.multi_upper) * (swell_index / (num_swells - 1))
+        return multiplier
+
     def transform_df(self, df):
         """
         Applies transformations to wave height columns based on wave direction,
@@ -347,6 +366,9 @@ class Transform:
         
         transformed_df = df.copy()
         
+        # Set the number of swells based on the DataFrame columns
+        num_swells = self.get_num_swells(transformed_df.columns)
+        
         # Identify columns related to wave heights and their corresponding directions
         hs_columns = [col for col in transformed_df.columns if "ht" in col] 
         total_peak_dir = transformed_df["seasw_dir[degree]"].replace(0, 360)
@@ -358,6 +380,20 @@ class Transform:
             hs = transformed_df[hs_col]
             peak_dir = transformed_df[peak_dir_col]
             adjusted_hs = hs.copy()
+            
+            #pull the swell # from the column name
+            swell_str = hs_col.split("_")[0]
+            swell_num = 1
+            
+            if swell_str == "seasw":
+                swell_num = 0
+            elif swell_str == "sea":
+                swell_num = 1
+            else:
+                swell_num = int(swell_str[-1]) + 1
+                
+            # print(f"Processing swell {swell_num} with {hs_col}")
+            # print(f"multiplier for {swell_num} is {self.get_interpolated_multiplier(num_swells, swell_num)}")
             
             #rotate all the dirs to our reference setup using theta_2 = 10
             theta_rotate = self.rotation_theta()
@@ -385,7 +421,7 @@ class Transform:
             if "seasw" not in hs_col:
                 #magical attenuation and multiplier for period and hs
                 transformed_df[peak_pd_col] = transformed_df[peak_pd_col] * self.attenuation
-                adjusted_hs = adjusted_hs * self.multiplier
+                adjusted_hs = adjusted_hs * self.get_interpolated_multiplier(num_swells, swell_num)
                 transformed_df[hs_col] = np.round(adjusted_hs, 2)
                 transformed_hs_list.append(adjusted_hs)
             else:
@@ -395,8 +431,6 @@ class Transform:
             transformed_df[peak_dir_col] = transformed_df[peak_dir_col].astype(int)
             transformed_df[peak_pd_col] = transformed_df[peak_pd_col].astype(int)
         
-        
-            
         # Combine transformed heights to calculate the combined wave height metric
         if transformed_hs_list:
             
@@ -419,7 +453,7 @@ class Transform:
         #inject some transformed header information if config is valid
         header_text = f", Transform ignored and standard table returned."
         if self.config:
-            header_text = f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multiplier: {self.multiplier}, attenuation: {self.attenuation}" 
+            header_text = f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multi_upper: {self.multi_upper}, multi_lower: {self.multi_lower}, attenuation: {self.attenuation}" 
         header = [line + header_text if "Table:" in line else line for line in header]
 
         data_lines = [line for line in lines if not line.startswith("#") and line.strip()]

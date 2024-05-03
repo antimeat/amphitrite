@@ -1,2 +1,4 @@
-BASE_DIR = "/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/transformer"
-BASE_URL = "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/transformer"
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_URL = BASE_DIR.replace("/cws/op", "http://wa-vw-er")

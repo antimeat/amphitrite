@@ -38,7 +38,8 @@ def generate_output_from_args(args):
             theta_split=args.theta_split,
             theta_1=args.theta_1,
             theta_2=args.theta_2,
-            multiplier=args.multiplier,
+            multi_upper=args.multi_upper,
+            multi_lower=args.multi_lower,
             attenuation=args.attenuation,
             thresholds=args.thresholds
         )
@@ -67,7 +68,7 @@ def generate_output_from_config(site_name, run_time=None, transformed=True):
     
     # if the site is not in the config return the standard table
     if site_name not in sites_info or transformed is False:
-        transformer = transform.Transform(site_name, 360, 0, 0, 1, 1, [3,2.5,2])
+        transformer = transform.Transform(site_name, 360, 0, 0, 1, 1, 1, [3,2.5,2])
         df,header = transformer.process_wave_table(table)
         transformer.save_to_file(df)
         html_table = transformer.transform_to_html_table(transformed_df)
@@ -81,7 +82,8 @@ def generate_output_from_config(site_name, run_time=None, transformed=True):
                 site_data["theta_split"],
                 site_data["theta_1"], 
                 site_data["theta_2"], 
-                site_data["multiplier"], 
+                site_data["multi_upper"], 
+                site_data["multi_lower"], 
                 site_data["attenuation"], 
                 [   
                     site_data["high_threshold"], 
@@ -116,7 +118,8 @@ def load_from_config(site_name, run_time=None, transformed=True):
             site_data["theta_split"],
             site_data["theta_1"], 
             site_data["theta_2"], 
-            site_data["multiplier"], 
+            site_data["multi_upper"], 
+            site_data["multi_lower"], 
             site_data["attenuation"], 
             [   
                 site_data["high_threshold"], 
@@ -150,11 +153,12 @@ def read_config():
                 "theta_split": parts[1].strip(),
                 "theta_1": parts[2].strip(),
                 "theta_2": parts[3].strip(),
-                "multiplier": parts[4].strip(),
-                "attenuation": parts[5].strip(),
-                "high_threshold": parts[6].strip(),
-                "medium_threshold": parts[7].strip(),
-                "low_threshold": parts[8].strip(),
+                "multi_upper": parts[4].strip(),
+                "multi_lower": parts[5].strip(),
+                "attenuation": parts[6].strip(),
+                "high_threshold": parts[7].strip(),
+                "medium_threshold": parts[8].strip(),
+                "low_threshold": parts[9].strip(),
             }
             for line in config
             for parts in [line.split(",")]  # Split once and use multiple times, then strip whitespace
@@ -189,7 +193,8 @@ def parse_arguments():
     parser.add_argument('--theta_split', type=str, default='90', help='Dirction to split theta_1 and theta_2.')
     parser.add_argument('--theta_1', type=str, default='262', help='Theta 1')
     parser.add_argument('--theta_2', type=str, default='20', help='Theta 2')
-    parser.add_argument('--multiplier', type=float, default=0.42, help='Multiplier')
+    parser.add_argument('--multi_upper', type=float, default=0.42, help='Multiplier upper')
+    parser.add_argument('--multi_lower', type=float, default=0.25, help='Multiplier lower')
     parser.add_argument('--attenuation', type=float, default=1.0, help='Attenuation')
     parser.add_argument('--thresholds', type=str, default="3,2.5,1.5", help='Thresholds')
     parser.add_argument('--run_time', type=str, default=None, help='Run Time: YYYYMMDDHH')
