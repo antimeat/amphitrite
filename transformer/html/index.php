@@ -73,8 +73,12 @@
 	                    <td><input type="number" id=theta_split name=theta_split size="5" min="0" max="360" value="90"></td>
                     </tr>		
                     <tr>
-	                    <td><label for="multiplier">Multiplier: </label></td>
-	                    <td><input type="number" id=multiplier name=multiplier step="0.05" min="0.20" max="2" value="1.0"></td>
+	                    <td><label for="multi_upper">Multiplier (upper): </label></td>
+	                    <td><input type="number" id=multi_upper name=multi_upper step="0.01" min="0.20" max="2" value="1.0"></td>
+                    </tr>		
+                    <tr>
+	                    <td><label for="multi_lower">Multiplier (lower): </label></td>
+	                    <td><input type="number" id=multi_lower name=multi_lower step="0.01" min="0.20" max="2" value="1.0"></td>
                     </tr>		
                     <tr>
 	                    <td><label for="attenuation">Period attenuation: </label></td>

@@ -63,6 +63,7 @@ Woodside - Dampier Port Offshore 10 days, Dampier_Po, 0.001-9, 9-40
 Woodside - Griffin 7 days, Griffin, 0.001-9, 9-40
 Woodside - Griffin 10 days, Griffin, 0.001-9, 9-40
 Woodside - Mermaid Sound 7 days, Dampier_Ne, 0.001-7, 7-13, 13-18, 16.5-40
+Woodside - Mermaid Sound Transformed, Dampier_Po, 0.001-7, 7-13, 13-18, 16.5-40
 Woodside - Enfield and Vincent 7 days, Enfield, 0.001-9, 9-40
 Woodside - North Rankin 7 days, Rankin, 0.001-9, 9-40
 Woodside - Pluto 7 days, PLA, 0.001-9, 9-40

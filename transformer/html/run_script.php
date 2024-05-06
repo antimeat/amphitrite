@@ -96,7 +96,8 @@
 			$theta1 = $_REQUEST["theta1"];
 			$theta2 = $_REQUEST["theta2"];
 			$theta_split = $_REQUEST["theta_split"];
-			$multiplier = $_REQUEST["multiplier"];
+			$multi_upper = $_REQUEST["multi_upper"];
+			$multi_lower = $_REQUEST["multi_lower"];
 			$attenuation = $_REQUEST["attenuation"];
 			
             // $tableName = $_REQUEST["table_select"];
@@ -122,7 +123,8 @@
 				. "--theta_1 '$theta1' "
 				. "--theta_2 '$theta2' "
 				. "--theta_split '$theta_split' "
-				. "--multiplier '$multiplier' "
+				. "--multi_upper '$multi_upper' "
+				. "--multi_lower '$multi_lower' "
 				. "--attenuation '$attenuation' "
 				. "--thresholds '$criteria_1,$criteria_2,$criteria_3' "
 				. $save_option
@@ -132,12 +134,7 @@
 			ob_end_clean();
 		?>
 		
-			<div class="alert success">
-                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-                <?php echo('<b>Formula:</b> Hs = cos((&#960 &#8260 180)&#8901(dir - '. $theta1 . ' or ' . $theta2 . ' &#8901(hs)')?>
-            </div>
-	        
-	        <div class="alert info">
+			<div class="alert info">
                 <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
                 <i>Load into vulture with </i> <b>data-source:</b> mod <b>site:</b> <?php echo($siteName);?>
             </div>

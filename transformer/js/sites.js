@@ -498,7 +498,7 @@ $(document).ready(function () {
 
 function load_sites(done) {
     var select = $("#site_select");
-    $.getJSON("../api.cgi", { get: "sites" }, function (d) {
+    $.getJSON("../api.cgi", { get: "sites_from_config" }, function (d) {
         SITES = {};
 
         $.each(d, function (i, s) {

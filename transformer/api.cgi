@@ -12,7 +12,7 @@ print("Content-Type: text/html\n")
 
 q = cgi.FieldStorage()
 
-get = q.getvalue('get', 'sites')
+get = q.getvalue('get', 'sites_from_config')
 
 if get == 'sites':
 
@@ -28,4 +28,8 @@ elif get == 'titles':
         print('{}<br>'.format(site_dict[site['name']]))
 
     #print(json.dumps(site_dict))    
+
+elif get == 'sites_from_config':
+    
+    print(sites.load_json_from_config())
 
