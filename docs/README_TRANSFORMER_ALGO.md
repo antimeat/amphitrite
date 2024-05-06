@@ -12,13 +12,13 @@ The transform algorithm is fairly blunt instrument to say the least. Essentially
 ## Graphical representation
 
 <div align="left">
-    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="95%"/>
+    <img src="http://wa-vw-er/webapps/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="95%"/>
 </div>
 
 ## Reference cos table
 
 <div align="left">
-    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/docs/cos_table.png" alt="Algorithm" width="50%"/>
+    <img src="http://wa-vw-er/webapps/amphitrite/docs/cos_table.png" alt="Algorithm" width="50%"/>
 </div>
 
 ## Author

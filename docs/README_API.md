@@ -60,7 +60,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
 ### Examples
 
 -   **List all sites in HTML**:
-    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_html`
+    `url http://wa-vw-er/webapps/amphitrite/api.cgi?get=list_html`
 
     #### returns:
 
@@ -73,7 +73,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
     |              ...              |      ...      |             ...             |
 
 -   **List entries in database**:
-    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=database`
+    `url http://wa-vw-er/webapps/amphitrite/api.cgi?get=database`
 
     #### returns:
 
@@ -86,7 +86,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
     |              ...              |    ...     |             ...             |    ...     |
 
 -   **List sites in json**:
-    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=list_json`
+    `url http://wa-vw-er/webapps/amphitrite/api.cgi?get=list_json`
 
     #### returns:
 
@@ -123,7 +123,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
     ```
 
 -   **List exclusion sites in json**:
-    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=exclusion`
+    `url http://wa-vw-er/webapps/amphitrite/api.cgi?get=exclusion`
 
     #### returns:
 
@@ -154,7 +154,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
     ```
 
 -   **Get Specific Site Data in JSON**:
-    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.cgi?get=site&site_name=Woodside - Scarborough 10 Days&run_time=2024010112`
+    `url http://wa-vw-er/webapps/amphitrite/api.cgi?get=site&site_name=Woodside - Scarborough 10 Days&run_time=2024010112`
 
     #### returns
 
@@ -177,7 +177,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
 
 ---
 
-Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/api.log" target="_blank">api.log</a>. Ensure the log file is writable by the web server.
+Errors are logged to <a href="http://wa-vw-er/webapps/amphitrite/api.log" target="_blank">api.log</a>. Ensure the log file is writable by the web server.
 
 ## Author
 

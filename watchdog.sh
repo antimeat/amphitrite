@@ -1,7 +1,7 @@
 #!/bin/bash
 
 WATCH_DIR="/cws/data/wavewatch/"
-SCRIPT_DIR="/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite"
+SCRIPT_DIR="/cws/op/webapps/amphitrite"
 LOG_FILE="$SCRIPT_DIR/script_errors.log"
 
 LOCK_FILE="$SCRIPT_DIR/.lockfile.lock"

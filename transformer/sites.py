@@ -28,7 +28,6 @@ def load_json():
 
     return df.to_json(orient='records')
 
-
 def load_json_from_config():
     """Load the site names from the config file"""
  

@@ -59,7 +59,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
 ### Examples
 
 -   **List table names in HTML**:
-    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi`
+    `url http://wa-vw-er/webapps/amphitrite/sites_api.cgi`
 
     #### returns:
 
@@ -75,7 +75,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
     |    Yoorn    | -20.34 | 115.79  |
 
 -   **List table names in json**:
-    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=json_tables`
+    `url http://wa-vw-er/webapps/amphitrite/sites_api.cgi?get=json_tables`
 
     #### returns:
 
@@ -107,7 +107,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
     ```
 
 -   **List active sites in HTML**:
-    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=html_sites`
+    `url http://wa-vw-er/webapps/amphitrite/sites_api.cgi?get=html_sites`
 
     #### returns:
 
@@ -122,7 +122,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
     | Woodside  | Stybarrow 10 Days   | -21.45, 113.82   |
 
 -   **List all sites in HTML**:
-    `url http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.cgi?get=compare`
+    `url http://wa-vw-er/webapps/amphitrite/sites_api.cgi?get=compare`
 
     #### returns:
 
@@ -170,7 +170,7 @@ Each endpoint serves a specific purpose and may require different parameters to 
 
 ---
 
-Errors are logged to <a href="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/sites_api.log" target="_blank">sites_api.log</a>. Ensure the log file is writable by the web server.
+Errors are logged to <a href="http://wa-vw-er/webapps/amphitrite/sites_api.log" target="_blank">sites_api.log</a>. Ensure the log file is writable by the web server.
 
 ## Author
 

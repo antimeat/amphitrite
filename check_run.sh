@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Paths to your directories and files
-SCRIPT_DIR="/cws/op/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite"
+SCRIPT_DIR="/cws/op/webapps/amphitrite"
 LOG_FILE="$SCRIPT_DIR/script_errors.log"
 LAST_RUN_FILE="$SCRIPT_DIR/.last_check"
 EMAIL_SCRIPT="$SCRIPT_DIR/emails.py"
