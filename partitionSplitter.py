@@ -449,7 +449,7 @@ def main():
             if wave_table is not None and "data" in wave_table:
                 table = wave_table["data"]
                 print(table)
-                message = f"<b>run-time:</b> {toolbox.latest_run_time} <br> <b>for:</b> {args.site_name}. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite</a>"
+                message = f"<b>run-time:</b> {toolbox.latest_run_time} <br> <b>for:</b> {args.site_name}. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite (dev)</a>"
                 emails.send_email(message=message)
             else:
                 print(f"No data available for site '{args.site_name}'.")     
