@@ -225,7 +225,7 @@ class Transform:
         # Formatting dictionaries for different column types
         formatter = {col: "{:.2f}" for col in swell_height_columns}
         formatter.update({col: "{:d}" for col in swell_period_columns if pd.api.types.is_numeric_dtype(df[col])})
-        formatter.update({col: "{:d}" for col in swell_direction_columns if pd.api.types.is_numeric_dtype(df[col])})
+        formatter.update({col: "{:03d}" for col in swell_direction_columns if pd.api.types.is_numeric_dtype(df[col])})
 
         # Styling and formatting the DataFrame for HTML
         styler = df.style
