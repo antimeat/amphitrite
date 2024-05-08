@@ -160,6 +160,21 @@ def list_sites_as_json():
     except Exception as e:
         handle_error(500, f"Internal Server Error: {e}")
 
+def get_tables():
+    """Return the site_name for a given table name"""
+    try:
+        file_name = os.path.join(BASE_DIR,"site_config.txt")
+        json_str = load_config_file(file_name)
+        
+        #remove parts from the data
+        for key in json_str:
+            del json_str[key]["parts"]
+            
+        return json.dumps(json_str)        
+        
+    except Exception as e:
+        handle_error(500, f"Internal Server Error: {e}")
+        
 def list_exclusion_as_json():
     """Return exclusion sites in json"""
     try:
@@ -191,6 +206,10 @@ def main():
     elif get == 'exclusion':
         print_headers("application/json")
         print(list_exclusion_as_json())    
+    
+    elif get == 'tables':
+        print_headers("application/json")
+        print(get_tables())    
     
     elif get == "site":
         site_name = form.getvalue('site_name', "Woodside - Pluto 7 days") 

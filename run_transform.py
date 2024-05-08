@@ -9,6 +9,7 @@ import os
 import argparse
 from transformer import transformer_configs as configs
 from transformer import transform
+import plotting 
 import database as db
 
 BASE_DIR = configs.BASE_DIR
@@ -71,6 +72,7 @@ def generate_output_from_config(site_name, run_time=None, transformed=True):
         transformer = transform.Transform(site_name, 360, 0, 0, 1, 1, 1, [3,2.5,2])
         df,header = transformer.process_wave_table(table)
         transformer.save_to_file(df)
+        transformed_df = transformer.transform_df(df)
         html_table = transformer.transform_to_html_table(transformed_df)
         transformer.print_html_table(html_table)        
     
@@ -213,10 +215,11 @@ def main():
     
     if args.all:
         generate_output_all_sites(run_time=args.run_time, transformed=args.notrans)
+        plotting.plot_all_combined_pages()
     else:
         generate_output_from_args(args)
-        # generate_output_from_config(args.siteName)
-    
+        site_name = args.siteName
+        plotting.plot_single_combined_page(site_name)    
             
 if __name__ == '__main__':
     main()

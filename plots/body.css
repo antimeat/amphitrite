@@ -1,0 +1,74 @@
+body,
+html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    text-align: center;
+    padding: 10px;
+    background-color: #f8f8f8;
+}
+
+.container {
+    display: flex;
+    height: calc(90% - 50px); /* Adjust based on actual header height */
+}
+
+.left-column,
+.right-column {
+    flex: 1 1 50%; /* Each takes half of the width */
+    height: 100%; /* Ensures both columns are of equal height */
+    padding: 10px;
+    box-sizing: border-box; /* Includes padding and border in the element's total dimensions */
+    display: flex;
+    flex-direction: column;
+}
+
+.plot,
+.image {
+    height: 50%; /* Each takes half of the height of the left column */
+}
+
+.table {
+    width: 100%; /* Full width of the right column */
+    height: 100%; /* Takes the full height of the right column */
+    max-height: 100%; /* or any appropriate height */
+    overflow-y: auto;
+}
+
+thead th {
+    position: sticky;
+    top: 500;
+    background-color: #f8f8f8;
+    z-index: 100; /* Ensures the header stays above other content */
+}
+
+img,
+iframe {
+    width: 100%;
+    height: 100%;
+    display: block; /* Removes any space below */
+    border: none; /* Removes default border */
+}
+
+iframe {
+    transform-origin: top left;
+    transform: scale(1); /* Adjust scale factor based on content size to fit */
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    .left-column,
+    .right-column {
+        flex: 1 1 100%;
+    }
+    .plot,
+    .image,
+    .table {
+        height: auto; /* Adjust based on content */
+    }
+}

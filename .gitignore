@@ -10,7 +10,7 @@ output/
 transformer/tables/
 
 #plotting
-plots/
+plots/*.html
 
 #logging
 *.log

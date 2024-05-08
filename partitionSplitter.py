@@ -5,8 +5,6 @@ Name:
 
 Classes:
     PartitionSplitter(origin,destination)
-
-Functions:    
 """
 import os
 import partition

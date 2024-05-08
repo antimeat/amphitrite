@@ -213,8 +213,12 @@ class Transform:
 
         attributes = 'align="center"'
         groupProperties = {'border-right': '1px solid #000', 'border-left': '1px solid #000'}
-        caption = 'hs = cos((π / 180) × (dir - {})) × (hs)'.format(theta1 + ' or ' + theta2)
-
+        
+        # Set the caption for the table depending on transformed or not
+        caption = self.site_name
+        if self.config:
+            caption += f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multi_upper: {self.multi_upper}, multi_lower: {self.multi_lower}, attenuation: {self.attenuation}"         
+        
         # Convert columns to numeric and set NaN for errors
         df[swell_height_columns + swell_direction_columns + swell_period_columns] = df[swell_height_columns + swell_direction_columns + swell_period_columns].apply(pd.to_numeric, errors='coerce')
 
@@ -233,9 +237,14 @@ class Transform:
         styler = styler.set_caption(caption)
         styler = styler.set_properties(**groupProperties, subset=groupSubset)
         styler = styler.format(formatter, na_rep="")
-        styler = styler.hide_index().render()
+        styler = styler.hide_index().set_sticky(axis="columns").render()
 
         print(styler)
+        
+        # Save the HTML table to a file
+        file_name = self.output_file.replace('.csv', '.html')
+        with open(file_name, 'w') as f:
+            f.write(styler)
 
     def transform_to_html_table(self, df):
         
