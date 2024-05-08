@@ -196,16 +196,21 @@ class Transform:
         swell_period_columns = [col for col in df.columns if 'pd' in col]
         num_swells = len(swell_height_columns) - 2
 
-        theta1 = str(self.theta_1)
-        theta2 = str(self.theta_2)
-        
         # Define styles for the HTML table
         styles = [
             dict(selector='table', props=[('margin', '0 auto'), ('border', '1px solid #000')]),
-            dict(selector='tr:hover', props=[('background-color', 'lightgrey')]),
-            dict(selector='th', props=[('font-size', '110%'), ('text-align', 'center'), ('border', '1px solid #000')]),
+            dict(selector='tr', props=[('position', 'relative'), ('transition', 'background-color 0.1s ease')]),  # Added relative positioning here
+            dict(selector='tr:hover', props=[('background-color', 'lightgrey'), ('z-index', '1')]),  # Applying a higher z-index on hover
+
             dict(selector='td', props=[('font-size', '100%'), ('text-align', 'center')]),
             dict(selector='caption', props=[('font-size', '150%'), ('font-weight', 'bold'), ('caption-side', 'top')]),
+            dict(selector='thead th',props=[('position', 'sticky'), ('top', '0px'), ('background-color', '#fff'), ('z-index', '2'), ('font-weight', 'bold'),('text-align', 'center'),('border', '1px solid #000')]),
+            
+            # Set the first two columns to be sticky
+            dict(selector='th:nth-child(1)', props=[('position', 'sticky'), ('top', '0px'), ('left', '0px'), ('background-color', 'cornsilk'), ('z-index', '3'), ('font-weight', 'bold'),('text-align', 'center')]),
+            dict(selector='td:nth-child(1)', props=[('position', 'sticky'), ('top', '0px'), ('left', '0px'), ('background-color', 'cornsilk'), ('z-index', '2'), ('font-weight', 'bold'),('text-align', 'center')]),
+            dict(selector='th:nth-child(2)', props=[('position', 'sticky'), ('top', '0px'), ('left', '29px'), ('background-color', 'cornsilk'), ('z-index', '3'), ('font-weight', 'bold'),('text-align', 'center')]),
+            dict(selector='td:nth-child(2)', props=[('position', 'sticky'), ('top', '0px'), ('left', '29px'), ('background-color', 'cornsilk'), ('z-index', '2'), ('font-weight', 'bold'),('text-align', 'center')]),
         ]
 
         # Create subsets for styling specific columns
@@ -237,7 +242,7 @@ class Transform:
         styler = styler.set_caption(caption)
         styler = styler.set_properties(**groupProperties, subset=groupSubset)
         styler = styler.format(formatter, na_rep="")
-        styler = styler.hide_index().set_sticky(axis="columns").render()
+        styler = styler.hide(axis='index').to_html()
 
         print(styler)
         
