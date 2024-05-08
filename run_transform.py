@@ -29,6 +29,13 @@ def generate_output_all_sites(run_time=None, transformed=True):
         except:
             pass
 
+def generate_test_output_from_args(args):
+    """
+    Print out a test.
+    """
+    transformed_df = load_from_config(args.siteName, args.run_time, args.notrans)
+    return transformed_df
+
 def generate_output_from_args(args):
     """
     Print out an html table and csv output from the given args.
@@ -202,7 +209,7 @@ def parse_arguments():
     parser.add_argument('--run_time', type=str, default=None, help='Run Time: YYYYMMDDHH')
     parser.add_argument('--notrans', action='store_false', help='If used, Transformed=False')
     parser.add_argument('--nosave', action='store_false', help='If used, dont save the file to disk')
-
+    parser.add_argument('--test', action='store_true', help='If used, run some tests')
     args = parser.parse_args()
     
     # Convert the thresholds string to a list of floats
@@ -216,10 +223,14 @@ def main():
     if args.all:
         generate_output_all_sites(run_time=args.run_time, transformed=args.notrans)
         plotting.plot_all_combined_pages()
+    elif args.test:
+        df = generate_test_output_from_args(args)
+        print(df)
     else:
         generate_output_from_args(args)
         site_name = args.siteName
         plotting.plot_single_combined_page(site_name)    
+    
             
 if __name__ == '__main__':
     main()

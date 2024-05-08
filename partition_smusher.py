@@ -25,6 +25,7 @@ import autoseas.auto_seas as auto_seas
 import gfe
 
 #package imports
+import run_transform
 import database as db
 import models
 import amphitrite_configs as configs
@@ -299,8 +300,10 @@ class PartitionSmusher(object):
             col_names = base_col_names + sea_col_names + swell_col_names
             
             #get the data from database
-            table = db.get_wavetable_from_db(site_name)["data"]
-            df_table_all = pd.read_csv(StringIO(table), comment="#", names=col_names, header=None)
+            # table = db.get_wavetable_from_db(site_name)["data"]
+            transformed_table = run_transform.load_from_config(site_name)
+            
+            df_table_all = pd.read_csv(StringIO(transformed_table), comment="#", names=col_names, header=None)
             
             # select just seas data
             df_table_seas = df_table_all[["time[UTC]", "sea_ht[m]", "sea_dir[degree]", "sea_pd[s]"]].copy()

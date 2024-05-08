@@ -16,7 +16,15 @@ header {
     height: calc(90% - 50px); /* Adjust based on actual header height */
 }
 
-.left-column,
+.left-column {
+    flex: 1 1 50%; /* Each takes half of the width */
+    height: 100%; /* Ensures both columns are of equal height */
+    padding: 10px;
+    box-sizing: border-box; /* Includes padding and border in the element's total dimensions */
+    display: flex;
+    flex-direction: column;
+}
+
 .right-column {
     flex: 1 1 50%; /* Each takes half of the width */
     height: 100%; /* Ensures both columns are of equal height */
@@ -26,9 +34,13 @@ header {
     flex-direction: column;
 }
 
-.plot,
+.plot {
+    height: 55%; /* Each takes half of the height of the left column */
+}
+
 .image {
-    height: 50%; /* Each takes half of the height of the left column */
+    width: 90%;
+    height: 45%; /* Each takes half of the height of the left column */
 }
 
 .table {
