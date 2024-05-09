@@ -29,8 +29,14 @@ fi
 # Create or overwrite the lock file with the current PID
 echo $$ > "$LOCK_FILE"
 
-# Find new files since last run
-new_files=$(find "$WATCH_DIR" -type f -newer "$LAST_RUN_FILE" 2>> "$LOG_FILE")
+# Create a temporary file with a timestamp of LAST_RUN_FILE minus 1 minute
+touch -r "$LAST_RUN_FILE" -d "-1 minute" /tmp/temp_last_run
+
+# Find new files since last run, newer by more than 1 minute
+new_files=$(find "$WATCH_DIR" -type f -newer /tmp/temp_last_run 2>> "$LOG_FILE")
+
+# Clean up the temporary file
+rm /tmp/temp_last_run
 
 # Change directory to script directory and run your script if new files are found
 if [[ ! -z "$new_files" ]]; then
