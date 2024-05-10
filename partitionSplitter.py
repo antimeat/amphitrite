@@ -429,6 +429,39 @@ def cleanup_logfile():
     logging.info(f"Logfile cleanup complete. Retained {len(valid_lines)} entries.")
     logging.info("--------------------------------------------------------------")    
             
+def load_log():
+    """
+    Load the last log entries from the last 10 minutes
+    """
+    logfile_path = LOG_FILENAME
+    cutoff = datetime.now() - timedelta(minutes=10)
+    valid_lines = []
+
+    try:
+        with open(logfile_path, 'r') as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        return None
+
+    if not lines:
+        return None
+
+    for line in lines:
+        # Extract the timestamp, assuming format 'YYYY-MM-DD HH:MM:SS,fff'
+        timestamp_str = line.split(',')[0]
+        try:
+            log_date = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
+            if log_date > cutoff:
+                valid_lines.append(line)
+        except ValueError as e:
+            continue
+
+    if not valid_lines:
+        return None
+    else:
+        # sort the list by date
+        return "<br>".join(sorted(valid_lines))
+        
 def main():
     
     parser = argparse.ArgumentParser()
@@ -441,6 +474,7 @@ def main():
         if args.site_name.strip().lower() == 'all':
             toolbox.generate_all_sites_to_db()
             message = f"<b>run-time:</b> {toolbox.latest_run_time} <br><b>for:</b> all sites. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite (dev)</a>"
+            message += f"<br><br> <b>Log entries:</b> <br> {load_log()}"
             emails.send_email(message=message)
         else:
             wave_table = toolbox.generate_site_to_db(site_name=args.site_name)
@@ -450,6 +484,7 @@ def main():
                 table = wave_table["data"]
                 print(table)
                 message = f"<b>run-time:</b> {toolbox.latest_run_time} <br> <b>for:</b> {args.site_name}. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite (dev)</a>"
+                message += f"<br><br> <b>Log entries:</b> <br> {load_log()}"
                 emails.send_email(message=message)
             else:
                 print(f"No data available for site '{args.site_name}'.")     
@@ -457,6 +492,7 @@ def main():
         
     except Exception as e:
         message = f"Problem with latest run: {toolbox.latest_run_time}"
+        message += f"<br><br> <b>Log entries:</b> <br> {load_log()}"
         emails.send_email(message=message)
         
     #tidy up the old records
