@@ -78,8 +78,8 @@ def generate_output_from_config(site_name, run_time=None, transformed=True):
     if site_name not in sites_info or transformed is False:
         transformer = transform.Transform(site_name, 360, 0, 0, 1, 1, 1, [3,2.5,2])
         df,header = transformer.process_wave_table(table)
-        transformer.save_to_file(df)
         transformed_df = transformer.transform_df(df)
+        transformer.save_to_file(transformed_df)
         html_table = transformer.transform_to_html_table(transformed_df)
         transformer.print_html_table(html_table)        
     
@@ -101,8 +101,8 @@ def generate_output_from_config(site_name, run_time=None, transformed=True):
                 ]
             )
             df, header = transformer.process_wave_table(table)
-            transformer.save_to_file(df)
             transformed_df = transformer.transform_df(df)
+            transformer.save_to_file(transformed_df)
             html_table = transformer.transform_to_html_table(transformed_df)
             transformer.print_html_table(html_table)        
         
@@ -200,16 +200,17 @@ def parse_arguments():
     parser.add_argument('--all', action='store_true', help='If used, generate all sites output from config file')
     parser.add_argument('--siteName', type=str, default='Dampier Salt - Cape Cuvier 7 days', help='Site Name')
     parser.add_argument('--theta_split', type=str, default='90', help='Dirction to split theta_1 and theta_2.')
-    parser.add_argument('--theta_1', type=str, default='262', help='Theta 1')
-    parser.add_argument('--theta_2', type=str, default='20', help='Theta 2')
+    parser.add_argument('--theta_1', type=str, default='0', help='Theta 1')
+    parser.add_argument('--theta_2', type=str, default='0', help='Theta 2')
     parser.add_argument('--multi_upper', type=float, default=0.42, help='Multiplier upper')
     parser.add_argument('--multi_lower', type=float, default=0.25, help='Multiplier lower')
     parser.add_argument('--attenuation', type=float, default=1.0, help='Attenuation')
-    parser.add_argument('--thresholds', type=str, default="3,2.5,1.5", help='Thresholds')
+    parser.add_argument('--thresholds', type=str, default="3,2.5,2.0", help='Thresholds')
     parser.add_argument('--run_time', type=str, default=None, help='Run Time: YYYYMMDDHH')
     parser.add_argument('--notrans', action='store_false', help='If used, Transformed=False')
     parser.add_argument('--nosave', action='store_false', help='If used, dont save the file to disk')
     parser.add_argument('--test', action='store_true', help='If used, run some tests')
+    parser.add_argument('--from_config', action='store_true', help='If used, run site from config')
     args = parser.parse_args()
     
     # Convert the thresholds string to a list of floats
@@ -220,12 +221,16 @@ def parse_arguments():
 def main():
     args = parse_arguments()  
     
-    if args.all:
+    if args.all or args.siteName.strip().lower() == 'all':
         generate_output_all_sites(run_time=args.run_time, transformed=args.notrans)
         plotting.plot_all_combined_pages()
     elif args.test:
         df = generate_test_output_from_args(args)
         print(df)
+    elif args.from_config:
+        generate_output_from_config(args.siteName, args.run_time, args.notrans)
+        site_name = args.siteName
+        plotting.plot_single_combined_page(site_name)    
     else:
         generate_output_from_args(args)
         site_name = args.siteName

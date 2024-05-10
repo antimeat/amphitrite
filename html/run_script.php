@@ -14,7 +14,7 @@
 
 		<?php
 			$dir = $BASE_DIR;
-			$outputFile = $dir . "test_output.txt";  // Concatenating the directory with the filename
+			$outputFile = $dir . "test_output.txt";  
 			putenv("NUMBA_CACHE_DIR=/tmp/numba_cache");
 			
 			$site = $_REQUEST["sites"];
@@ -22,15 +22,18 @@
 			chdir($dir);
 
 			$pythonPath = $PYTHON_PATH;
-			$scriptPath = $dir . "partitionSplitter.py";
-			// $escapedSite = escapeshellarg("");
+			$scriptPath_1 = $dir . "partitionSplitter.py";
+			$scriptPath_2 = $dir . "run_transform.py";
+			
+			$command_1 = "$pythonPath $scriptPath_1 --site '$site' > $outputFile 2>&1";
+			passthru($command_1);
 
-			$command = "$pythonPath $scriptPath --site '$site' > $outputFile 2>&1";
-			passthru($command);
-
+			$command_2 = "$pythonPath $scriptPath_2 --from_config --site '$site'";
+			passthru($command_2);
 
 			// Read the output file and convert for html
 			$output = file_get_contents($outputFile);			
+
 		?>
 
 		<!-- <div class="container-fluid">
