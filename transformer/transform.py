@@ -376,6 +376,7 @@ class Transform:
         
         # this is our last chance to bail if thetas are not valid, return the df as is if not valid
         if not self.config:
+            print("not transforming this table")
             return df
         
         transformed_df = df.copy()

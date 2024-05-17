@@ -198,6 +198,10 @@ class PartitionSplitter(object):
         variables.remove("efth")
         df = ws[variables].to_dataframe()
         
+        # print(df.columns)
+        # print(df.head(50))
+        # exit()
+        
         #find how many swell partitions we have and add them to a reduced column list
         all_swell_nums = ['{}'.format(n.split('_')[1]) for n in df.columns if "swell" in n]
         unique_swell_nums = list(dict.fromkeys(all_swell_nums))

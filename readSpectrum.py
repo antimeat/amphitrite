@@ -96,11 +96,15 @@ def noPartition(filename,site):
     ws['tp'] = ws_total.tp
     ws['tm01'] = ws_total.tm01
     ws['tm02'] = ws_total.tm02
-    ws['tp'] = ws_total.tp
     ws['dpm'] = ws_total.dpm
     ws['dp'] = ws_total.dp
     ws['dm'] = ws_total.dm
     ws['dspr'] = ws_total.dspr
+    
+    # dp and tp are recalculated due to bug in wavespectra ??
+    peak_stats = get_peak_stats(ws.efth)
+    ws["tp"].values = peak_stats.tp.values.reshape(-1,1)
+    ws["dp"].values = peak_stats.dp.values.reshape(-1,1)
     
     return ws
     
@@ -113,8 +117,10 @@ def onePartition(filename, site, period):
     ----------
     filename : str
         A string for the netCDF spectral file.
+    site : str
+        A string for the site name.
     period : int
-        The wave period to split the data
+        The wave period to split the data.
 
     Returns
     -------
@@ -140,11 +146,15 @@ def onePartition(filename, site, period):
     ws['tp'] = ws_total.tp
     ws['tm01'] = ws_total.tm01
     ws['tm02'] = ws_total.tm02
-    ws['tp'] = ws_total.tp
     ws['dpm'] = ws_total.dpm
     ws['dp'] = ws_total.dp
     ws['dm'] = ws_total.dm
     ws['dspr'] = ws_total.dspr
+    
+    # dp and tp are recalculated due to bug in wavespectra ??
+    peak_stats = get_peak_stats(ws.efth)
+    ws["tp"].values = peak_stats.tp.values.reshape(-1,1)
+    ws["dp"].values = peak_stats.dp.values.reshape(-1,1)
     
     #append partitioned variables to file
     ws['hs_sea'] = sea_stats.hs
@@ -174,6 +184,11 @@ def onePartition(filename, site, period):
     ws['hmax_sw'] = swell_stats.hmax
     ws.hmax_sw.attrs['standard_name'] = ws.hmax_sw.attrs['standard_name']+'_swell_partition'
     
+    # dp and tp are recalculated due to bug in wavespectra ??
+    peak_stats = get_peak_stats(sea)
+    ws["tp_sea"].values = peak_stats.tp.values.reshape(-1,1)
+    ws["dp_sea"].values = peak_stats.dp.values.reshape(-1,1)
+    
     # ws['tp_sw'] = swell_stats.tp
     ws['tp_sw'] = swell.spec.tp(smooth=False).fillna(1 / swell.freq.max())
 
@@ -190,6 +205,11 @@ def onePartition(filename, site, period):
     ws.dm_sw.attrs['standard_name'] = ws.dm_sw.attrs['standard_name']+'_swell_partition'
     ws['dspr_sw'] = swell_stats.dspr
     ws.dspr_sw.attrs['standard_name'] = ws.dspr_sw.attrs['standard_name']+'_swell_partition'
+    
+    # dp and tp are recalculated due to bug in wavespectra ??
+    peak_stats = get_peak_stats(swell)
+    ws["tp_sw"].values = peak_stats.tp.values.reshape(-1,1)
+    ws["dp_sw"].values = peak_stats.dp.values.reshape(-1,1)
     
     # print(f"ws_sea: {ws['hs_sea']}, ws_sw: {ws['hs_sw']}")
     return ws
@@ -220,9 +240,9 @@ def rangePartition(filename, site, start, end):
     
     """
     # here we make a minor tweaks to start and end to ensure we dont end with crossover values between partitions
-    end -= 0.51 
+    end += 0.49 
     if start > 5:
-        start -= 0.49        
+        start += 0.51        
         
     try: 
         #read in file
@@ -239,14 +259,6 @@ def rangePartition(filename, site, start, end):
         
         # params["tp"].values = get_tp(part.spec.oned().to_dataframe('efth').reset_index()).values
         # params["dp"].values = get_dp(part.to_dataframe('efth').reset_index()).values
-        
-        #if its a swell partition push low energy tp to the start
-        tp = 0
-        if start > 5:
-            tp = part.spec.tp(smooth=False).fillna(1 / part.freq.max())
-        else:
-            #we do a fudge with tp depending on which end of the partition to push low energy
-            tp = part.spec.tp(smooth=False).fillna(1 / part.freq.min())
         
         params['station_name'] = ws.station_name
         
@@ -317,7 +329,7 @@ def get_dp(df, group_col='time', x_col='efth', y_col='dir'):
         
         dp = pd.DataFrame(np.round(result['dir'].values, 2))
         dp.index = df[group_col].unique()
-        dp.columns = ['Dp']
+        dp.columns = ['dp']
             
     except Exception as e:
         print(f"Error in get_dp: {e}")
