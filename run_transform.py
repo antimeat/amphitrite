@@ -46,8 +46,8 @@ def generate_output_from_args(args):
             theta_split=args.theta_split,
             theta_1=args.theta_1,
             theta_2=args.theta_2,
-            multi_upper=args.multi_upper,
-            multi_lower=args.multi_lower,
+            multi_short=args.multi_short,
+            multi_long=args.multi_long,
             attenuation=args.attenuation,
             thresholds=args.thresholds
         )
@@ -91,8 +91,8 @@ def generate_output_from_config(site_name, run_time=None, transformed=True):
                 site_data["theta_split"],
                 site_data["theta_1"], 
                 site_data["theta_2"], 
-                site_data["multi_upper"], 
-                site_data["multi_lower"], 
+                site_data["multi_short"], 
+                site_data["multi_long"], 
                 site_data["attenuation"], 
                 [   
                     site_data["high_threshold"], 
@@ -127,8 +127,8 @@ def load_from_config(site_name, run_time=None, transformed=True):
             site_data["theta_split"],
             site_data["theta_1"], 
             site_data["theta_2"], 
-            site_data["multi_upper"], 
-            site_data["multi_lower"], 
+            site_data["multi_short"], 
+            site_data["multi_long"], 
             site_data["attenuation"], 
             [   
                 site_data["high_threshold"], 
@@ -162,8 +162,8 @@ def read_config():
                 "theta_split": parts[1].strip(),
                 "theta_1": parts[2].strip(),
                 "theta_2": parts[3].strip(),
-                "multi_upper": parts[4].strip(),
-                "multi_lower": parts[5].strip(),
+                "multi_short": parts[4].strip(),
+                "multi_long": parts[5].strip(),
                 "attenuation": parts[6].strip(),
                 "high_threshold": parts[7].strip(),
                 "medium_threshold": parts[8].strip(),
@@ -202,13 +202,13 @@ def parse_arguments():
     parser.add_argument('--theta_split', type=str, default='90', help='Dirction to split theta_1 and theta_2.')
     parser.add_argument('--theta_1', type=str, default='0', help='Theta 1')
     parser.add_argument('--theta_2', type=str, default='0', help='Theta 2')
-    parser.add_argument('--multi_upper', type=float, default=0.42, help='Multiplier upper')
-    parser.add_argument('--multi_lower', type=float, default=0.25, help='Multiplier lower')
+    parser.add_argument('--multi_short', type=float, default=0.42, help='Multiplier upper')
+    parser.add_argument('--multi_long', type=float, default=0.25, help='Multiplier lower')
     parser.add_argument('--attenuation', type=float, default=1.0, help='Attenuation')
     parser.add_argument('--thresholds', type=str, default="3,2.5,2.0", help='Thresholds')
     parser.add_argument('--run_time', type=str, default=None, help='Run Time: YYYYMMDDHH')
     parser.add_argument('--notrans', action='store_false', help='If used, Transformed=False')
-    parser.add_argument('--nosave', action='store_false', help='If used, dont save the file to disk')
+    parser.add_argument('--nosave', action='store_true', help='If used, dont save the file to disk')
     parser.add_argument('--test', action='store_true', help='If used, run some tests')
     parser.add_argument('--from_config', action='store_true', help='If used, run site from config')
     args = parser.parse_args()
@@ -234,7 +234,8 @@ def main():
     else:
         generate_output_from_args(args)
         site_name = args.siteName
-        plotting.plot_single_combined_page(site_name)    
+        if not args.nosave:
+            plotting.plot_single_combined_page(site_name)    
     
             
 if __name__ == '__main__':

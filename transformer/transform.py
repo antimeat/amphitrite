@@ -18,6 +18,9 @@ import argparse
 #local imports relative to amphtirite
 from transformer import transformer_configs as configs
 
+# Set the umask to 0 to ensure that no permissions are masked
+os.umask(0)
+
 BASE_DIR = configs.BASE_DIR
 
 class Transform:
@@ -25,7 +28,7 @@ class Transform:
     Class for generating modified wave/swell tables from an API source.
     """
     
-    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', theta_split=90,theta_1=262, theta_2=20, multi_upper=1.0, multi_lower=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
+    def __init__(self, site_name='Dampier Salt - Cape Cuvier 7 days', theta_split=90,theta_1=262, theta_2=20, multi_short=1.0, multi_long=1.0, attenuation=1.0, thresholds=[0.3, 0.2, 0.15]):
         """
         Initialize the WaveTable object with site details and processing parameters.
         """
@@ -33,8 +36,8 @@ class Transform:
         self.theta_split = float(theta_split)
         self.theta_1 = float(theta_1)
         self.theta_2 = float(theta_2)
-        self.multi_upper = float(multi_upper)
-        self.multi_lower = float(multi_lower)
+        self.multi_short = float(multi_short)
+        self.multi_long = float(multi_long)
         self.attenuation = float(attenuation)
         self.thresholds = [float(x) for x in thresholds]
         self.output_file = os.path.join(BASE_DIR,'tables/{}_data.csv'.format(self.site_name.replace(' ', '_').replace('-', '')))
@@ -222,7 +225,7 @@ class Transform:
         # Set the caption for the table depending on transformed or not
         caption = self.site_name
         if self.config:
-            caption += f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multi_upper: {self.multi_upper}, multi_lower: {self.multi_lower}, attenuation: {self.attenuation}"         
+            caption += f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multi_short: {self.multi_short}, multi_long: {self.multi_long}, attenuation: {self.attenuation}"         
         
         # Convert columns to numeric and set NaN for errors
         df[swell_height_columns + swell_direction_columns + swell_period_columns] = df[swell_height_columns + swell_direction_columns + swell_period_columns].apply(pd.to_numeric, errors='coerce')
@@ -251,6 +254,9 @@ class Transform:
         with open(file_name, 'w') as f:
             f.write(styler)
 
+        # Set permissions to 666 (read and write for user, group, and others)
+        # os.chmod(file_name, 0o666)
+        
     def transform_to_html_table(self, df):
         
         # Ensure 'time[UTC]' is in datetime format and set as index
@@ -361,10 +367,10 @@ class Transform:
         Calculate the interpolated multiplier based on the upper and lower bounds,
         """
         if swell_index == 0:
-            return self.multi_upper
+            return self.multi_short
         
         swell_index -= 1  # Convert 1-based index to 0-based index for internal calculation
-        multiplier = self.multi_upper + (self.multi_lower - self.multi_upper) * (swell_index / (num_swells - 1))
+        multiplier = self.multi_short + (self.multi_long - self.multi_short) * (swell_index / (num_swells - 1))
         return multiplier
 
     def transform_df(self, df):
@@ -376,7 +382,7 @@ class Transform:
         
         # this is our last chance to bail if thetas are not valid, return the df as is if not valid
         if not self.config:
-            print("not transforming this table")
+            print("<h4>Not transforming this table</h4>")
             return df
         
         transformed_df = df.copy()
@@ -435,12 +441,13 @@ class Transform:
             #dont include the total_hs to a few calcs
             if "seasw" not in hs_col:
                 #magical attenuation and multiplier for period and hs
-                transformed_df[peak_pd_col] = transformed_df[peak_pd_col] * self.attenuation
                 adjusted_hs = adjusted_hs * self.get_interpolated_multiplier(num_swells, swell_num)
                 transformed_df[hs_col] = np.round(adjusted_hs, 2)
                 transformed_hs_list.append(adjusted_hs)
             else:
                 transformed_df[hs_col] = np.round(hs, 2)
+            
+            transformed_df[peak_pd_col] = transformed_df[peak_pd_col] * self.attenuation
             
             # finalise some rounding
             transformed_df[peak_dir_col] = transformed_df[peak_dir_col].astype(int)
@@ -468,7 +475,7 @@ class Transform:
         #inject some transformed header information if config is valid
         header_text = f", Transform ignored and standard table returned."
         if self.config:
-            header_text = f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multi_upper: {self.multi_upper}, multi_lower: {self.multi_lower}, attenuation: {self.attenuation}" 
+            header_text = f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multi_short: {self.multi_short}, multi_long: {self.multi_long}, attenuation: {self.attenuation}" 
         header = [line + header_text if "Table:" in line else line for line in header]
 
         data_lines = [line for line in lines if not line.startswith("#") and line.strip()]
@@ -503,6 +510,10 @@ class Transform:
         try:
             df.to_csv(self.output_file)
             status = f"Data saved to {self.output_file}"
+            
+            # Set permissions to 666 (read and write for user, group, and others)
+            # os.chmod(self.output_file, 0o666)
+            
         except Exception as e:
             status = f"Error saving data: {e}"
         

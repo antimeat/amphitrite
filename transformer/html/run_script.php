@@ -96,8 +96,8 @@
 			$theta1 = $_REQUEST["theta1"];
 			$theta2 = $_REQUEST["theta2"];
 			$theta_split = $_REQUEST["theta_split"];
-			$multi_upper = $_REQUEST["multi_upper"];
-			$multi_lower = $_REQUEST["multi_lower"];
+			$multi_short = $_REQUEST["multi_short"];
+			$multi_long = $_REQUEST["multi_long"];
 			$attenuation = $_REQUEST["attenuation"];
 			
             // $tableName = $_REQUEST["table_select"];
@@ -108,8 +108,8 @@
 			
 			$save_option = "--nosave";  
 
-			if (isset($_REQUEST["save_output"])) {
-				$save_output = ""; 
+			if (isset($_REQUEST["save_output"]) && $_REQUEST["save_output"] == "on") {
+				$save_option = ""; 
 			}
 
 			# Command to execute
@@ -123,8 +123,8 @@
 				. "--theta_1 '$theta1' "
 				. "--theta_2 '$theta2' "
 				. "--theta_split '$theta_split' "
-				. "--multi_upper '$multi_upper' "
-				. "--multi_lower '$multi_lower' "
+				. "--multi_short '$multi_short' "
+				. "--multi_long '$multi_long' "
 				. "--attenuation '$attenuation' "
 				. "--thresholds '$criteria_1,$criteria_2,$criteria_3' "
 				. $save_option

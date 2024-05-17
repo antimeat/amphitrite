@@ -9,6 +9,9 @@ import json
 import urllib.request
 import amphitrite_configs as configs
 
+# Set the umask to 0 to ensure that no permissions are masked
+os.umask(0)
+
 BASE_DIR = configs.BASE_DIR
 BASE_URL = configs.BASE_URL
 
@@ -74,6 +77,9 @@ def generate_html(site_name):
     with open(out_file, "w") as file:
         file.write(html_content)
 
+    # Set permissions to 666 (read and write for user, group, and others)
+    # os.chmod(out_file, 0o666)
+    
 def plot_all_combined_pages():
     """
     Loop through the TABLES dictionary and generate HTML content for each site
