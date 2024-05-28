@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Transformer algorithm</title>
+  <title>Transformer</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -26,8 +26,42 @@
 </head>
 <body>
 <header id="title-block-header">
-<h1 class="title">Transformer algorithm</h1>
+<h1 class="title">Transformer</h1>
 </header>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Read the <a href="#algorithm">algorithm</a> for details of how the
+Transformer works.</li>
+<li><strong>Note:</strong> site tables are defined in <a
+href="http://wa-vw-er/webapps/amphitrite/html/dashboard.php">Amphitrite</a>,
+not here. Hence the Transformer GUI does not allow you to change the
+backend spectral table that seeds the site you are
+<em>transforming</em>. To change the backend table, you need to
+re-configure Amphitrite.</li>
+<li>Run tests via the Transformer GUI before editing the site
+configuration from the <em>edit-config</em> menu. Running tests via the
+GUI does not save any output by default. You can, however, check the
+<em>save-output</em> button to save the HTML output and CSV output,
+which then updates the HTML table output for that site and makes it
+available via HTML, as well as the <em>amphitrite</em> data source in <a
+href="http://wa-vw-er/webapps/er_ml_projects/vulture/html/dashboard.php">Vulture</a>.
+Once a new model run arrives, the HTML output (<em>and amphitrite data
+source</em>) will be overridden using configuration in the site
+configuration.</li>
+<li>Save site configurations you want to execute for each model run from
+the <em>edit-config</em> menu.</li>
+<li>Once you save the configuration from the <em>edit-config</em> menu,
+the transformed data is available immediately on demand via HTML tables,
+amphitrite data source in Vulture, and in Ofcast. This configuration is
+executed with each new model run.</li>
+<li><strong>Note:</strong> use <span
+class="math inline"><em>θ</em><sub>1</sub> = 0</span> and <span
+class="math inline"><em>θ</em><sub>2</sub> = 0</span> in the Transformer
+GUI to return the original table without a transformation. This is
+useful for ground-truthing the original data that a site is transformed
+from.</li>
+</ul>
+<h2 id="algorithm">Algorithm</h2>
 <p>The transform algorithm is fairly blunt instrument to say the least.
 Essentially we take an existing swell partition table and apply a window
 where we allow energy to penetrate unaffected by any refraction effects.
@@ -77,7 +111,18 @@ Similarly for <span class="math inline"><em>θ</em></span> between <span
 class="math inline"><em>θ</em><sub>2</sub></span> and <span
 class="math inline"><em>θ</em><sub><em>s</em><em>p</em><em>l</em><em>i</em><em>t</em></sub></span>,
 <span
-class="math inline"><em>θ</em><sub><em>b</em><em>e</em><em>n</em><em>t</em></sub> = <em>θ</em><sub>2</sub></span></p>
+class="math inline"><em>θ</em><sub><em>b</em><em>e</em><em>n</em><em>t</em></sub> = <em>θ</em><sub>2</sub></span>.
+As a result of initial verification as well as wave theory the
+multiplication factor has been broken down into two seperate factors,
+one for the short period partition and one for the longer period
+partitions. Hence we have defined multiplication factors to apply of
+<span
+class="math inline"><em>m</em><em>u</em><em>l</em><em>t</em><em>i</em><sub><em>s</em><em>h</em><em>o</em><em>r</em><em>t</em></sub></span>
+and <span
+class="math inline"><em>m</em><em>u</em><em>l</em><em>t</em><em>i</em><sub><em>l</em><em>o</em><em>n</em><em>g</em></sub></span>.
+A final note, the multiplication factors are applied to every incoming
+direction, regardless of having the <span
+class="math inline">cos </span> rule applied or not.</p>
 <h2 id="assumptions">Assumptions</h2>
 <ul>
 <li>maximum refraction amount of <span
@@ -99,12 +144,12 @@ class="math inline"><em>θ</em><sub>2</sub></span></li>
 </ul>
 <h2 id="graphical-representation">Graphical representation</h2>
 <div align="left">
-    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="95%"/>
+    <img src="http://wa-vw-er/webapps/amphitrite/docs/transformer_algo.png" alt="Algorithm" width="95%"/>
 </div>
 
 <h2 id="reference-cos-table">Reference cos table</h2>
 <div align="left">
-    <img src="http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/docs/cos_table.png" alt="Algorithm" width="50%"/>
+    <img src="http://wa-vw-er/webapps/amphitrite/docs/cos_table.png" alt="Algorithm" width="50%"/>
 </div>
 
 <h2 id="author">Author</h2>

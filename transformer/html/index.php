@@ -14,7 +14,7 @@
 	        text-align: left;
 	        display: inline-block;
 	        vertical-align: middle;
-            width: 30%;
+            width: 35%;
         }
         input[type="radio"] {
 	        vertical-align: left;
@@ -31,7 +31,7 @@
     <script type="text/javascript" src="../js/jquery-ui/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/moment.min.js"></script>
     <script type="text/javascript" src="../js/underscore-min.js"></script>
-    <script type="text/javascript" src="../js/sites.js"></script>
+    <script type="text/javascript" src="../js/data_from_config.js"></script>
 
     <link rel="stylesheet" media="all" type="text/css" href="../js/jquery-ui/jquery-ui.css" />
     <link rel="stylesheet" media="all" type="text/css" href="../js/jquery-ui-timepicker-addon.css" />
@@ -61,12 +61,12 @@
                     <tr><td><hr></td><td><hr></td></tr>
    
                     <tr>
-	                    <td><label for="theta1">Angle for &#952;<sub>1</sub>: </label></td>
-	                    <td><input type="number" id=theta1 name=theta1 size="5" min="0" max="360" value="0"></td>
+	                    <td><label for="theta_1">Angle for &#952;<sub>1</sub>: </label></td>
+	                    <td><input type="number" id=theta_1 name=theta_1 size="5" min="0" max="360" value="0"></td>
                     </tr>		
                     <tr>
-	                    <td><label for="theta2">Angle for &#952;<sub>2</sub> </label></td>
-	                    <td><input type="number" id=theta2 name=theta2 size="5" min="0" max="360" value="0"></td>
+	                    <td><label for="theta_2">Angle for &#952;<sub>2</sub> </label></td>
+	                    <td><input type="number" id=theta_2 name=theta_2 size="5" min="0" max="360" value="0"></td>
                     </tr>		
                     <tr>
 	                    <td><label for="theta_split">Angle for &#952;<sub>split</sub> </label></td>

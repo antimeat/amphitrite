@@ -93,8 +93,8 @@
 		
 		<?php
 		    include('configs.php');
-			$theta1 = $_REQUEST["theta1"];
-			$theta2 = $_REQUEST["theta2"];
+			$theta_1 = $_REQUEST["theta_1"];
+			$theta_2 = $_REQUEST["theta_2"];
 			$theta_split = $_REQUEST["theta_split"];
 			$multi_short = $_REQUEST["multi_short"];
 			$multi_long = $_REQUEST["multi_long"];
@@ -120,8 +120,8 @@
 			// Execute command with the conditionally determined --nosave option
 			passthru("$cmd "
 				. "--siteName '$siteName' "
-				. "--theta_1 '$theta1' "
-				. "--theta_2 '$theta2' "
+				. "--theta_1 '$theta_1' "
+				. "--theta_2 '$theta_2' "
 				. "--theta_split '$theta_split' "
 				. "--multi_short '$multi_short' "
 				. "--multi_long '$multi_long' "
@@ -136,7 +136,7 @@
 		
 			<div class="alert info">
                 <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-                <i>Load into vulture with </i> <b>data-source:</b> mod <b>site:</b> <?php echo($siteName);?>
+                <i>Load into vulture with </i> <b>data-source:</b> amphitrite <b>site:</b> <?php echo($siteName);?>
             </div>
 	        
 	        <fieldset align="center">	

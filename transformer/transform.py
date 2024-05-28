@@ -225,8 +225,9 @@ class Transform:
         # Set the caption for the table depending on transformed or not
         caption = self.site_name
         if self.config:
-            caption += f", Transformed with \u03B8 west: {int(self.theta_1)}, \u03B8 east: {int(self.theta_2)}, multi_short: {self.multi_short}, multi_long: {self.multi_long}, attenuation: {self.attenuation}"         
-        
+            caption += f", Transformed with \u03B8<sub>1</sub>: {int(self.theta_1)}, \u03B8<sub>2</sub>: {int(self.theta_2)}, multi_short: {self.multi_short}, multi_long: {self.multi_long}, attenuation: {self.attenuation}"         
+        else:
+            caption += ", No transform, using original data."
         # Convert columns to numeric and set NaN for errors
         df[swell_height_columns + swell_direction_columns + swell_period_columns] = df[swell_height_columns + swell_direction_columns + swell_period_columns].apply(pd.to_numeric, errors='coerce')
 
@@ -366,12 +367,12 @@ class Transform:
         """
         Calculate the interpolated multiplier based on the upper and lower bounds,
         """
-        if swell_index == 0:
+        if swell_index == 0 or swell_index == 1:
             return self.multi_short
         
-        swell_index -= 1  # Convert 1-based index to 0-based index for internal calculation
-        multiplier = self.multi_short + (self.multi_long - self.multi_short) * (swell_index / (num_swells - 1))
-        return multiplier
+        # swell_index -= 1  # Convert 1-based index to 0-based index for internal calculation
+        # multiplier = self.multi_short + (self.multi_long - self.multi_short) * (swell_index / (num_swells - 1))
+        return self.multi_long
 
     def transform_df(self, df):
         """
@@ -382,7 +383,6 @@ class Transform:
         
         # this is our last chance to bail if thetas are not valid, return the df as is if not valid
         if not self.config:
-            print("<h4>Not transforming this table</h4>")
             return df
         
         transformed_df = df.copy()

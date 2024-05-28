@@ -1,6 +1,6 @@
 ###################################################################################################################################################################################
 # Transformer site configuration file
-# Format: Site Name, Angle to split theta_1 and theta_2, theta_1, theta_2, Multiplier lower, Multiplier upper, Period attenuation, High highlight, medium highlight, low highlight
+# Format: Site Name, Angle to split theta_1 and theta_2, theta_1, theta_2, multi_short, multi_long, Period attenuation, High highlight, medium highlight, low highlight
 #
 # Example:
 # Woodside - Mermaid Sound 7 days, 180, 330, 30, 1, 1, 1, 0.3, 0.25, 0.2
@@ -9,7 +9,7 @@
 # Rules:
 # theta_split clockwise of theta_2
 # theta_1 clockwise of theta_split
-# theta_2 clockwise of theta_1 
+# theta_2 clockwise of theta_1
 ###################################################################################################################################################################################
 
 Chevron - Wheatstone LNG Plant, 180, 290, 30, 1, 1, 1, 0.3, 0.25, 0.2

@@ -236,10 +236,6 @@ function getDateString() {
     return `${year}${month}${day}${hour}`;
 }
 
-// Example usage:
-let midnight = new Date();
-console.log(formatDateToYYYYMMDDHH(midnight)); // Outputs: YYYYMMDDHH
-
 function refreshSeas() {
     midnight = getDateString();
 

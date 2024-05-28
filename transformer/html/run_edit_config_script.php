@@ -11,7 +11,7 @@
     passthru("cd $dir && $dir" . "save_transformer_config.py '$sites' '$comments' $CONFIG_FILE_NAME");
     $buffer = ob_get_contents();
     $htmlBuffer = str_replace("\n", "<br>", $buffer);
-
+    passthru("cd $BASE_DIR && $BASE_DIR" . "run_transform.py --all");
     ob_end_clean();
 ?>
 

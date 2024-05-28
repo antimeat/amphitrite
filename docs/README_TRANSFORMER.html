@@ -123,8 +123,10 @@ theta_2 (default: 90)</li>
 (default: 262)</li>
 <li><code>--theta_2</code>: 2nd angle for direction transformation
 (default: 20)</li>
-<li><code>--multiplier</code>: Multiplier for the wave heights (default:
-1.0).</li>
+<li><code>--multi_short</code>: Multiplier for short period wave heights
+(default: 1.0).</li>
+<li><code>--multi_long</code>: Multiplier for long period wave heights
+(default: 1.0).</li>
 <li><code>--attenuation</code>: Attenuation factor for the wave periods
 (default: 1.0).</li>
 <li><code>--thresholds</code>: 3 comma-separated threshold values for
@@ -139,7 +141,7 @@ not used)</li>
 <h3 id="running-the-script">Running the Script</h3>
 <p>Run transformer on an indivual site</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./run_transformer.py</span> <span class="at">--siteName</span> <span class="st">&quot;Dampier Salt - Cape Cuvier&quot;</span> <span class="at">--theta_split</span> 90 <span class="at">--theta_1</span> 260 <span class="at">--theta_2</span> 020 <span class="at">--multiplier</span> 1.0 <span class="at">--attenuation</span> 1.0 <span class="at">--thresholds</span> <span class="st">&quot;0.3,0.2,0.15&quot;</span></span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./run_transformer.py</span> <span class="at">--siteName</span> <span class="st">&quot;Dampier Salt - Cape Cuvier&quot;</span> <span class="at">--theta_split</span> 90 <span class="at">--theta_1</span> 260 <span class="at">--theta_2</span> 020 <span class="at">--multi_short</span> 0.7 <span class="at">--multi_long</span> 1.0 <span class="at">--attenuation</span> 1.0 <span class="at">--thresholds</span> <span class="st">&quot;0.3,0.2,0.15&quot;</span></span></code></pre></div>
 <p>To execute transformation of all configured sites</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./run_transformer.py</span> <span class="at">--all</span></span></code></pre></div>

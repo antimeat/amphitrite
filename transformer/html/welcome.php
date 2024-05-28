@@ -44,18 +44,25 @@
                     <div class="welcome">
                             <h5>
                                 <ol>
-                                    <li><h4>Edit config</h4>
+                                <li>
+                                    <h4>Read</h4>
                                         <ul>
-                                            <li><i>edit the config file to change transformer defaults for each site</i></li>
+                                            <li><i>read the important-notes from the top menu-item</i></li>
                                         </ul>  
                                     </li>    
                                     <br>
-                                    <li><h4>Transformer interface</h4>
+                                    <li><h4>Transformer GUI</h4>
                                         <ul>
-                                            <li><i>select an active ofcast site to view the transform</i></li>
+                                            <li><i>run tests to preview the transform, save output to view in Vulture and html</i></li>
                                         </ul>  
-                                    </li>                                    
-                                    
+                                    </li>
+                                    <br>
+                                    <li><h4>Edit config</h4>
+                                        <ul>
+                                            <li><i>edit the config file to change transformer defaults</i></li>
+                                        </ul>  
+                                    </li>    
+                                    <br>
                                 </ol>    
                             </h5>
                             <br>                            
@@ -67,6 +74,3 @@
         </div>        
     </body>
 </html>
-
-        
-

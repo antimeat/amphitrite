@@ -10,7 +10,7 @@
 	<a class="navbar-brand col-md-2 p-3" id="head" href="#" onclick="parent.location = 'dashboard.php'"><i><?php echo($TITLE); ?></i></a>
     <ul class="nav">
       <li><a class="nav-link navbar-nav navbar-right text-secondary h6" href="#" onclick="changeLink('edit-config')"><i>edit-config</i></a></li>
-      <li><a class="nav-link navbar-nav navbar-right text-secondary h6" id="notesMenu" href="#">hints</a></li>
+      <li><a class="nav-link navbar-nav navbar-right text-secondary h6" id="notesMenu" href="#">important-notes</a></li>
     </ul>
   </nav>	
 
@@ -37,10 +37,10 @@
 
 <!-- notes modal-->
 <div class="modal fade" id="notesModal" tabindex="-1" role="dialog" aria-labelledby="notesModal" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="notesModalTitle">Hints & Tricks</h5>
+        <h5 class="modal-title" id="notesModalTitle">Notes</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -48,34 +48,15 @@
       <div class="modal-body">
         <p>
         <ul>
-            <li><h6><i>LOAD</i> data does the following:</h6></li>
-            <ol>
-                <li><h6>pulls guidance data from the </i>data source</i>.</h6></li>
-                <li><h6>pulls forecast data from Ofcast.</h6></li>
-                <li><h6>populates wind and hs field boxes from the <i>data source</i></h6></li>
-                <li><h6>calulates and populates residual swell field using the formula: take sum of the squares from <i>selected swells</i> in Ofcast, then take the difference between that and the <i> data source</i> guidance. Residual swell field values should then be used to fill the <i>unckecked swell#</i> in Ofcast.</h6></li>
-            </ol>
-            <li><h6>Data in the field boxes is always from the <i>data source</i>. It's worth remembering this, as when selecting a <i>previous issue</i> the data field boxes are <b>not</b> from the previous forecast.</h6></li>
-            <li><h6><b><div class=tooltip" data-toggle="tooltip" data-html="true" title="<img src='img/vulture_tool_tip_special_sauce.png'>">special-sauce:</div><b></h6></li>
-            <ul>
-                <li><h6><i>wind limit:</i> the lower limit used where winds below that limit will not be modified.</h6></li>
-                <li><h6><i>wind multiplier:</i> that multiplication factor used to multiply wind speeds above the <i>wind limit</i>.</h6></li>
-                <li><h6><i>hs limit:</i> the lower limit used where hs below that limit will not be modified.</h6></li>
-                <li><h6><i>hs multiplier:</i> that multiplication factor used to multiply hs above the <i>hs limit</i>.</h6></li>
-            </ul>
-            <li><h6>Some selected Ofcast keyboard-shortcuts for pasting data values:</h6></li>
-            <ul>
-                <li><h6><i>SHIFT P:</i> paste wind speed,dir into dialog box for en masse pasting all values.</h6></li>
-                <li><h6><i>CTRL O:</i> pase individual columns of wind speed,dir each time-step</h6></li>
-                <li><h6><i>SHIFT O:</i> paste seas/swell amplitude,period,dir into dialog box for en masse pasting all values.</h6></li>
-                <li><h6><i>CRTL P:</i> paste individual columns of seas/swell amplitude</h6></li>
-            </ul>
-            
-            </li>            
+            <li><h6>Read the <i>Docs -> Algorithm</i> for details of how the Transformer works.</h6></li>
+            <li><h6><b>Note:</b> site tables are defined in <a href="http://wa-vw-er/webapps/amphitrite/html/dashboard.php" target="amphitrite">Amphitrite</a>, not here. Hence the Transformer GUI does not allow you to change the backend spectral table the seeds the site you are <i>transforming</i>. To change the backend table you need to re-configure Amphitrite. </h6></li>
+            <li><h6>Run tests via the Transformer GUI before editing the site configuration from the <i>edit-config</i> menu. Running tests via the GUI does not save any output by default. You can however check the <i>save-ouput</i> button to save the html output and csv output, which then updates the html table output for that site and makes it available via html, as well as the <i>amphitrite</i> data source in <a href="http://wa-vw-er/webapps/er_ml_projects/vulture/html/dashboard.php" target=vulture>Vulture</a>. Once a new model run arrives the html output (<i>and amphitrite data source</i>) will be overriden using configuration in the site configuration. <b>Note:</b> use theta_1 = 0 and theta_2 = 0 in the Transformer GUI to return the original table without a transformation. This is useful for ground-truthing the original data that a site is transformed from.</h6></li>                
+            <li><h6>Save site configurations you want to execute for each model run from the <i>edit-config</i> menu.</h6></li>                
+            <li><h6>Once you save the configuration from <i>edit-config</i> menu, the transformed data is avialable immediately on demand via html tables, amphitrite data source in Vulture, and in Ofcast. This configuration is executed with each new model run</h6></li>                
         </ul>
         </p>
         <br>
-        <h7 class="font-italic">For suggestions and problems: <a href="mailto:darryl.vink@bom.gov.au">darryl.vink@bom.gov.au</a> <h7>             
+        <h7 class="font-italic">For suggestions and problems: <a href="mailto:darryl.vink@bom.gov.au">daz.vink@bom.gov.au</a> </h7>             
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

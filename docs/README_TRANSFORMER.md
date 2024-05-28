@@ -23,7 +23,8 @@ The transformer execution script sits under the root directory of the Amphitrite
 -   `--theta_split`: The angle that splits theat_1 and theta_2 (default: 90)
 -   `--theta_1` 1st angle for direction transformation (default: 262)
 -   `--theta_2`: 2nd angle for direction transformation (default: 20)
--   `--multiplier`: Multiplier for the wave heights (default: 1.0).
+-   `--multi_short`: Multiplier for short period wave heights (default: 1.0).
+-   `--multi_long`: Multiplier for long period wave heights (default: 1.0).
 -   `--attenuation`: Attenuation factor for the wave periods (default: 1.0).
 -   `--thresholds`: 3 comma-separated threshold values for significant wave heights (default: "0.3,0.2,0.15").
 -   `--run_time`: Optionally pass a run Time: YYYYMMDDHH (default: None)
@@ -35,7 +36,7 @@ The transformer execution script sits under the root directory of the Amphitrite
 Run transformer on an indivual site
 
 ```bash
-./run_transformer.py --siteName "Dampier Salt - Cape Cuvier" --theta_split 90 --theta_1 260 --theta_2 020 --multiplier 1.0 --attenuation 1.0 --thresholds "0.3,0.2,0.15"
+./run_transformer.py --siteName "Dampier Salt - Cape Cuvier" --theta_split 90 --theta_1 260 --theta_2 020 --multi_short 0.7 --multi_long 1.0 --attenuation 1.0 --thresholds "0.3,0.2,0.15"
 ```
 
 To execute transformation of all configured sites

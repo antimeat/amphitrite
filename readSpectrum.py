@@ -134,10 +134,12 @@ def onePartition(filename, site, period):
     ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     
     #get sea and swell split
-    sea = ws.spec.split(fmin=1/period).chunk({"freq": -1})
+    #sea = ws.spec.split(fmin=1/period).chunk({"freq": -1})
+    sea = ws.spec.split(fmin=1/period)
     sea_stats = sea.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     # sea_stats["tp"].values = get_tp(sea.spec.oned().to_dataframe('efth').reset_index()).values        
-    swell = ws.spec.split(fmax=1/period).chunk({"freq": -1})
+    # swell = ws.spec.split(fmax=1/period).chunk({"freq": -1})
+    swell = ws.spec.split(fmax=1/period)
     swell_stats = swell.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     # swell_stats["tp"].values = get_tp(swell.spec.oned().to_dataframe('efth').reset_index()).values        
     
@@ -249,7 +251,8 @@ def rangePartition(filename, site, start, end):
         ws = amendVariablesNames(filename, site)
             
         #get sea and swell split
-        part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
+        # part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
+        part = ws.spec.split(fmin=1/end, fmax=1/start )
         params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dpm", "dp", "dm", "dspr","tp"])
         
         #derive peak stats for period and dir
