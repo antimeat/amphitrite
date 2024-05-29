@@ -70,9 +70,10 @@
 					$("#imageContainer").load(fileName);
 				}
 				else if (input == 'edit-config') {
-				    fileName = 'edit-config.php';
+				    //fileName = 'edit-config.php';
+					fileName = 'edit_config_wrapper.php';
 					$("#imageContainer").load(fileName);
-				}				
+				}								
 			}
 
 		</script>
