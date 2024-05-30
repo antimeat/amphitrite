@@ -1,4 +1,36 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo $title; ?></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap 4 CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        #loading {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+        .table tbody tr td {
+            padding: 4px;
+            font-size: 14px;
+        }
+        .table thead tr th {
+            padding: 4px;
+            font-size: 14px;
+            cursor: pointer; /* Add cursor to indicate sortable columns */
+        }
+        .form-group-padding {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
     <?php 
         include('configs.php');
         
@@ -9,7 +41,7 @@
         if ($handle) {
             while (($line = fgets($handle)) !== false) {
                 // Check if we have a header line "#"
-                if (strpos(trim($line), "#") === 0 || strpos(trim($line), "##################################################################################################################################") === 0) {
+                if (strpos(trim($line), "#") === 0 || strpos(trim($line), "") === 0) {
                     $header_comments[] = trim($line);
                 }
             }
@@ -22,21 +54,12 @@
         $header_comments = implode("\n", $header_comments); // Convert the array to a single string
     ?>
 
-    <head>
-        <title><?php echo $title; ?></title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-        <!-- Bootstrap 4 CSS CDN -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    </head>
-
-    <body>
-        <div class="container-fluid">
+    <div class="container-fluid">
         <div style="position: relative; top: 100px">
-            <form class="col-sm-12" action="run_edit_config_script.php" method="POST" onsubmit="return tableToCSV();">
-                <div id = "loading" style = "display: none;">
+            <form class="col-sm-12" action="run_edit_config_script.php" method="POST" onsubmit="return tableToTextareas();">
+                <div id="loading" style="display: none;">
                     <div>
-                        <img src = <?php echo($BASE_URL . "html/img/loading_icon.gif");?> width = 150 height = 100 />
+                        <img src="<?php echo($BASE_URL . "transformer/html/img/loading_icon.gif");?>" width="150" height="100" />
                     </div>
                 </div>
                         
@@ -62,7 +85,7 @@
                                 return; // Exit the function if the file handle isn't obtained
                             }
 
-                            echo "<table class='table table-bordered table-hover caption-top' id='editableTable'>\n";
+                            echo "<table class='table table-bordered table-hover caption-top' id='sitesTable'>\n";
                             echo "<thead>\n";
                             $counter = 0; // Define a counter to identify the header row
 
@@ -72,22 +95,27 @@
                                 if (strpos($data[0], "#") === 0) {
                                     continue;
                                 }
-
+                         
                                 // Distinguish between header and data rows
                                 if ($counter == 0) {
                                     echo "<tr class='table-header'>\n"; // Use class for styling if needed
-                                    echo "<th>site_name</th>\n";
-                                    echo "<th>theta_split</th>\n";
-                                    echo "<th>theta_1</th>\n";
-                                    echo "<th>theta_2</th>\n";
-                                    echo "<th>multi_short</th>\n";
-                                    echo "<th>multi_long</th>\n";
-                                    echo "<th>attenuation</th>\n";
-                                    echo "<th>criteria_1</th>\n";
-                                    echo "<th>criteria_2</th>\n";
-                                    echo "<th>criteria_3</th>\n";                                
+                                    echo "<th onclick='sortTable(0)'>site_name</th>\n";
+                                    echo "<th onclick='sortTable(1)'>theta_split</th>\n";
+                                    echo "<th onclick='sortTable(2)'>theta_1</th>\n";
+                                    echo "<th onclick='sortTable(3)'>theta_2</th>\n";
+                                    echo "<th onclick='sortTable(4)'>multi_short</th>\n";
+                                    echo "<th onclick='sortTable(5)'>multi_long</th>\n";
+                                    echo "<th onclick='sortTable(6)'>attenuation</th>\n";
+                                    echo "<th onclick='sortTable(7)'>criteria_1</th>\n";
+                                    echo "<th onclick='sortTable(8)'>criteria_2</th>\n";
+                                    echo "<th onclick='sortTable(9)'>criteria_3</th>\n";                                
                                     echo "</tr>\n";
                                     echo "</thead>\n<tbody>\n"; // Close the header and start the body
+                                    echo "<tr>\n";
+                                    foreach ($data as $cell) {
+                                        echo "<td contentEditable='true'>" . htmlspecialchars($cell) . "</td>\n"; // Simplified class usage
+                                    }
+                                    echo "</tr>\n";
                                 } else {
                                     echo "<tr>\n";
                                     foreach ($data as $cell) {
@@ -136,124 +164,149 @@
                 </div>
             </form>         
         </div>
-        </div>
+    </div>
 
-        <script type="text/javascript">
-            var selectedRow = null;
+    <script type="text/javascript">
+        var selectedRow = null;
 
-            $(document).ready(function() {
-                // Initialize row selection handling
-                $('#editableTable').on('click', 'tr', function() {
-                    selectedRow = $(this).index() + 1;
-                    console.log("Row selected: " + selectedRow); // Debugging output
-                });
-
-                $('#editableTable').on('blur', 'td', function() {
-                    var content = $(this).text();
-                    if (content.includes('.')) {
-                        $(this).text(parseFloat(content).toFixed(3));
-                    }                    
-                });
+        $(document).ready(function() {
+            // Initialize row selection handling
+            $('#sitesTable').on('click', 'tbody tr', function() {
+                selectedRow = $(this).index();
+                console.log("Row selected: " + selectedRow); // Debugging output
             });
 
-            function showLoader() {
-                document.getElementById("loading").style.display = "block";
-                // document.getElementById("table").style.display = "none";        
+            // Ensure all cells are editable after page load
+            $('#sitesTable tbody tr').each(function() {
+                makeCellsEditable(this);
+            });
+
+            // Log the initial row count for debugging
+            console.log("Initial row count (excluding header): " + $('#sitesTable tbody tr').length);
+        });
+
+        function tableToTextareas() {
+            var sites = [];
+            $('#sitesTable tbody tr').each(function() {
+                var row = [];
+                $(this).find('td').each(function() {
+                    row.push($(this).text().trim());
+                });
+                sites.push(row.join(', '));
+            });
+            $('#data').val(sites.join('\n'));
+
+            return true;
+        }
+
+        function makeCellsEditable(row) {
+            $(row).find('td').attr('contentEditable', 'true');
+        }
+
+        function addEditableCells(row) {
+            var cellCount = $('#sitesTable thead tr th').length; // Get the number of columns from the header row
+            for (var i = 0; i < cellCount; i++) {
+                var cell = row.insertCell(i);
+                cell.contentEditable = 'true'; // Make cell editable
+            }
+        }
+
+        function insertAbove() {
+            if (selectedRow !== null) {
+                var table = document.getElementById("sitesTable").getElementsByTagName('tbody')[0];
+                var row = table.insertRow(selectedRow);
+                addEditableCells(row);
+            } else {
+                alert("No row selected");
+            }
+        }
+
+        function insertBelow() {
+            if (selectedRow !== null) {
+                var table = document.getElementById("sitesTable").getElementsByTagName('tbody')[0];
+                var row = table.insertRow(selectedRow + 1);
+                addEditableCells(row);
+            } else {
+                alert("No row selected");
+            }
+        }
+
+        function deleteRow() {
+            if (selectedRow !== null) {
+                var table = document.getElementById("sitesTable").getElementsByTagName('tbody')[0];
+                if (table.rows.length > 1) {  // Keep at least one row for data entry
+                    table.deleteRow(selectedRow);
+                }
+                selectedRow = null;  // Reset selected row
+            } else {
+                alert("No row selected");
+            }
+        }
+
+        function reverseTableRows() {
+            var table = document.getElementById("sitesTable").getElementsByTagName('tbody')[0];
+
+            // Get all the rows in the table
+            var rows = Array.from(table.rows);
+
+            // Reverse the array of rows
+            rows.reverse();
+
+            // Remove all rows from the table
+            while (table.rows.length) {
+                table.deleteRow(0);
             }
 
-            function tableToCSV() {
-                var csv_data = [];
-                var cell_str = "";
-                var rows = document.getElementById('editableTable').getElementsByTagName('tr');
-                console.log(rows.length);
-                for (var i = 0; i < rows.length; i++) {
-                    // Change this line to include 'th' elements as well
-                    var cols = rows[i].querySelectorAll('th, td');
-
-                    var csvrow = [];
-                    for (var j = 0; j < cols.length; j++) {
-                        cell_str = cols[j].innerHTML;
-                        cell_str = cell_str.replace(/\r/g, ''); // remove any carriage returns
-                        csvrow.push(cell_str);
-                    }
-                    csv_data.push(csvrow.join(","));
-                }
-
-                csv_data = csv_data.join("\n");
-
-                // Put the CSV data into the hidden form field
-                document.getElementById('data').value = csv_data;
-
-                showLoader();
-                
-                // Allow the form to submit
-                return true;
-            }
-
-            function addEditableCells(row) {
-                var cellCount = $('#editableTable tr').eq(0).find('th').length; // Get the number of columns from the header row
-                for (var i = 0; i < cellCount; i++) {
-                    var cell = row.insertCell(i);
-                    cell.contentEditable = 'true'; // Make cell editable
-                }
-            }
-
-            function insertAbove() {
-                if (selectedRow !== null) {
-                    var table = document.getElementById("editableTable");
-                    var row = table.insertRow(selectedRow);
-                    addEditableCells(row);
-                } else {
-                    alert("No row selected");
-                }
-            }
-
-            function insertBelow() {
-                if (selectedRow !== null) {
-                    var table = document.getElementById("editableTable");
-                    var row = table.insertRow(selectedRow + 1);
-                    addEditableCells(row);
-                } else {
-                    alert("No row selected");
-                }
-            }
-
-            function deleteRow() {
-                if (selectedRow !== null) {
-                    var table = document.getElementById("editableTable");
-                    if (table.rows.length > 1) {  // Keep at least one row for data entry
-                        table.deleteRow(selectedRow);
-                    }
-                    selectedRow = null;  // Reset selected row
-                } else {
-                    alert("No row selected");
-                }
-            }
-
-            function reverseTableRows() {
-                var table = document.getElementById("editableTable");
-
-                // Get all the rows in the table, except the header row
-                var rows = Array.from(table.rows).slice(1);
-
-                // Reverse the array of rows
-                rows = rows.reverse();
-
-                // Remove all rows, except the header row, from the table
-                while(table.rows.length > 1) {
-                    table.deleteRow(1);
-                }
-
-                // Append each row back to the table in reverse order
-                for (var i = 0; i < rows.length; i++) {
-                    table.appendChild(rows[i]);
+            // Append each row back to the table in reverse order and set contentEditable
+            for (var i = 0; i < rows.length; i++) {
+                var newRow = table.insertRow();
+                for (var j = 0; j < rows[i].cells.length; j++) {
+                    var newCell = newRow.insertCell(j);
+                    newCell.innerHTML = rows[i].cells[j].innerHTML;
+                    newCell.setAttribute('contentEditable', 'true');
                 }
             }
 
-        </script>
+            // Log the row count after reversing for debugging
+            console.log("Row count after reversing (excluding header): " + $('#sitesTable tbody tr').length);
+        }
 
-        <!-- Bootstrap 4 JS CDN -->
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        function showLoader() {
+            $('#loading').style.display = "block";
+            $('#sitesTable').style.display = "none";
+        }
 
-    </body>
+        function onSubmitForm() {
+            tableToTextareas();
+            showLoader();
+            return true;
+        }
+
+        function sortTable(columnIndex) {
+            var table = document.getElementById("sitesTable").getElementsByTagName('tbody')[0];
+            var rows = Array.from(table.rows);
+            var sortedRows = rows.sort((a, b) => {
+                var aText = a.cells[columnIndex].innerText.trim().toLowerCase();
+                var bText = b.cells[columnIndex].innerText.trim().toLowerCase();
+                return aText.localeCompare(bText);
+            });
+
+            // Remove all rows from the table
+            while (table.rows.length) {
+                table.deleteRow(0);
+            }
+
+            // Append sorted rows back to the table and make cells editable
+            sortedRows.forEach(row => {
+                table.appendChild(row);
+                makeCellsEditable(row);
+            });
+        }
+    </script>
+
+    <!-- Include jQuery and Bootstrap JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
+</body>
 </html>

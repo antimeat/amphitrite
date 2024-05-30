@@ -435,10 +435,10 @@ def cleanup_logfile():
             
 def load_log():
     """
-    Load the last log entries from the last 10 minutes
+    Load the last log entries from the last 60 minutes
     """
     logfile_path = LOG_FILENAME
-    cutoff = datetime.now() - timedelta(minutes=10)
+    cutoff = datetime.now() - timedelta(minutes=60)
     valid_lines = []
 
     try:

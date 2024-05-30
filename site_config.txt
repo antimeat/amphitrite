@@ -1,72 +1,62 @@
+############################################################
 # Site Configuration File
-# Format: Site Name, Table Name, Split Range 1, Split Range 2
-# Example of a line: BHP - Pyrenees, Pyranees, 0.001-9, 9-40
-# Please follow the format strictly while editing
-# WRB-A, WRB-A, 0.001-9, 9-40
-# WRB-B, WRB-B, 0.001-9, 9-40
-# CheJetty, CheJetty, 0.001-9, 9-40
-# Mermaid-Sn, Mermaid_snd, 0.001-9, 9-40
-# Navaid9, Navaid9, 0.001-9, 9-40
-# Eagle-1, Eagle-1, 0.001-9, 9-40
-# Santos - Frigate-1 4 days, Frigate-1, 0.001-9, 9-40
-# Mermaid-St, Mermaid-St, 0.001-9, 9-40
-# Valaris, Valaris, 0.001-9, 9-40
-# Chevron - Wheatstone LNG Plant AFS, Wheatstone, 0.001-9, 9-40
-# Chevron - Wheatstone Platform AFS, PLA, 0.001-9, 9-40
-# Chevron Barrow Island AFS, WRB-B, 0.001-9, 9-40
-# Chevron Barrow Island AFS ML, WRB-B, 0.001-9, 9-40
-# Santos - Van Gogh 4 days, Van-Gogh, 0.001-9, 9-40
+# Format: site, table, partition_1 ,..., partition_n
+#
+# Partition guidlines:
+# Generic/Woodside: 0.001 -> 9, 9 -> 40
+# Chevron: 0.001 -> 10, 10 -> 40
+############################################################
 
 Abbot Point, Abbot_Poin, 0.001-9, 9-40
 BHP - Pyrenees, Pyrenees, 0.001-9, 9-40
 Chevron - Barrow Island AFS ML ext, Barrow4, 0.001-10, 10-40
 Chevron - Gorgon, Gorgon, 0.001-10, 10-40
-Chevron - North Whites Beach, Whites_Bea, 0.001-10, 10-40
 Chevron - Jansz, Jansz_PTS, 0.001-10, 10-40
+Chevron - North Whites Beach, Whites_Bea, 0.001-10, 10-40
 Chevron - Wheatstone LNG Plant, Ashburton_, 0.001-10, 10-40
 Chevron - Wheatstone Platform AFS, PLA, 0.001-10, 10-40
 Citic Pacific - Cape Preston Area, Cape_prest, 0.001-9, 9-40
 Citic Pacific - Mermaid Strait, Dampier_Po, 0.001-9, 9-40
 Dampier Salt - Cape Cuvier 7 days, Cape_Cuvie, 0.001-9, 9-17, 17-40
-INPEX - Ichthys 7 days, Ichthys, 0.001-9, 9-40
 INPEX - Darwin Outer Pilot Boarding 7 days, Darwin_OPB, 0.001-9, 9-40
-Jadestone Energy - Stag, Stag, 0.001-9, 9-40
+INPEX - Ichthys 7 days, Ichthys, 0.001-9, 9-40
 Jadestone Energy - Montara, Montara, 0.001-9, 9-40
+Jadestone Energy - Stag, Stag, 0.001-9, 9-40
 Mineral Resources - Anchorage Point, Onslow_Anc, 0.001-9, 9-40
 Mineral Resources - Wharf Approach, Wheatstone, 0.001-9, 9-40
-Nexans - MidRoute 7 days, BUP_midway, 0.001-9, 9-40
-Nexans - HDD Exit Barrow Island 7 days, Whites_Bea, 0.001-9, 9-40
 Nexans - GorgonCDU 7 days, Gorgon, 0.001-9, 9-40
+Nexans - HDD Exit Barrow Island 7 days, Whites_Bea, 0.001-9, 9-40
+Nexans - MidRoute 7 days, BUP_midway, 0.001-9, 9-40
 Onslow Salt - Onslow Jetty, Onslow_Sal, 0.001-9, 9-40
-Pilbara Ports Authority - Ashburton, Ashburton_, 0.001-9, 9-40
-Pilbara Ports Authority - Port Hedland, PH_Beacon1, 0.001-9, 9-40
+Petrofac - Northern Endeavour 7 days, Bayu_Undan, 0.001-9, 9-40
 Pilbara Port Authority - Port Hedland, PH_Beacon1, 0.001-9, 9-40
 Pilbara Ports - Port Hedland, PH_Beacon1, 0.001-9, 9-40
+Pilbara Ports Authority - Ashburton, Ashburton_, 0.001-9, 9-40
 Pilbara Ports Authority - Dampier, Dampier_Po, 0.001-9, 9-40
-Petrofac - Northern Endeavour 7 days, Bayu_Undan, 0.001-9, 9-40
+Pilbara Ports Authority - Port Hedland, PH_Beacon1, 0.001-9, 9-40
 Santos - Barossa, Barossa, 0.001-9, 9-40
-Santos - Barossa KP40, Barossa, 0.001-9, 9-40
 Santos - Barossa KP200, West_Darwi, 0.001-9, 9-40
 Santos - Barossa KP250, West_Darwi, 0.001-9, 9-40
-Santos ABUW - Bayu-Undan, Bayu_Undan, 0.001-9, 9-40
+Santos - Barossa KP40, Barossa, 0.001-9, 9-40
 Santos - John Brookes 4 days, John_Brook, 0.001-9, 9-40
-Santos - MEFF 7 days, MEFF, 0.001-9, 9-40
-Santos - Reindeer 4 days, Reindeer, 0.001-9, 9-40
-Santos - Varanus 4 days, Varanus, 0.001-9, 9-40
-Santos - MS1Standby 4 days, MS-1_Stand, 0.001-9, 9-40
-Santos - Van Gogh 4 days, Enfield, 0.001-9, 9-40
 Santos - Kumul Marine Terminal, Kumul_Plat, 0.001-9, 9-40
+Santos - MEFF 7 days, MEFF, 0.001-9, 9-40
+Santos - MS1Standby 4 days, MS-1_Stand, 0.001-9, 9-40
+Santos - Reindeer 4 days, Reindeer, 0.001-9, 9-40
+Santos - Van Gogh 4 days, Enfield, 0.001-9, 9-40
+Santos - Varanus 4 days, Varanus, 0.001-9, 9-40
+Santos ABUW - Bayu-Undan, Bayu_Undan, 0.001-9, 9-40
 Vermilion - Wandoo, Wando, 0.001-9, 9-40
 Woodside - Balnaves 7 days, Balnaves, 0.001-9, 9-40
-Woodside - Dampier Port Offshore 7 days, Dampier_Po, 0.001-9, 9-40
 Woodside - Dampier Port Offshore 10 days, Dampier_Po, 0.001-9, 9-40
-Woodside - Griffin 7 days, Griffin, 0.001-9, 9-40
+Woodside - Dampier Port Offshore 7 days, Dampier_Po, 0.001-9, 9-40
+Woodside - Enfield and Vincent 7 days, Enfield, 0.001-9, 9-40
 Woodside - Griffin 10 days, Griffin, 0.001-9, 9-40
+Woodside - Griffin 7 days, Griffin, 0.001-9, 9-40
 Woodside - Mermaid Sound 7 days, Dampier_Ne, 0.001-7, 7-13, 13-18, 16.5-40
 Woodside - Mermaid Sound Transformed, Dampier_Po, 0.001-7, 7-13, 13-18, 16.5-40
-Woodside - Enfield and Vincent 7 days, Enfield, 0.001-9, 9-40
 Woodside - North Rankin 7 days, Rankin, 0.001-9, 9-40
 Woodside - Pluto 7 days, PLA, 0.001-9, 9-40
 Woodside - Pyrenees, Pyrenees, 0.001-9, 9-40
-Woodside - Stybarrow 10 Days, Stybarrow, 0.001-9, 9-40
 Woodside - Scarborough 10 days, Scarb_new, 0.001-9, 9-40
+Woodside - Stybarrow 10 Days, Stybarrow, 0.001-9, 9-40
