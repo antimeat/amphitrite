@@ -56,7 +56,8 @@
 
     <div class="container-fluid">
         <div style="position: relative; top: 100px">
-            <form class="col-sm-12" action="run_edit_config_script.php" method="POST" onsubmit="return tableToTextareas();">
+        
+            <form class="col-sm-12" action="run_edit_config_script.php" method="POST" onsubmit="return onSubmitForm();">
                 <div id="loading" style="display: none;">
                     <div>
                         <img src="<?php echo($BASE_URL . "transformer/html/img/loading_icon.gif");?>" width="150" height="100" />
@@ -272,8 +273,8 @@
         }
 
         function showLoader() {
-            $('#loading').style.display = "block";
-            $('#sitesTable').style.display = "none";
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("sitesTable").style.display = "none";
         }
 
         function onSubmitForm() {
