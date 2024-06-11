@@ -14,6 +14,7 @@ import numpy as np
 import wavespectra
 import os
 import pandas as pd
+import cmocean
 
 # Set the Numba cache directory
 numba_cache_dir = '/tmp/numba_cache'
@@ -58,7 +59,7 @@ def amendVariablesNames_old(filename,site):
     ws = wavespectra.read_dataset(ds)
     ws['station_name'] = ds.rename({'station':'site'}).station_name
     ws = ws.where(ws.station_name == site, drop=True)
-
+    
     return ws
 
 def amendVariablesNames(filename,site):
