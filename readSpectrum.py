@@ -62,7 +62,7 @@ def amendVariablesNames_old(filename,site):
     
     return ws
 
-def amendVariablesNames(filename,site):
+def amendVariablesNames_current(filename,site):
     """changes the 'dir' variable name as it clashes with model internal names
     """
     
@@ -84,12 +84,73 @@ def amendVariablesNames(filename,site):
     
     return ws
 
-def noPartition(filename,site):
+def amendVariablesNames(filename, site):
+    """Changes the 'dir' variable name as it clashes with model internal names
+    and interpolates both direction and frequency to a finer resolution.
+    """
+    try:
+        ds = xr.open_dataset(filename)
+    except Exception as e:
+        print(f"Error opening dataset: {e}")
+        return None
+    
+    # Handle station names
+    site_names = [''.join(stn.astype(str)) for stn in ds.station_name.values]
+    ds['station_name'] = xr.DataArray(np.array(site_names), coords={'station': ds.station}, dims=['station'])
+    
+    ws = wavespectra.read_dataset(ds)
+    ws['station_name'] = ds.rename({'station':'site'}).station_name
+    ws = ws.where(ws.station_name == site, drop=True)
+    
+    # Create the new direction and frequency arrays
+    original_dirs = ws.dir.values
+    
+    # Create the new direction and frequency arrays
+    new_dir_start = original_dirs.min()
+    new_dir_end = original_dirs.max()
+    new_dir = np.arange(new_dir_start, new_dir_end + 6, 6) % 360  # Ensure wrapping around 360 degrees
+    new_freq = np.linspace(ws.freq.min(), ws.freq.max(), len(ws.freq) * 2)  # Double the frequency resolution
+    
+    # Interpolate the 'efth' variable to the new direction and frequency grid
+    try:
+        efth_interp = ws.efth.interp(freq=new_freq, dir=new_dir, method="linear", kwargs={"fill_value": "extrapolate"})
+    except Exception as e:
+        print(f"Error interpolating directions and frequencies: {e}")
+        return None
+    
+    # Create the new dataset
+    new_ds = xr.Dataset(
+        {
+            "efth": efth_interp,
+            "lon": ws.lon,
+            "lat": ws.lat,
+            "dpt": ws.dpt,
+            "wspd": ws.wspd,
+            "wdir": ws.wdir,
+            "station_name": ws.station_name,
+        },
+        coords={
+            "time": ws.time,
+            "site": ws.site,
+            "freq": new_freq,
+            "dir": new_dir,
+        },
+        attrs={**ws.attrs},
+    )
+    
+    try:
+        new_ws = wavespectra.read_dataset(new_ds)
+    except Exception as e:
+        print(f"Error creating wavespectra.SpecDataset: {e}")
+        return None
+    
+    return new_ws
+
+def noPartition(ws, filename,site):
     """no partition wave statistics
     """
     
     #read in file
-    ws = amendVariablesNames(filename,site)
     ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     
     ws['hs'] = ws_total.hs
@@ -110,12 +171,14 @@ def noPartition(filename,site):
     return ws
     
 
-def onePartition(filename, site, period):
+def onePartition(ws, filename, site, period):
     """
     Customer single partition split function
     
     Parameters
     ----------
+    ws : wavespectra
+        The wavespectra dataset.    
     filename : str
         A string for the netCDF spectral file.
     site : str
@@ -131,7 +194,7 @@ def onePartition(filename, site, period):
     # print(f"one_partition period: {period}")
     
     #read in file
-    ws = amendVariablesNames(filename,site)
+    # ws = amendVariablesNames(filename,site)
     ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     
     #get sea and swell split
@@ -217,12 +280,14 @@ def onePartition(filename, site, period):
     # print(f"ws_sea: {ws['hs_sea']}, ws_sw: {ws['hs_sw']}")
     return ws
 
-def rangePartition(filename, site, start, end):
+def rangePartition(ws, filename, site, start, end):
     """
     Customer single partition split function
     
     Parameters
     ----------
+    ws : wavespectra
+        The wavespectra dataset.    
     filename : str
         A string for the netCDF spectral file.
     start : int
@@ -249,7 +314,7 @@ def rangePartition(filename, site, start, end):
         
     try: 
         #read in file
-        ws = amendVariablesNames(filename, site)
+        # ws = amendVariablesNames(filename, site)
             
         #get sea and swell split
         # part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})

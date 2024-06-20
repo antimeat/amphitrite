@@ -183,12 +183,13 @@ class Partitions(object):
         filename = self.filename
         
         #get the full spectrum data
-        ws = readSpectrum.noPartition(filename,site)
+        ws_dataset = readSpectrum.amendVariablesNames(filename,site)
+        ws = readSpectrum.noPartition(ws_dataset,filename,site)
 
         #append data variables back in
         #loop through intermediate swell partitions        
         i = 1
-        part = readSpectrum.rangePartition(filename, parts[i-1][0], site, parts[i-1][1])
+        part = readSpectrum.rangePartition(ws, filename, parts[i-1][0], site, parts[i-1][1])
 
         ws['swell_{}_hs'.format(i)] = part.hs
         ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -223,12 +224,13 @@ class Partitions(object):
         filename = self.filename
         
         #get the full spectrum data
-        ws = readSpectrum.noPartition(filename,site)
+        ws_dataset = readSpectrum.amendVariablesNames(filename,site)
+        ws = readSpectrum.noPartition(ws_dataset,filename,site)
         
         #append data variables back in
         #loop through intermediate swell partitions        
         for i in range(1,len(parts)+1):
-            part = readSpectrum.rangePartition(filename, site, parts[i-1][0], parts[i-1][1])
+            part = readSpectrum.rangePartition(ws, filename, site, parts[i-1][0], parts[i-1][1])
         
             ws['swell_{}_hs'.format(i)] = part.hs
             ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -263,11 +265,12 @@ class Partitions(object):
         filename = self.filename
         
         #get the full spectrum data
-        ws = readSpectrum.noPartition(filename,site)
+        ws_dataset = readSpectrum.amendVariablesNames(filename,site)
+        ws = readSpectrum.noPartition(ws_dataset,filename,site)
 
         #append data variables back in
         #go through and first partition (seas)
-        part = readSpectrum.onePartition(filename, site, parts[0][1])
+        part = readSpectrum.onePartition(ws, filename, site, parts[0][1])
         i = 0
         ws['swell_{}_hs'.format(i)] = part.hs_sea
         ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -290,7 +293,7 @@ class Partitions(object):
         
         #loop through intermediate swell partitions        
         for i in range(1,len(parts)-1):
-            part = readSpectrum.rangePartition(filename, site, parts[i][0], parts[i][1])
+            part = readSpectrum.rangePartition(ws, filename, site, parts[i][0], parts[i][1])
             ws['swell_{}_hs'.format(i)] = part.hs
             ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
             ws['swell_{}_hmax'.format(i)] = part.hmax
@@ -311,7 +314,7 @@ class Partitions(object):
             ws['swell_{}_dspr'.format(i)].attrs['standard_name'] = ws['swell_{}_dspr'.format(i)].attrs['standard_name']+'_P{}_partition'.format(i)
         
         #go through the last swell partition
-        part = readSpectrum.onePartition(filename, site, parts[-1][0])
+        part = readSpectrum.onePartition(ws, filename, site, parts[-1][0])
         i = len(parts) - 1
         ws['swell_{}_hs'.format(i)] = part.hs_sw
         ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -334,14 +337,14 @@ class Partitions(object):
         
         return ws
     
-    def mermaidSound(self,site="Woodside - Mermaid Sound 7 days"):
+    def mermaidSound(self,site="Dampier_Po"):
         """Mermaid sound specific partitions"""
         
         #pass an list of tuples for each period range in the required splits
         #avoid divide by zero on the first
         parts = [(0.1,7),(7,13),(13,18),(16.5,40)]
         
-        ws = self.multi_parts_test(site,*parts)
+        ws = self.multi_parts(site,*parts)
         return ws   
     
 if __name__ == "__main__":
@@ -349,3 +352,4 @@ if __name__ == "__main__":
     print(parts.get_latest_run_time())
     table_names = parts.generate_table_names()
     print(table_names)
+    print(parts.mermaidSound())
