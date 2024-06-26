@@ -10,6 +10,9 @@ To Do
     - need to keep track of the seas when no longer forced
 - 
 """
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import numpy as np
 import csv, math
@@ -27,7 +30,8 @@ if DEBUG:
 SHOW_TABLE = False
 
 FETCH_WEIGHTS = [0.2, 0.6, 0.2]
-MAX_FETCH = 60.0  # 100km
+MAX_FETCH = 100  # 100km
+MAX_DEPTH = 50  # 60km
 MAX_DURATION = 36.0  # hours
 
 DIRECTION_WEIGHTED_BIN_DELTAS = range(-8, 9, 1)
@@ -108,8 +112,8 @@ def autoSeas(siteName,
     # clip unlimited fetch and smooth
     fetchForDecreaseFactor = {}
     for d, f in unlimitedFetchTable.items():
-        if f == 'U':
-            f = 400.0
+        if str(f).upper() == 'U':
+            f = MAX_FETCH
         fetchForDecreaseFactor[d] = f
     fetchForDecreaseFactor = calcAverageFetches(fetchForDecreaseFactor)
             
@@ -172,6 +176,7 @@ def autoSeas(siteName,
     
     old = seaBins.copy()
     
+    #setup intial values of mSeas
     mSeas = [getSeasToReturn(seaBins, returnDir)]
     
     if returnPdDir:
@@ -179,13 +184,14 @@ def autoSeas(siteName,
         windDir = winds[0][0]
         mSeas = [get_seas(SeaCalc, seaBins, windSpd, windDir, returnDir, returnPdDir)]
                 
+    # calc seas using the average of two wind dirs
     for i in range(1, len(winds)):
 
-        # update sea bins
-        if DEBUG: print("pre update bins\n"), np.round(seaBins, 2)
-
-        w, duration = getWind(winds, i, windWeights)
+        if DEBUG: 
+            print("pre update bins\n"), np.round(seaBins, 2)
         
+        # update sea bins
+        w, duration = getWind(winds, i, windWeights)
         seaBins = updateBins(SeaCalc, seaBins, w, duration, decreaseFactor, binDeltas, binWeights)
 
         if SHOW_TABLE or debug:
@@ -198,9 +204,11 @@ def autoSeas(siteName,
         else:
             mSeas.append(getSeasToReturn(seaBins, returnDir))
 
-        if DEBUG: print("updated seaBins for", w[0], round(w[1]))
-        #print np.round(seaBins, 1)
-        if DEBUG: print(np.max(seaBins))
+        if DEBUG: 
+            print("updated seaBins for", w[0], round(w[1]))
+            #print np.round(seaBins, 1)
+        if DEBUG: 
+            print(np.max(seaBins))
         
     if SHOW_TABLE or debug:
         print("")
@@ -232,6 +240,7 @@ def calcAverageFetch(d, fetchTable):
         
 def calcAverageFetches(fetchTable):
     """Calculate the average for 1 bin either side using some fudged weights (FETCH_WEIGHTS)."""
+    print(f"fetchTable: {fetchTable}")
     averaged = {d: calcAverageFetch(d, fetchTable) for d in range(0, 360, 10)}
     return averaged
     
@@ -325,7 +334,8 @@ def get_seas(SeaCalc, seaBins, windSpd, windDir, returnDir, returnPdDir):
 
         maxSeas = max(0.1, maxSeas)
         avDir = round(averageDirection(dirsAtMax))
-        sea_pd = SeaCalc.calcPeriodFromWind(windSpd, avDir)
+        # sea_pd = SeaCalc.calcPeriodFromWind(windSpd, avDir)
+        sea_pd = SeaCalc.calcPeriod(maxSeas, windSpd, avDir)
         
         return [maxSeas, sea_pd, avDir]
 
@@ -521,7 +531,7 @@ def loadFetchAndDepthTables_old(siteName, maxFetch):
 
             # Turn fetch into a number and limit to the max fetch
             fetch = r['fetch']
-            unlimitedFetches[dirn] = float(fetch) if fetch != 'U' else 'U'
+            unlimitedFetches[dirn] = float(fetch) if str(fetch).upper() != 'U' else 'U'
             fetch = maxFetch if fetch == 'U' else float(fetch)
             if fetch > maxFetch:
                 fetch = maxFetch
@@ -536,7 +546,7 @@ def loadFetchAndDepthTables_old(siteName, maxFetch):
     if depths.keys():
         for dirn in fetches.keys():
             if dirn not in depths:
-                depths[dirn] = 30.0
+                depths[dirn] = MAX_DEPTH    
     else:
         depths = None
 
@@ -550,7 +560,7 @@ def loadFetchAndDepthTables(siteName, maxFetch):
     unlimitedFetches = {}
 
     note = ''
-
+        
     with open("autoseas/fetchLimits/" + siteName + ".csv", mode='r') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
         for r in reader:
@@ -564,7 +574,7 @@ def loadFetchAndDepthTables(siteName, maxFetch):
             # Turn fetch into a number and limit to the max fetch
             fetch = r['fetch']
             unlimitedFetches[dirn] = float(fetch) if fetch != 'U' else 'U'
-            fetch = maxFetch if fetch == 'U' else float(fetch)
+            fetch = maxFetch if str(fetch).upper() == 'U' else float(fetch)
             if fetch > maxFetch:
                 fetch = maxFetch
             fetches[dirn] = fetch
@@ -574,16 +584,16 @@ def loadFetchAndDepthTables(siteName, maxFetch):
                 depth = float(r['depth'])
                 depths[dirn] = depth
             else:
-                depths[dirn] = 60
+                depths[dirn] = MAX_DEPTH
             
     # check for any depth values
     if depths.keys():
         for dirn in fetches.keys():
             if dirn not in depths:
-                depths[dirn] = 30.0
+                depths[dirn] = 60
     else:
         depths = None
-
+        
     return fetches, depths, unlimitedFetches, note
 
 def getFetch(fetchTable, windDir):
@@ -600,36 +610,113 @@ def getDepth(depthTable, windDir):
 # Tests
 #############################################################
 
-
-# def test_calcEquivDuration():
-
-#     print("15 knots, 100 nm fetch, 5 hours => 0.8m")
-#     print("seas", seasFromFetchAndDuration(15, 5.0, 100.0))
-
-#     dur = calcEquivDuration(0.8, 15.0, 100.0)
-#     print("duration", dur)
-
-
-# def test_calcSeaFromGDCurves():
-
-#     tests = [
-#         # (speed, duration, fetch)
-#         (10.0, 3.0, 185),
-#     ]
-
-#     for speed, duration, fetch in tests:
+if __name__ == "__main__":
+    # Add the directory containing the autoseas package to sys.path
+    import sys
+    import os
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+    from bretschneider import Bretschneider
+    from shallowWaterSeas import ShallowWaterSeas
+    from breugen_holthuijsen import BreugenHolthuijsen
     
-#         print("speed: {}, duration: {}, fetch: {}, seas: {}".format(
-#             speed,
-#             duration,
-#             fetch,
-#             calcSeaFromGDCurves(speed, duration, fetch)
-#             ))
-        
-#     exit()
+    np.set_printoptions(suppress=True, formatter={'float_kind':'{:f}'.format})
+    
+    
+    WINDS_1 = [
+        (200, 40),
+        (190, 40),
+        (180, 40),
+        (170, 40),
+        (170, 40),
+        (200, 10),
+        (240, 14),
+        (240, 17),
+        (230, 18),
+        (230, 20),
+        (220, 21),
+        (210, 18),
+        (210, 13),
+        (230, 14),
+        (240, 13),
+        (230, 14),
+    ]
+    
+    WINDS_2 = [
+        (200, 10),
+        (190, 20),
+        (180, 20),
+        (170, 10),
+        (170, 10),
+        (200, 10),
+        (240, 14),
+        (240, 17),
+        (230, 18),
+        (230, 20),
+        (220, 21),
+        (210, 18),
+        (210, 13),
+        (230, 14),
+        (240, 13),
+        (230, 14),
+    ]
+    
 
-#####################################################################################
+    
+    siteName = 'Woodside_-_Enfield_and_Vincent_10_days' 
+    #siteName = 'CITIC_Pacific_-_Mermaid_Strait' 
+    winds_1 = WINDS_1
+    winds_2 = WINDS_2
+    src="autoseas"
+    firstSeas=0
+    maxFetch=MAX_FETCH
+    maxDuration=MAX_DURATION
+    windWeights=[0.25, 0.75]
+    returnDir=False
+    returnPdDir=True
+    calcType='brettschneider'
+    debug=False
+    averageFetch=True
+    varyDecreaseFactors=False
+    useDirectionWeights=True
+    
+    seas_1 = autoSeas(
+        siteName, 
+        winds_1,
+        src = src,
+        firstSeas = firstSeas,
+        maxFetch = maxFetch,
+        maxDuration = maxDuration,
+        windWeights = windWeights,
+        returnDir = returnDir,
+        returnPdDir = returnPdDir,
+        calcType = calcType,
+        debug = debug,
+        averageFetch = averageFetch,
+        varyDecreaseFactors = varyDecreaseFactors,
+        useDirectionWeights = useDirectionWeights
+    )
+    
+    seas_2 = autoSeas(
+        siteName, 
+        winds_2,
+        src = src,
+        firstSeas = firstSeas,
+        maxFetch = maxFetch,
+        maxDuration = maxDuration,
+        windWeights = windWeights,
+        returnDir = returnDir,
+        returnPdDir = returnPdDir,
+        calcType = calcType,
+        debug = debug,
+        averageFetch = averageFetch,
+        varyDecreaseFactors = varyDecreaseFactors,
+        useDirectionWeights = useDirectionWeights
+    ) 
+    
+    # Flatten the lists if they contain nested lists
+    seas_1 = np.round(seas_1, 2)
+    seas_2 = np.round(seas_2, 2)
 
-#test_calcEquivDuration()
-
-#print autoSeas('Enfield and Vincent', WINDS)
+    print(f"winds_1: {winds_1}, seas: {seas_1}\n\n\n")    
+    print(f"winds_2: {winds_2}, seas: {seas_2}")    
+    

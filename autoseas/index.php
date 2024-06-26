@@ -226,11 +226,11 @@ th {
                     <button type="button" onclick="storeValues()" id="button" name="button" class="btn">Set Cookie</button>
                 </div>
                 <div class="container actions flex" style="display: flex; align-items: right; width: 80%;">
-                    <!-- Radio buttons for algorithm choice -->
+                    <!-- Radio buttons for Server choice -->
                     <span>Ofcast server:<br> </span>
                     <form id="serverChoice" style="display: flex; align-items: right; width: 100%;">
-                        <label><input type="radio" name="algorithm" value="op"> <b>operations</b></label>
-                        <label><input type="radio" name="algorithm" value="dev" checked> <b>develpoment</b></label>
+                        <label><input type="radio" name="serverSelect" value="op"> <b>operations</b></label>
+                        <label><input type="radio" name="serverSelect" value="dev" checked> <b>develpoment</b></label>
                     </form>
                 </div>
             </div>

@@ -42,13 +42,20 @@ class Bretschneider(object):
         return self.FETCH_LIMITS_TABLE[i]
 
     def calcPeriodFromWind(self, windSpd, windDir):
-        """Calculate the period from the seas"""
-        
-        g = 9.81  
+        """Calculate the peak wave period from wind speed using Pierson-Moskowitz approximation"""
         wind_speed_mps = windSpd * 0.51444  # convert wind speed from knots to m/s
-        period = 0.286 * wind_speed_mps ** 2 / g
-        return int(round(period))
+        alpha = 0.87  # updated alpha based on current literature
+        period = alpha * wind_speed_mps
+        
+        return round(period, 2)        
             
+    def calcPeriod(self, hs, windSpd, windDir):
+        """Calculate the peak wave period from significant wave height"""
+        
+        period = 3.86 * (hs ** 0.5)
+        period = max(1,period)
+        return int(round(period, 2))               
+    
     def seasFromFetchLimited(self, windSpd, windDir):
         """Calculate the 'fetch limited' or full developed seas for this wind speed and direction.
     

@@ -35,7 +35,7 @@ def binary_search(f, y, lo, hi, delta):
         elif f(x) > y:
             hi = x - delta
         else:
-            return x;
+            return x
     return hi if (f(hi) - y < y - f(lo)) else lo
 
 def calculate_fully_developed_wave_height(V_stc):
@@ -78,7 +78,7 @@ def calculate_fetch_term(F, V_stc):
     Returns:
     - float: Fetch term.
     """
-    #conver fetch from nautical miles to metres
+    #convert fetch from nautical miles to metres
     fetch = F*1852
     fetch_term = math.tanh(0.000414 * (GRAVITY * fetch / abs(V_stc)**2)**0.79)
     return fetch_term
@@ -166,7 +166,7 @@ class BreugenHolthuijsen():
         # using deep water values for duration based growth, limit to bretschneider values for fetch
         self.DURATIONS = loadTable('autoseas/bs_durations.csv')
         self.FETCH_TABLE = loadTable('autoseas/bs_fetchLimits.csv')
-
+    
     def setFetchAndDepthFile(self, siteName, maxFetch):
         """Redundant I think."""
     
@@ -182,7 +182,6 @@ class BreugenHolthuijsen():
                 depth = float(r['depth'])
                 
                 self.FETCH_AND_DEPTH[dirn] = (fetch, depth)
-    
     def setFetchAndDepthTables(self, fetchTable, depthTable):
         """Set fetch and depth from the input tables."""
         self.FETCH_AND_DEPTH = {}
@@ -193,7 +192,6 @@ class BreugenHolthuijsen():
         """Get the fetch and depth in the table for the given windDir."""
         i = 10 * dirIndex(windDir)
         fetchAndDepth = self.FETCH_AND_DEPTH[i]
-        
         return fetchAndDepth
 
     def seasFromFetchLimited(self, windSpd, windDir):
@@ -263,16 +261,16 @@ class BreugenHolthuijsen():
         
         return duration
 
-    def calcPeriodFromWind(self, windSpd, windDir):
+    def calcPeriod(self, hs,  windSpd, windDir):
         """Calculate the period from the seas"""
         
         #windSpd in knots, windDir in degrees
         fetch, depth = self.getFetchAndDepth(windDir)
         
         windSpd_ms = kts_to_mps(windSpd)
-        pd_max = calculate_fully_developed_wave_period(windSpd_ms)
+        pd_max = max(1,calculate_fully_developed_wave_period(windSpd_ms))
         depth_term_period = calculate_depth_term_period(depth, windSpd_ms)
         fetch_term_period = calculate_fetch_term_period(fetch, windSpd_ms)
-        wave_period = calculate_wave_period(pd_max, depth_term_period, fetch_term_period)
+        wave_period = max(1,calculate_wave_period(pd_max, depth_term_period, fetch_term_period))
         
         return wave_period

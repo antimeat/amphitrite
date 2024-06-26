@@ -244,6 +244,7 @@ function refreshSeas() {
     var algo_form = document.getElementById("algorithmChoice");
     var form_data = new FormData(algo_form);
     var algo = form_data.get("algorithm");
+
     console.log(site);
     console.log(algo);
 
@@ -300,16 +301,10 @@ function refreshSeas() {
             winds: windStr,
             site: site,
             returnPdDir: 1,
-            type: "new",
+            type: algo,
             src: "autoseas",
             first_time_step: midnight,
         };
-
-        // algorithm
-        var algo = $("#algorithm").val();
-        if (algo) {
-            opts.type = algo;
-        }
 
         console.log(opts);
 

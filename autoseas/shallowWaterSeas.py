@@ -355,7 +355,14 @@ class ShallowWaterSeas(object):
 
         return int(round(T_shallow))
 
-
+    def calcPeriod(self, hs, windSpd, windDir):
+        """Calculate the peak wave period from significant wave height"""
+        
+        period = 3.86 * (hs ** 0.5)
+        period = max(1,period)
+        
+        return int(round(period, 2))               
+    
     def seasFromFetchLimited(self, windSpd, windDir):
         """Calculate the 'fetch limited' or full developed seas for this wind speed and direction.
     
