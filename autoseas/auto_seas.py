@@ -120,7 +120,7 @@ def autoSeas(siteName,
     if averageFetch:
         fetchTable = calcAverageFetches(fetchTable)
     
-    if calcType in ['deep', 'mixed', "bretschneider"] or depthTable is None:
+    if calcType in ['deep', 'mixed', "bretschneider"]:
         
         if calcType == "mixed":
             # assume there is a seaLimits table for this product
@@ -673,7 +673,7 @@ if __name__ == "__main__":
     windWeights=[0.25, 0.75]
     returnDir=False
     returnPdDir=True
-    calcType='brettschneider'
+    calcType='holthuijsen'
     debug=False
     averageFetch=True
     varyDecreaseFactors=False
@@ -689,7 +689,7 @@ if __name__ == "__main__":
         windWeights = windWeights,
         returnDir = returnDir,
         returnPdDir = returnPdDir,
-        calcType = calcType,
+        calcType = 'bretschneider',
         debug = debug,
         averageFetch = averageFetch,
         varyDecreaseFactors = varyDecreaseFactors,
@@ -706,7 +706,7 @@ if __name__ == "__main__":
         windWeights = windWeights,
         returnDir = returnDir,
         returnPdDir = returnPdDir,
-        calcType = calcType,
+        calcType = 'holthuijsen',
         debug = debug,
         averageFetch = averageFetch,
         varyDecreaseFactors = varyDecreaseFactors,
