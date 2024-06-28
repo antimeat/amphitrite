@@ -178,6 +178,7 @@ def periodInShallowWater(ua, fetch, depth):
     """
     
     # Equation 3-40 from Shore Protection Manual 1984
+    fetch = fetch * 1852.0  # convert to m
     T = (ua / GRAVITY) * 7.54 * \
         math.tanh(
             0.833 * math.pow(GRAVITY * depth / (ua ** 2.0), (3.0 / 8.0))
@@ -358,8 +359,9 @@ class ShallowWaterSeas(object):
     def calcPeriod(self, hs, windSpd, windDir):
         """Calculate the peak wave period from significant wave height"""
         
-        period = 3.86 * (hs ** 0.5)
-        period = max(2,period)
+        fetch, depth = self.getFetchAndDepth(windDir)
+        period = periodInShallowWater(windStressFactor(windSpd), fetch, depth)
+        period = max(2, period)
         
         return int(round(period, 2))               
     

@@ -30,7 +30,7 @@ def calculate_differences(original_data, compared_data):
     compared_seas = compared_data_dict["seas"]
     
     # Calculate differences
-    return [(abs(float(o[0]) - float(c[0])), abs(float(o[1]) - float(c[1])), directional_difference(float(o[2]), float(c[2]))) for o, c in zip(original_seas, compared_seas)]
+    return [(float(o[0]) - float(c[0]), float(o[1]) - float(c[1]), directional_difference(float(o[2]), float(c[2]))) for o, c in zip(original_seas, compared_seas)]
 
 def generate_comparison_table(differences, original_algo, algorithm_name):
 

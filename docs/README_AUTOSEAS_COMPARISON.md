@@ -12,7 +12,7 @@ This API, `comparison_api.cgi`, is designed for comparing different autoseas alg
 
 ---
 
--   **URL**: `http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/comparison_api.cgi`
+-   **URL**: `http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/comparison_api.cgi`
 
 ## Request Parameters
 
@@ -52,7 +52,7 @@ The API responds with an HTML document that includes:
 
 **Request URL for comparing algorithms**
 
-http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/comparison_api.cgi?first_time_step=2024012212&site=Woodside%20-%20Scarborough%2010%20Days&src=autoseas&winds=200/10/3,210/20/3,220/30/3
+http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/comparison_api.cgi?first_time_step=2024012212&site=Woodside%20-%20Scarborough%2010%20Days&src=autoseas&winds=200/10/3,210/20/3,220/30/3
 
 ## Response
 

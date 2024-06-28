@@ -8,7 +8,7 @@ The `get_winds.cgi` script is designed to retrieve forecast wind data for a spec
 
 ## API Endpoint
 
--   **URL**: `http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/get_winds.cgi`
+-   **URL**: `http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/get_winds.cgi`
 
 ## Request Parameters
 
@@ -46,7 +46,7 @@ The API responds with a JSON object containing an array of wind conditions. Each
 ## Example Usage
 
 To retrieve wind data for "Woodside - Mermaid Sound 7 days":
-curl "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite/get_winds.cgi?fName=Woodside%20-%20Mermaid%20Sound%207%20days"
+curl "http://wa-vw-er/webapps/er_ml_projects/davink/amphitrite_dev/amphitrite/get_winds.cgi?fName=Woodside%20-%20Mermaid%20Sound%207%20days"
 
 ## Response Example
 

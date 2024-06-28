@@ -83,9 +83,33 @@ def simple_calculate_depth_term(D, V_stc):
     depth_term = 0.2 * (GRAVITY * D / abs(V_stc)**2)**1.14
     return depth_term
 
-def simple_calculate_wave_period(T_max, depth_term_period, fetch_term_period):
-    T = T_max * (depth_term_period * fetch_term_period)**0.16
-    return T
+def simple_calculate_wave_period(wind_spd, fetch, depth,):
+    """
+    Calculate the depth term in the wave height formula.
+    Equation 3-40 from Shore Protection Manual 1984
+    Parameters:
+    - wind_spd (float): 10m wind spd in knots.
+    - fetch (float): Fetch in nautical miles.
+    - depth (float): Depth in metres.
+    
+    Returns:
+    - int: Period.
+    """
+
+    fetch = fetch * 1852.0  # convert to m
+    wind_stress = 0.71 * math.pow(wind_spd * 0.514444, 1.23)
+    
+    period = (wind_stress / GRAVITY) * 7.54 * \
+        math.tanh(
+            0.833 * math.pow(GRAVITY * depth / (wind_stress ** 2.0), (3.0 / 8.0))
+        ) * math.tanh( \
+            0.0379 * math.pow(GRAVITY * fetch / (wind_stress ** 2.0), 0.3333) / \
+            math.tanh(
+                0.833 * math.pow(GRAVITY * depth / (wind_stress ** 2.0), (3.0 / 8.0))
+            )
+        )
+
+    return period
 
 def calculate_depth_term(D, V_stc):
     """
@@ -296,13 +320,8 @@ class BreugenHolthuijsen():
     def calcPeriod(self, hs,  windSpd, windDir):
         """Calculate the period from the seas"""
         
-        #windSpd in knots, windDir in degrees
         fetch, depth = self.getFetchAndDepth(windDir)
-        
-        windSpd_ms = kts_to_mps(windSpd)
-        pd_max = max(2,calculate_fully_developed_wave_period(windSpd_ms))
-        depth_term_period = simple_calculate_depth_term(depth, windSpd_ms)
-        fetch_term_period = simple_calculate_fetch_term(fetch, windSpd_ms)
-        wave_period = max(2,simple_calculate_wave_period(pd_max, depth_term_period, fetch_term_period))
+        period = simple_calculate_wave_period(windSpd, fetch, depth)
+        wave_period = max(2,period)
         
         return wave_period

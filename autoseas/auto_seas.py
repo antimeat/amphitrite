@@ -30,8 +30,8 @@ if DEBUG:
 SHOW_TABLE = False
 
 FETCH_WEIGHTS = [0.2, 0.6, 0.2]
-MAX_FETCH = 100  # 100km
-MAX_DEPTH = 50  # 60km
+MAX_FETCH = 60  # in nautical miles
+MAX_DEPTH = 200  # in km
 MAX_DURATION = 36.0  # hours
 
 DIRECTION_WEIGHTED_BIN_DELTAS = range(-8, 9, 1)
@@ -130,7 +130,7 @@ def autoSeas(siteName,
             SeaCalc = Bretschneider()
             SeaCalc.setFetchTable(fetchTable)
         
-    elif calcType == "shallow":    
+    elif calcType in "shallow":    
         SeaCalc = ShallowWaterSeas()
         SeaCalc.setFetchAndDepthTables(fetchTable, depthTable)
     
@@ -240,7 +240,7 @@ def calcAverageFetch(d, fetchTable):
         
 def calcAverageFetches(fetchTable):
     """Calculate the average for 1 bin either side using some fudged weights (FETCH_WEIGHTS)."""
-    print(f"fetchTable: {fetchTable}")
+    # print(f"fetchTable: {fetchTable}")
     averaged = {d: calcAverageFetch(d, fetchTable) for d in range(0, 360, 10)}
     return averaged
     
@@ -590,7 +590,7 @@ def loadFetchAndDepthTables(siteName, maxFetch):
     if depths.keys():
         for dirn in fetches.keys():
             if dirn not in depths:
-                depths[dirn] = 60
+                depths[dirn] = MAX_DEPTH
     else:
         depths = None
         
@@ -689,7 +689,7 @@ if __name__ == "__main__":
         windWeights = windWeights,
         returnDir = returnDir,
         returnPdDir = returnPdDir,
-        calcType = 'bretschneider',
+        calcType = 'shallow',
         debug = debug,
         averageFetch = averageFetch,
         varyDecreaseFactors = varyDecreaseFactors,
@@ -717,6 +717,6 @@ if __name__ == "__main__":
     seas_1 = np.round(seas_1, 2)
     seas_2 = np.round(seas_2, 2)
 
-    print(f"winds_1: {winds_1}, seas: {seas_1}\n\n\n")    
-    print(f"winds_2: {winds_2}, seas: {seas_2}")    
+    print(f"winds_1: {winds_1}\nseas: {seas_1}\n\n\n")    
+    print(f"winds_2: {winds_2}\nseas: {seas_2}")    
     

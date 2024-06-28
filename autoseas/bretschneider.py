@@ -52,7 +52,7 @@ class Bretschneider(object):
     def calcPeriod(self, hs, windSpd, windDir):
         """Calculate the peak wave period from significant wave height"""
         
-        period = 3.86 * (hs ** 0.5)
+        period = 4 * (hs ** 0.5)
         period = max(2,period)
         return int(round(period, 2))               
     
