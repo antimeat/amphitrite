@@ -19,6 +19,7 @@ import database as db
 import models
 import emails
 import amphitrite_configs as configs
+import plotting
 
 BASE_DIR = configs.BASE_DIR
 
@@ -41,11 +42,12 @@ except Exception as e:
 class PartitionSplitter(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
 
-    def __init__(self):
+    def __init__(self,dir_param="dpm"):
         self.partition = partition.Partitions()
         self.config_file = os.path.join(BASE_DIR,"site_config.txt")
         self.site_tables = self.load_config_file(self.config_file)
         self.latest_run_time = self.partition.get_latest_run_time().strftime(format="%Y-%m-%d %HZ")
+        self.dir_param = dir_param
         
     def mps_to_kts(self,windSpd):
         windSpd_kts = windSpd * 1.94384  # Convert from knots to m/s
@@ -218,9 +220,6 @@ class PartitionSplitter(object):
         df['fcst_hrs'] = df.groupby('station_name').cumcount()
         df['fcst_hrs'] = df['fcst_hrs'].astype(str).str.zfill(3)
         
-        # define the parameter to use for direction
-        dir_type = 'dpm'
-        
         # Dynamically generate swell column mappings based on the swells present
         swell_prefix_mapping = {}
         for i,n in enumerate(unique_swell_nums):
@@ -228,14 +227,14 @@ class PartitionSplitter(object):
                 if i == 0:
                     swell_prefix_mapping.update({
                         f"swell_1_hs": "sea_ht[m]",
-                        f"swell_1_{dir_type}": "sea_dir[degree]",
+                        f"swell_1_{self.dir_param}": "sea_dir[degree]",
                         f"swell_1_tp": "sea_pd[s]",
                     })
                 else:
                     new_prefix = f'sw{i}_'
                     swell_prefix_mapping.update({
                         f"swell_{i+1}_hs": f"{new_prefix}ht[m]",
-                        f"swell_{i+1}_{dir_type}": f"{new_prefix}dir[degree]",
+                        f"swell_{i+1}_{self.dir_param}": f"{new_prefix}dir[degree]",
                         f"swell_{i+1}_tp": f"{new_prefix}pd[s]",
                     })
 
@@ -249,7 +248,7 @@ class PartitionSplitter(object):
             "wdir": "wind_dir[degrees]",
             "wspd": "wind_spd[kn]",
             "hs": "seasw_ht[m]",
-            f"{dir_type}": "seasw_dir[degree]",
+            f"{self.dir_param}": "seasw_dir[degree]",
             "tp": "seasw_pd[s]",            
         }
 
@@ -472,9 +471,10 @@ def main():
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--site",dest="site_name",nargs="?", default="all",help="the forecast site name from Ofcast",required=False)
+    parser.add_argument("--dir_param",dest="dir_param",nargs="?", default="dpm",help="the directional parameter to use: dp, dpm",required=False)
     args = parser.parse_args()
     
-    toolbox = PartitionSplitter()
+    toolbox = PartitionSplitter(args.dir_param)
     
     try: 
         if args.site_name.strip().lower() == 'all':
@@ -489,6 +489,7 @@ def main():
             if wave_table is not None and "data" in wave_table:
                 table = wave_table["data"]
                 print(table)
+                plotting.plot_single_combined_page(args.site_name)    
                 message = f"<b>run-time:</b> {toolbox.latest_run_time} <br> <b>for:</b> {args.site_name}. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite (dev)</a>"
                 message += f"<br><br> <b>Log entries:</b> <br> {load_log()}"
                 emails.send_email(message=message)

@@ -8,6 +8,7 @@ import os
 import json
 import urllib.request
 import amphitrite_configs as configs
+import argparse
 
 # Set the umask to 0 to ensure that no permissions are masked
 os.umask(0)
@@ -95,5 +96,23 @@ def plot_single_combined_page(site_name):
     load_tables()
     generate_html(site_name)
 
+def main():
+    parser = argparse.ArgumentParser(description="Generate HTML content for each site")
+    parser.add_argument("--site", help="Site name")
+    args = parser.parse_args()
+
+    if args.site:
+        try:
+            plot_single_combined_page(args.site)
+            print(f"Generated HTML content for {args.site}")
+        except Exception as e:
+            print(f"Error: {e}")
+        
+    else:
+        try:
+            plot_all_combined_pages()
+        except Exception as e:
+            print(f"Error: {e}")
+
 if __name__ == "__main__":
-    plot_all_combined_pages()
+    main()
