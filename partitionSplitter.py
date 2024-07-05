@@ -218,21 +218,10 @@ class PartitionSplitter(object):
         df['fcst_hrs'] = df.groupby('station_name').cumcount()
         df['fcst_hrs'] = df['fcst_hrs'].astype(str).str.zfill(3)
         
-        col_mapping = {
-            "run_time": "run_time",
-            "station_name": "location",
-            "fcst_hrs": "time[hrs]",
-            "time": "time[UTC]",
-            "time_local": "time[WST]",
-            "wdir": "wind_dir[degrees]",
-            "wspd": "wind_spd[kn]",
-            "hs": "seasw_ht[m]",
-            "dp": "seasw_dir[degree]",
-            "tp": "seasw_pd[s]",            
-        }
-
+        # define the parameter to use for direction
+        dir_type = 'dpm'
+        
         # Dynamically generate swell column mappings based on the swells present
-        dir_type = 'dp'
         swell_prefix_mapping = {}
         for i,n in enumerate(unique_swell_nums):
             if f"swell_{n}_hs" in df.columns:  # Check if the swell column actually exists
@@ -251,6 +240,19 @@ class PartitionSplitter(object):
                     })
 
         # Rename columns according to mappings and use values for out cols
+        col_mapping = {
+            "run_time": "run_time",
+            "station_name": "location",
+            "fcst_hrs": "time[hrs]",
+            "time": "time[UTC]",
+            "time_local": "time[WST]",
+            "wdir": "wind_dir[degrees]",
+            "wspd": "wind_spd[kn]",
+            "hs": "seasw_ht[m]",
+            f"{dir_type}": "seasw_dir[degree]",
+            "tp": "seasw_pd[s]",            
+        }
+
         col_mapping.update(swell_prefix_mapping)
         df.rename(columns=col_mapping, inplace=True)
         

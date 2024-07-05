@@ -102,26 +102,15 @@ def amendVariablesNames(filename, site):
     ws['station_name'] = ds.rename({'station':'site'}).station_name
     ws = ws.where(ws.station_name == site, drop=True)
     
-    # Create the new direction and frequency arrays
-    original_dirs = ws.dir.values
+    # Interpolate the direction and frequency to a finer resolution
+    new_freq = np.logspace(np.log10(ws.spec.freq.min()), np.log10(ws.spec.freq.max()), num=72)
+    new_dir = np.arange(0, 360, 5)
+    ws_efth_interp = ws.efth.sortby("dir").spec.interp(freq=new_freq, dir=new_dir, maintain_m0=True)
     
-    # Create the new direction and frequency arrays
-    new_dir_start = original_dirs.min()
-    new_dir_end = original_dirs.max()
-    new_dir = np.arange(new_dir_start, new_dir_end + 6, 6) % 360  # Ensure wrapping around 360 degrees
-    new_freq = np.linspace(ws.freq.min(), ws.freq.max(), len(ws.freq) * 2)  # Double the frequency resolution
-    
-    # Interpolate the 'efth' variable to the new direction and frequency grid
-    try:
-        efth_interp = ws.efth.interp(freq=new_freq, dir=new_dir, method="linear", kwargs={"fill_value": "extrapolate"})
-    except Exception as e:
-        print(f"Error interpolating directions and frequencies: {e}")
-        return None
-    
-    # Create the new dataset
+    #Create the new dataset
     new_ds = xr.Dataset(
         {
-            "efth": efth_interp,
+            "efth": ws_efth_interp,
             "lon": ws.lon,
             "lat": ws.lat,
             "dpt": ws.dpt,
@@ -144,33 +133,36 @@ def amendVariablesNames(filename, site):
         print(f"Error creating wavespectra.SpecDataset: {e}")
         return None
     
-    return new_ws
+    return new_ws.sortby(["time","dir"])
 
-def noPartition(ws, filename,site):
-    """no partition wave statistics
+def noPartition(ws):
     """
-    
+    No partition wave statistics
+    """
     #read in file
     ws_total = ws.spec.stats(["hs", "hmax", "tp", "tm01", "tm02", "dpm", "dp", "dm", "dspr"])
     
     ws['hs'] = ws_total.hs
     ws['hmax'] = ws_total.hmax
-    ws['tp'] = ws_total.tp
     ws['tm01'] = ws_total.tm01
     ws['tm02'] = ws_total.tm02
     ws['dpm'] = ws_total.dpm
-    ws['dp'] = ws_total.dp
     ws['dm'] = ws_total.dm
     ws['dspr'] = ws_total.dspr
-    
+    ws['tp'] = ws_total.tp
+    ws['dp'] = ws_total.dp
+
     # dp and tp are recalculated due to bug in wavespectra ??
-    peak_stats = get_peak_stats(ws.efth)
-    ws["tp"].values = peak_stats.tp.values.reshape(-1,1)
-    ws["dp"].values = peak_stats.dp.values.reshape(-1,1)
-    
+    try:
+        peak_stats = get_peak_stats(ws.spec.efth)
+        ws["tp"].values = peak_stats.tp.values.reshape(-1,1)
+        ws["dp"].values = peak_stats.dp.values.reshape(-1,1)
+        ws["dpm"] = ws["dpm"].fillna(ws["dp"])
+        
+    except Exception as e:
+        print(f"Error in recalcing tp and dp in noPartition: {e}")        
     return ws
     
-
 def onePartition(ws, filename, site, period):
     """
     Customer single partition split function
@@ -221,6 +213,7 @@ def onePartition(ws, filename, site, period):
     peak_stats = get_peak_stats(ws.efth)
     ws["tp"].values = peak_stats.tp.values.reshape(-1,1)
     ws["dp"].values = peak_stats.dp.values.reshape(-1,1)
+    ws["dpm"] = ws["dpm"].fillna(ws["dp"])
     
     #append partitioned variables to file
     ws['hs_sea'] = sea_stats.hs
@@ -254,6 +247,7 @@ def onePartition(ws, filename, site, period):
     peak_stats = get_peak_stats(sea)
     ws["tp_sea"].values = peak_stats.tp.values.reshape(-1,1)
     ws["dp_sea"].values = peak_stats.dp.values.reshape(-1,1)
+    ws["dpm_sea"] = ws["dpm_sea"].fillna(ws["dp_sea"])
     
     # ws['tp_sw'] = swell_stats.tp
     ws['tp_sw'] = swell.spec.tp(smooth=False).fillna(1 / swell.freq.max())
@@ -276,36 +270,26 @@ def onePartition(ws, filename, site, period):
     peak_stats = get_peak_stats(swell)
     ws["tp_sw"].values = peak_stats.tp.values.reshape(-1,1)
     ws["dp_sw"].values = peak_stats.dp.values.reshape(-1,1)
+    ws["dpm_sw"] = ws["dpm_sw"].fillna(ws["dp_sw"])
     
     # print(f"ws_sea: {ws['hs_sea']}, ws_sw: {ws['hs_sw']}")
     return ws
 
-def rangePartition(ws, filename, site, start, end):
+def rangePartition(ws, start, end):
     """
     Customer single partition split function
-    
     Parameters
     ----------
     ws : wavespectra
         The wavespectra dataset.    
-    filename : str
-        A string for the netCDF spectral file.
     start : int
         start of the range partition period (min)
     end : int
         end of the range partition period (max)
-        
     Returns
     -------
     xarray
         An xarray object with the partitioned and total wave paramters, and spectrum
-        
-        
-    Example
-    -------
-    
-    rangePartition(filename, 8, 16)
-    
     """
     # here we make a minor tweaks to start and end to ensure we dont end with crossover values between partitions
     end += 0.49 
@@ -313,23 +297,20 @@ def rangePartition(ws, filename, site, start, end):
         start += 0.51        
         
     try: 
-        #read in file
-        # ws = amendVariablesNames(filename, site)
-            
-        #get sea and swell split
-        # part = ws.spec.split(fmin=1/end, fmax=1/start ).chunk({"freq": -1})
-        part = ws.spec.split(fmin=1/end, fmax=1/start )
+        part = ws.spec.split(fmin=1/end, fmax=1/start)
+        part.name ='efth'
         params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dpm", "dp", "dm", "dspr","tp"])
-        
         #derive peak stats for period and dir
         peak_stats = get_peak_stats(part)
-        params["tp"].values = peak_stats.tp.values.reshape(-1,1)
-        params["dp"].values = peak_stats.dp.values.reshape(-1,1)
-        
         # params["tp"].values = get_tp(part.spec.oned().to_dataframe('efth').reset_index()).values
         # params["dp"].values = get_dp(part.to_dataframe('efth').reset_index()).values
-        
+            
+        params['tp'].values = peak_stats.tp.values.reshape(-1,1)
+        params['dp'].values = peak_stats.dp.values.reshape(-1,1)
         params['station_name'] = ws.station_name
+        
+        # replance NaN values in dpm with values from dp
+        params['dpm'] = params['dpm'].fillna(params['dp'])
         
     except Exception as e:
         print(f"Error in rangePartition: {e}")
@@ -343,11 +324,15 @@ def get_peak_stats(partition):
     """
     max_dir = partition.max(dim="freq").idxmax(dim="dir")
     max_freq = partition.max(dim="dir").idxmax(dim="freq")
-    new = pd.DataFrame([1/max_freq.values.flatten(), max_dir.values.flatten()]).T
-    new.columns = ['tp','dp']
-    new.index = partition.time
+    max_efth = partition.max(dim=["dir", "freq"]).values.flatten()
     
-    return new.round(2)
+    tp = (1 / max_freq).values.flatten()
+    dp = max_dir.values.flatten()
+    
+    new = pd.DataFrame({'efth': max_efth, 'tp': tp, 'dp': dp}, index=partition.time.values)
+    new.index = pd.to_datetime(new.index)
+    
+    return new.round(2)    
 
 def get_tp(df, group_col='time', x_col='efth', y_col='freq'):
     """
@@ -361,7 +346,7 @@ def get_tp(df, group_col='time', x_col='efth', y_col='freq'):
         y_col (str): Name of the column to extract values from (default: 'y').
 
     Returns:
-        pd.DataFrame: Dataframe containing Tp
+        pd.DataFrame: Dataframe containing tp
     """
     try: 
         max_x_rows = df.loc[df.groupby(group_col)[x_col].idxmax()]
@@ -388,7 +373,7 @@ def get_dp(df, group_col='time', x_col='efth', y_col='dir'):
         y_col (str): Name of the column to extract values from (default: 'y').
 
     Returns:
-        pd.DataFrame: Dataframe containing Tp
+        pd.DataFrame: Dataframe containing dp
     """
     df_copy = df.copy()
 
@@ -405,8 +390,3 @@ def get_dp(df, group_col='time', x_col='efth', y_col='dir'):
         return None
    
     return dp
-
-def singlePartition(filename, site, period):
-    """Placeholder"""
-    return
-    

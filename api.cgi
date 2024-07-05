@@ -15,6 +15,7 @@ import run_transform
 
 BASE_DIR = configs.BASE_DIR
 BASE_URL = configs.BASE_URL
+PLOTS_URL = os.path.join(BASE_URL, "plots")
 LOG_FILE = os.path.join(BASE_DIR,'api.log')
 
 try:
@@ -123,11 +124,12 @@ def list_sites_as_html():
         tables = site_data[1]
         partitions = site_data[2]
         run_times = site_data[3]
+        
         table_style = """
             <style>
                 table { 
                     border-collapse: collapse; 
-                    width: 80%; 
+                    width: 85%; 
                     margin: 20px auto; 
                 }
                 th, td { 
@@ -143,9 +145,20 @@ def list_sites_as_html():
                 }
             </style>
         """
-        headers = "<tr><th>Forecast site</th><th>Auswave table</th><th>Partitions</th><th>Latest run-time</th></tr>"
+        headers = "<tr><th>Forecast site</th><th>3 panel plots</th><th>Auswave table</th><th>Partitions</th><th>Latest run-time</th></tr>"
 
-        html_table_rows = "".join([f"<tr><td><a href='api.cgi?get=site&site_name={site_names[i]}' target='_blank'>{site_names[i]}</a></td><td>{tables[i]}</td><td>{', '.join(map(str, partitions[i]))}</td><td>{run_times[i]}</td></tr>" for i in range(len(site_names))])
+        html_table_rows = "".join([
+            f"""
+            <tr>
+                <td><a href='api.cgi?get=site&site_name={site_names[i]}' target='_blank'>{site_names[i]}</a></td>
+                <td><a href='{os.path.join(PLOTS_URL, site_names[i].lower().replace(' ', '_').replace('-', '') + ".html")}' target='_blank'><img src={os.path.join(BASE_URL,'html/img/table.png')} width=30 height=30></a></td>
+                <td>{tables[i]}</td>
+                <td>{', '.join(map(str, partitions[i]))}</td>
+                <td>{run_times[i]}</td>
+            </tr>
+            """ for i in range(len(site_names))
+        ])
+
         return f"{table_style}<h2>Partitioned Swell Tables</h2><table>{headers}{html_table_rows}</table>"
     except Exception as e:
         handle_error(500, f"Internal Server Error: {e}")

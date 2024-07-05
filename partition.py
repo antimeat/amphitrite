@@ -189,7 +189,7 @@ class Partitions(object):
         #append data variables back in
         #loop through intermediate swell partitions        
         i = 1
-        part = readSpectrum.rangePartition(ws, filename, parts[i-1][0], site, parts[i-1][1])
+        part = readSpectrum.rangePartition(ws, parts[i-1][0], parts[i-1][1])
 
         ws['swell_{}_hs'.format(i)] = part.hs
         ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -225,12 +225,12 @@ class Partitions(object):
         
         #get the full spectrum data
         ws_dataset = readSpectrum.amendVariablesNames(filename,site)
-        ws = readSpectrum.noPartition(ws_dataset,filename,site)
+        ws = readSpectrum.noPartition(ws_dataset)
         
         #append data variables back in
         #loop through intermediate swell partitions        
         for i in range(1,len(parts)+1):
-            part = readSpectrum.rangePartition(ws, filename, site, parts[i-1][0], parts[i-1][1])
+            part = readSpectrum.rangePartition(ws_dataset, parts[i-1][0], parts[i-1][1])
         
             ws['swell_{}_hs'.format(i)] = part.hs
             ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
@@ -293,7 +293,7 @@ class Partitions(object):
         
         #loop through intermediate swell partitions        
         for i in range(1,len(parts)-1):
-            part = readSpectrum.rangePartition(ws, filename, site, parts[i][0], parts[i][1])
+            part = readSpectrum.rangePartition(ws, parts[i][0], parts[i][1])
             ws['swell_{}_hs'.format(i)] = part.hs
             ws['swell_{}_hs'.format(i)].attrs['standard_name'] = ws['swell_{}_hs'.format(i)].attrs['standard_name'] +'_P{}_partition'.format(i)
             ws['swell_{}_hmax'.format(i)] = part.hmax
