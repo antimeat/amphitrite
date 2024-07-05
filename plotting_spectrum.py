@@ -48,8 +48,7 @@ class WavespectraHighRes(object):
                 
     def get_site_spectra(self,site):
         """if we dont already have a wavespectra object, create one"""
-        if self.ws is None:
-            self.ws = self.interpolate_wavespectra(site)
+        self.ws = self.interpolate_wavespectra(site)
         return self.ws
             
     def get_latest_run_time(self):
@@ -251,7 +250,7 @@ def spec_plot(latest_runtime, oned,site_name,partitions=None):
     file_name = site_name.lower().replace(' ', '_').replace('-', '') + ".png"
     try:
         fig, ax = plt.subplots(figsize=(15, 5))
-        oned.isel(site=0).T.plot(ax=ax, cmap=plt.cm.turbo, robust=True)
+        oned.T.plot(ax=ax, cmap=plt.cm.turbo, robust=True)
         ax.set_ylabel('Period (s)')
         
         # If we have partitions, plot them as red dashed lines with labels
@@ -297,6 +296,8 @@ def main():
         partitions = TABLES[site_name]['parts']
         site_ws = ws_hires.get_site_spectra(table_name)
         site_ws['freq'] = 1/site_ws.freq
+        print(site_ws)
+        exit()
         oned = site_ws.spec.oned()
         spec_plot(latest_runtime, oned, site_name, partitions)
         
