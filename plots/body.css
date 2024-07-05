@@ -35,12 +35,12 @@ header {
 }
 
 .plot {
-    height: 55%; /* Each takes half of the height of the left column */
+    height: 50%; /* Each takes half of the height of the left column */
 }
 
 .image {
-    width: 90%;
-    height: 45%; /* Each takes half of the height of the left column */
+    width: 95%;
+    height: 50%; /* Each takes half of the height of the left column */
 }
 
 .table {

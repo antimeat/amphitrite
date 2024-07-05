@@ -223,7 +223,9 @@ def main():
     
     if args.all or args.siteName.strip().lower() == 'all':
         generate_output_all_sites(run_time=args.run_time, transformed=args.notrans)
+        
         plotting.plot_all_combined_pages()
+        
     elif args.test:
         df = generate_test_output_from_args(args)
         print(df)

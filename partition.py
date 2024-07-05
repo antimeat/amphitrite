@@ -31,7 +31,7 @@ class Partitions(object):
     def __init__(self):
         self.dir = "/cws/data/wavewatch/"
         self.filename = self.get_latest_file_new()
-        self.set_latest_run_time(self.filename)
+        self.latest_run_time = self.set_latest_run_time(self.filename)
             
     def get_latest_run_time(self):
         return self.latest_run_time
@@ -39,7 +39,8 @@ class Partitions(object):
     def set_latest_run_time(self,filename):
         date_string = filename.split("/")[-1].split("_")[2].split(".")[0]
         print(date_string)
-        self.latest_run_time = datetime.datetime.strptime(date_string,"%Y%m%d%H")
+        latest_run_time = datetime.datetime.strptime(date_string,"%Y%m%d%H")
+        return latest_run_time
     
     def generate_table_names(self):
         """Generate a file of all the table names in the netcdf file"""

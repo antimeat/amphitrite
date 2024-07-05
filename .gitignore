@@ -11,6 +11,8 @@ transformer/tables/
 
 #plotting
 plots/*.html
+plots/*.png
+plots/spectral/*
 
 #logging
 *.log

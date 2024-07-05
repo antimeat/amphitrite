@@ -8,6 +8,7 @@ LOCK_FILE="$SCRIPT_DIR/.lockfile.lock"
 LAST_RUN_FILE="$SCRIPT_DIR/.last_check"
 SCRIPT="partitionSplitter.py"
 OUTPUT_SCRIPT="run_transform.py"
+SPECTRAL_PLOTTING="plotting_spectrum.py"
 
 # Function to check if the PID in the lock file is still running
 check_pid() {
@@ -47,6 +48,10 @@ if [[ ! -z "$new_files" ]]; then
     # Run the transformer output script
     echo "$(date) - Transforming output to csv and html has commenced." >> "$LOG_FILE"
     "./$OUTPUT_SCRIPT" --all 2>> "$LOG_FILE"
+
+    # Run the transformer output script
+    echo "$(date) - Spectral plotting output has commenced." >> "$LOG_FILE"
+    "./$SPECTRAL_PLOTTING" 2>> "$LOG_FILE"
 fi
 
 # Update last run file timestamp for next run

@@ -18,7 +18,7 @@ BASE_URL = configs.BASE_URL
 
 # Base URL for the iframe and image sources
 BASE_URL_GHPLOTS = "http://wa-vw-er.bom.gov.au/webapps/vwave/plots/"
-BASE_URL_IMAGES = "http://wa-vw-er.bom.gov.au/webapps/vwave/plotsSpec/"
+BASE_URL_IMAGES = BASE_URL + "/plots/spectral/"  
 BASE_URL_TABLES = BASE_URL + "/transformer/tables/"  
 
 OUTPUT_DIR = os.path.join(BASE_DIR, "plots")
@@ -39,7 +39,7 @@ def generate_html(site_name):
     Generate HTML content for a site
     """
     plot_file = TABLES[site_name]['table'] + ".html"
-    image_file = TABLES[site_name]['table'] + ".png"
+    image_file = site_name.lower().replace(' ', '_').replace('-', '') + ".png"
     table_file = site_name.replace(' ', '_').replace('-', '') + "_data.html"  # Normalize filenames
 
     # HTML content
