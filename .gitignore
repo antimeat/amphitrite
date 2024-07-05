@@ -12,7 +12,7 @@ transformer/tables/
 #plotting
 plots/*.html
 plots/*.png
-plots/spectral/*
+plots/spectral/
 
 #logging
 *.log
