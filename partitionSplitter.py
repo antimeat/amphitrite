@@ -42,12 +42,13 @@ except Exception as e:
 class PartitionSplitter(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
 
-    def __init__(self,dir_param="dpm"):
+    def __init__(self,dir_param="dpm", pd_param="tp"):
         self.partition = partition.Partitions()
         self.config_file = os.path.join(BASE_DIR,"site_config.txt")
         self.site_tables = self.load_config_file(self.config_file)
         self.latest_run_time = self.partition.get_latest_run_time().strftime(format="%Y-%m-%d %HZ")
         self.dir_param = dir_param
+        self.pd_param = pd_param
         
     def mps_to_kts(self,windSpd):
         windSpd_kts = windSpd * 1.94384  # Convert from knots to m/s
@@ -228,14 +229,14 @@ class PartitionSplitter(object):
                     swell_prefix_mapping.update({
                         f"swell_1_hs": "sea_ht[m]",
                         f"swell_1_{self.dir_param}": "sea_dir[degree]",
-                        f"swell_1_tp": "sea_pd[s]",
+                        f"swell_1_{self.pd_param}": "sea_pd[s]",
                     })
                 else:
                     new_prefix = f'sw{i}_'
                     swell_prefix_mapping.update({
                         f"swell_{i+1}_hs": f"{new_prefix}ht[m]",
                         f"swell_{i+1}_{self.dir_param}": f"{new_prefix}dir[degree]",
-                        f"swell_{i+1}_tp": f"{new_prefix}pd[s]",
+                        f"swell_{i+1}_{self.pd_param}": f"{new_prefix}pd[s]",
                     })
 
         # Rename columns according to mappings and use values for out cols
@@ -249,7 +250,7 @@ class PartitionSplitter(object):
             "wspd": "wind_spd[kn]",
             "hs": "seasw_ht[m]",
             f"{self.dir_param}": "seasw_dir[degree]",
-            "tp": "seasw_pd[s]",            
+            f"{self.pd_param}": "seasw_pd[s]",            
         }
 
         col_mapping.update(swell_prefix_mapping)
@@ -471,10 +472,11 @@ def main():
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--site",dest="site_name",nargs="?", default="all",help="the forecast site name from Ofcast",required=False)
-    parser.add_argument("--dir_param",dest="dir_param",nargs="?", default="dpm",help="the directional parameter to use: dp, dpm",required=False)
+    parser.add_argument("--dir_param",dest="dir_param",nargs="?", default="dp",help="the directional parameter to use: dp, dpm",required=False)
+    parser.add_argument("--pd_param",dest="pd_param",nargs="?", default="tp",help="the period parameter to use: tp, tm01, tm02",required=False)
     args = parser.parse_args()
     
-    toolbox = PartitionSplitter(args.dir_param)
+    toolbox = PartitionSplitter(args.dir_param, args.pd_param)
     
     try: 
         if args.site_name.strip().lower() == 'all':

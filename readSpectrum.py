@@ -157,8 +157,8 @@ def noPartition(ws):
         peak_stats = get_peak_stats(ws.spec.efth)
         ws["tp"].values = peak_stats.tp.values.reshape(-1,1)
         ws["dp"].values = peak_stats.dp.values.reshape(-1,1)
-        ws["dpm"] = ws["dpm"].fillna(ws["dp"])
-        
+        ws['dpm'].values = xr.where(np.isnan(ws['dpm']), ws['dp'], ws['dpm']).values      
+    
     except Exception as e:
         print(f"Error in recalcing tp and dp in noPartition: {e}")        
     return ws
@@ -213,7 +213,7 @@ def onePartition(ws, filename, site, period):
     peak_stats = get_peak_stats(ws.efth)
     ws["tp"].values = peak_stats.tp.values.reshape(-1,1)
     ws["dp"].values = peak_stats.dp.values.reshape(-1,1)
-    ws["dpm"] = ws["dpm"].fillna(ws["dp"])
+    ws['dpm'].values = xr.where(np.isnan(ws['dpm']), ws['dp'], ws['dpm']).values      
     
     #append partitioned variables to file
     ws['hs_sea'] = sea_stats.hs
@@ -247,7 +247,7 @@ def onePartition(ws, filename, site, period):
     peak_stats = get_peak_stats(sea)
     ws["tp_sea"].values = peak_stats.tp.values.reshape(-1,1)
     ws["dp_sea"].values = peak_stats.dp.values.reshape(-1,1)
-    ws["dpm_sea"] = ws["dpm_sea"].fillna(ws["dp_sea"])
+    ws['dpm_sea'].values = xr.where(np.isnan(ws['dpm_sea']), ws['dp_sea'], ws['dpm_sea']).values      
     
     # ws['tp_sw'] = swell_stats.tp
     ws['tp_sw'] = swell.spec.tp(smooth=False).fillna(1 / swell.freq.max())
@@ -270,7 +270,7 @@ def onePartition(ws, filename, site, period):
     peak_stats = get_peak_stats(swell)
     ws["tp_sw"].values = peak_stats.tp.values.reshape(-1,1)
     ws["dp_sw"].values = peak_stats.dp.values.reshape(-1,1)
-    ws["dpm_sw"] = ws["dpm_sw"].fillna(ws["dp_sw"])
+    ws['dpm_sw'].values = xr.where(np.isnan(ws['dpm_sw']), ws['dp_sw'], ws['dpm_sw']).values      
     
     # print(f"ws_sea: {ws['hs_sea']}, ws_sw: {ws['hs_sw']}")
     return ws
@@ -300,17 +300,18 @@ def rangePartition(ws, start, end):
         part = ws.spec.split(fmin=1/end, fmax=1/start)
         part.name ='efth'
         params = part.spec.stats(["hs", "hmax", "tm01", "tm02", "dpm", "dp", "dm", "dspr","tp"])
+        
         #derive peak stats for period and dir
         peak_stats = get_peak_stats(part)
-        # params["tp"].values = get_tp(part.spec.oned().to_dataframe('efth').reset_index()).values
-        # params["dp"].values = get_dp(part.to_dataframe('efth').reset_index()).values
-            
         params['tp'].values = peak_stats.tp.values.reshape(-1,1)
         params['dp'].values = peak_stats.dp.values.reshape(-1,1)
-        params['station_name'] = ws.station_name
         
-        # replance NaN values in dpm with values from dp
-        params['dpm'] = params['dpm'].fillna(params['dp'])
+        # params['dpm'].values = peak_stats.dpm.values.reshape(-1,1)
+        params['station_name'] = ws.station_name
+            
+        # Replace values where 'dpm' is nan
+        params['dpm'].values = xr.where(np.isnan(params['dpm']), params['dp'], params['dpm']).values      
+        
         
     except Exception as e:
         print(f"Error in rangePartition: {e}")
