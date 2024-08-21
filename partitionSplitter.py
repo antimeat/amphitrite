@@ -42,7 +42,7 @@ except Exception as e:
 class PartitionSplitter(object):   
     """Class of methods to breed a mongrel mix of wave spectra, transformations and Ofcast forecasts"""
 
-    def __init__(self,dir_param="dpm", pd_param="tp"):
+    def __init__(self,dir_param="dp", pd_param="tp"):
         self.partition = partition.Partitions()
         self.config_file = os.path.join(BASE_DIR,"site_config.txt")
         self.site_tables = self.load_config_file(self.config_file)
@@ -481,7 +481,7 @@ def main():
     try: 
         if args.site_name.strip().lower() == 'all':
             toolbox.generate_all_sites_to_db()
-            message = f"<b>run-time:</b> {toolbox.latest_run_time} <br><b>for:</b> all sites. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite (dev)</a>"
+            message = f"<b>run-time:</b> {toolbox.latest_run_time} <br><b>for:</b> all sites. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite</a>"
             message += f"<br><br> <b>Log entries:</b> <br> {load_log()}"
             emails.send_email(message=message)
         else:
@@ -492,7 +492,7 @@ def main():
                 table = wave_table["data"]
                 print(table)
                 plotting.plot_single_combined_page(args.site_name)    
-                message = f"<b>run-time:</b> {toolbox.latest_run_time} <br> <b>for:</b> {args.site_name}. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite (dev)</a>"
+                message = f"<b>run-time:</b> {toolbox.latest_run_time} <br> <b>for:</b> {args.site_name}. <br> <a href=\"{configs.BASE_URL}/html/dashboard.php\" target=\"amphitrite\">Amphitrite</a>"
                 message += f"<br><br> <b>Log entries:</b> <br> {load_log()}"
                 emails.send_email(message=message)
             else:

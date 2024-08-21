@@ -32,7 +32,7 @@ SHOW_TABLE = False
 FETCH_WEIGHTS = [0.2, 0.6, 0.2]
 MAX_FETCH = 60  # in nautical miles
 MAX_DEPTH = 200  # in km
-MAX_DURATION = 36.0  # hours
+MAX_DURATION = 36.0  # in hours
 
 DIRECTION_WEIGHTED_BIN_DELTAS = range(-8, 9, 1)
 
@@ -130,7 +130,7 @@ def autoSeas(siteName,
             SeaCalc = Bretschneider()
             SeaCalc.setFetchTable(fetchTable)
         
-    elif calcType in "shallow":    
+    elif calcType == "shallow":    
         SeaCalc = ShallowWaterSeas()
         SeaCalc.setFetchAndDepthTables(fetchTable, depthTable)
     
@@ -689,7 +689,7 @@ if __name__ == "__main__":
         windWeights = windWeights,
         returnDir = returnDir,
         returnPdDir = returnPdDir,
-        calcType = 'shallow',
+        calcType = 'bretschneider',
         debug = debug,
         averageFetch = averageFetch,
         varyDecreaseFactors = varyDecreaseFactors,
@@ -717,6 +717,6 @@ if __name__ == "__main__":
     seas_1 = np.round(seas_1, 2)
     seas_2 = np.round(seas_2, 2)
 
-    print(f"winds_1: {winds_1}\nseas: {seas_1}\n\n\n")    
-    print(f"winds_2: {winds_2}\nseas: {seas_2}")    
+    print(f"winds_1: {winds_1}, seas: {seas_1}\n\n\n")    
+    print(f"winds_2: {winds_2}, seas: {seas_2}")    
     

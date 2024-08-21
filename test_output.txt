@@ -1,5 +1,5 @@
-WARNING:matplotlib:Matplotlib created a temporary config/cache directory at /tmp/matplotlib-jry2ul11 because the default path (/var/www/.config/matplotlib) is not a writable directory; it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+WARNING:matplotlib:Matplotlib created a temporary config/cache directory at /tmp/matplotlib-odkz7weh because the default path (/var/www/.config/matplotlib) is not a writable directory; it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
 INFO:matplotlib.font_manager:generated new fontManager
 2024070718
 Email sent successfully
-Deleted 0 old records.
+Deleted 74 old records.

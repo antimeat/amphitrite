@@ -103,7 +103,7 @@ def amendVariablesNames(filename, site):
     ws = ws.where(ws.station_name == site, drop=True)
     
     # Interpolate the direction and frequency to a finer resolution
-    new_freq = np.logspace(np.log10(ws.spec.freq.min()), np.log10(ws.spec.freq.max()), num=72)
+    new_freq = np.logspace(np.log10(ws.spec.freq.min()), np.log10(ws.spec.freq.max()), num=144)
     new_dir = np.arange(0, 360, 5)
     ws_efth_interp = ws.efth.sortby("dir").spec.interp(freq=new_freq, dir=new_dir, maintain_m0=True)
     

@@ -13,7 +13,7 @@ cgitb.enable()
 
 # Constants
 HT_DECIMAL_PLACES = {
-    "Barrow Island 7 Day - AusWaveBWI".replace(' ', '_'): 2
+    "Barrow Island 7 Day - AusWaveBWI".replace(' ', '_'): 2    
 }
 DEFAULT_WINDS = "330/10/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3,330/20/3"
 DEFAULT_SITE = 'Woodside - Scarborough 10 Days'
@@ -95,7 +95,7 @@ def calculate_seas(kwargs):
 
 def format_seas_data(seas, site_name, return_dir, return_pd_dir):
     """just round some stuff correctly please"""
-    ht_places = HT_DECIMAL_PLACES.get(site_name, 1)
+    ht_places = HT_DECIMAL_PLACES.get(site_name, 2)
     
     if return_dir:
         return [[round(s, ht_places), int(round(d))] for s, d in seas]

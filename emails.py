@@ -4,7 +4,7 @@ import argparse
 import smtplib
 import email.message
 
-def send_email(message, subject="Poseidon & Amphitrite in development! [SEC=UNOFFICIAL]", emoji="\U0001F3C4", sender="ImARobot@bom.gov.au", recipient="daz.vink@bom.gov.au"):
+def send_email(message, subject="Poseidon & Amphitrite in development! [SEC=UNOFFICIAL]", emoji="\U0001F3C4", sender="robot", recipient="energy-resources-ops;davink@wa-vw-er.bom.gov.au"):
     if emoji:
         subject = f"{emoji} {subject}"
 
@@ -25,10 +25,10 @@ def send_email(message, subject="Poseidon & Amphitrite in development! [SEC=UNOF
         print(f"Error: {e}")
 
 def success(message):
-    send_email(message, subject="Success: Poseidon & Amphitrite [SEC=UNOFFICIAL]", emoji="\U0001F389")  # Success emoji
+    send_email(message, subject="Success: Amphitrite [SEC=UNOFFICIAL]", emoji="\U0001F389")  # Success emoji
 
 def fail(message):
-    send_email(message, subject="Failure: Poseidon & Amphitrite [SEC=UNOFFICIAL]", emoji="\U0001F4A5")  # Explosion emoji
+    send_email(message, subject="Failure: Amphitrite [SEC=UNOFFICIAL]", emoji="\U0001F4A5")  # Explosion emoji
 
 def main():
     parser = argparse.ArgumentParser(description="Send notification emails based on success or failure of processes.")
