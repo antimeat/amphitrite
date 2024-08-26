@@ -6,7 +6,7 @@
     <title><?php echo $TITLE; ?></title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Bootstrap 4 CSS CDN -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://wa-vw-er/webapps/er_ml_projects/bootstrap/css/bootstrap.min.css">
     <style>
         #loading {
             display: none;
@@ -303,9 +303,10 @@ $commentsDisplay = implode("\n", $comments);
         }
     </script>
 
-    <!-- Include jQuery and Bootstrap JavaScript -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
+    <!-- jQuery, Popper.js, and Bootstrap JS via jsDelivr CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>	
+
 </body>
 </html>

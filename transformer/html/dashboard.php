@@ -11,7 +11,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
 
 		<!-- Bootstrap CSS -->
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="http://wa-vw-er/webapps/er_ml_projects/bootstrap/css/bootstrap.min.css">
 		<style>     
 		    .bomImage { width: position: absolute; left: 1000px; top: 950px  }
 		</style>			
