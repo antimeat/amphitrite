@@ -73,6 +73,10 @@ autoseas generated winds. Highest energy at each timestep wins.</li>
 <code>src</code> parameter. Format is direction (degrees), speed
 (knots), and time period (hours). Time period is the time difference
 between the last wind and the current.</li>
+<li>Note: if zero value wind speed and direction are passed; eg:
+<code>0/0/3</code>, we assume the direction is <code>360</code> and
+default to a speed of <code>1</code> kts, to avoid divide by zero
+problems in seas calculations.</li>
 </ul></li>
 </ol>
 <h2 id="response-format">Response Format</h2>

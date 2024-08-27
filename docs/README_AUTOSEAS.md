@@ -47,6 +47,7 @@ The response is a JSON object with the following structure:
 -   `seas_hs`: Sea state height (meters).
 -   `seas_pd`: Period of the sea state (hours).
 -   `seas_dir`: Direction of the sea state (degrees).
+-   Note: if zero value wind speed and direction are passed; eg: `0/0/3`, we assume the direction is `360` and default to a speed of `0.1` kts, to avoid divide by zero problems in seas calculations. Thus returning {"seas": [[`0.1, 0, 360`]]}
 
 ## Example
 
