@@ -73,10 +73,6 @@ autoseas generated winds. Highest energy at each timestep wins.</li>
 <code>src</code> parameter. Format is direction (degrees), speed
 (knots), and time period (hours). Time period is the time difference
 between the last wind and the current.</li>
-<li>Note: if zero value wind speed and direction are passed; eg:
-<code>0/0/3</code>, we assume the direction is <code>360</code> and
-default to a speed of <code>1</code> kts, to avoid divide by zero
-problems in seas calculations.</li>
 </ul></li>
 </ol>
 <h2 id="response-format">Response Format</h2>
@@ -86,6 +82,11 @@ problems in seas calculations.</li>
 <li><code>seas_hs</code>: Sea state height (meters).</li>
 <li><code>seas_pd</code>: Period of the sea state (hours).</li>
 <li><code>seas_dir</code>: Direction of the sea state (degrees).</li>
+<li>Note: if zero value wind speed and direction are passed; eg:
+<code>0/0/3</code>, we assume the direction is <code>360</code> and
+default to a speed of <code>0.1</code> kts, to avoid divide by zero
+problems in seas calculations. Thus returning {"seas":
+[[<code>0.1, 0, 360</code>]]}</li>
 </ul>
 <h2 id="example">Example</h2>
 <hr />
