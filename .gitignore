@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+#all the output files
+output/
+
+#more output files
+transformer/tables/
+
+#plotting
+plots/*.html
+plots/*.png
+plots/spectral/
+
+#logging
+*.log
+
+#lockfiles
+*.lock
+
+#database
+*.db
+
+#ignore jupyter notebook
+*.ipynb
+*.ipynb_checkpoints/

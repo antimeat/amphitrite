@@ -1,0 +1,100 @@
+<!-- As a heading -->
+<?php
+    include('config.php');
+?>
+<style>
+	.form {
+		margin-top:15px;		
+	}
+</style>
+	
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0">
+	<a class="navbar-brand col-md-2 p-3" id="head" href="#" onclick="parent.location = 'dashboard.php'"><i><?php echo($TITLE);?></i></a>
+    <ul class="nav">
+        <li><a class="nav-link navbar-nav navbar-right text-secondary h6" href="#" onclick="changeLink('edit-config')"><i>edit-config</i></a></li>
+        <li><a class="nav-link navbar-nav navbar-right text-secondary h6" href="#" onclick="changeLink('edit-exclusion')"><i>edit-exclude</i></a></li>
+        <li><a class="nav-link navbar-nav navbar-right text-secondary h6" id="notesMenu" href="#">hints</a></li>
+    </ul>
+</nav>	
+
+<!-- notes modal-->
+<div class="modal fade" id="notesModal" tabindex="-1" role="dialog" aria-labelledby="notesModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="notesModalTitle">Hints</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <p>
+          <b>The partitioning process executes for the 00Z/06Z/12Z/18Z runs of Auswave each day. Check that the <i>Active Sites</i> are configured correctly using <i>"Config check"</i></b>
+        </p>
+        <p>
+          <b>Config check</b>  
+          <ul>
+            <li><i>"Config check"</i> should show a green highlighted <i>"Sites config and exclusiions up to date!"</i>, 
+              otherwise, if sites are highlighted in yellow they should be either added to the configuration file or the exlusion file.</li>
+            <li>the <i>configuration</i> file and the <i>exclusion</i> file both need to be kept up to date</li>  
+            <li>update the sites config file using menu item <i>"edit-config"</i></li>
+            <li>sites config file has the format "forecast_name", "table_name", "partions"</li>
+            <li>update the sites to exclude (eg: land based sites) using menu item <i>"edit-exclude"</i></li>
+            <li>exlusion file has the format "forecast_name"</li>
+          </ul>
+        </p>
+        <p>
+          <b>Site partition tables</b>  
+          <ul>
+            <li>table of site info and links to the output</li>  
+            <li>pulls latest available data from the database for each site</i></li>          
+          </ul>
+        </p>  
+        <p>
+          <b>Database check</b>  
+          <ul>
+            <li>query the database to see the current site list and run_times that are saved </li>  
+          </ul>
+        </p>  
+        <p>
+          <b>Active sites</b>  
+          <ul>
+            <li>Ofcast active site list with shift, name, days, lat, lon </li>  
+          </ul>
+        </p>  
+        <p>
+          <b>Auswave table names</b>  
+          <ul>
+            <li>Auswave table names and their respective lat lons. Useful for setting up the configuration file </li>  
+          </ul>
+        </p>  
+        <p>
+          <b>Activate run</b>  
+          <ul>
+            <li>activate a manual run of the partion splitter choosing individual sites or all</li>  
+            <li>by default it will run using the latest available auswave data to split</li>  
+          </ul>
+        </p>
+        <p>
+          <b>Log file</b>  
+          <ul>
+            <li>each time the partitioning process is run we generate a log file </li>  
+            <li>its a good place to find clues for trouble-shooting</li>  
+          </ul>
+        </p>
+        <br>
+        <h7 class="font-italic">For suggestions and problems: <a href="mailto:darryl.vink@bom.gov.au">daz.vink@bom.gov.au</a> </h7>             
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $("#notesMenu").click(function() {
+        $('#notesModal').modal('show');
+    })
+</script>

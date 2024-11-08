@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>API for sites, table and configuration data</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="github-markdown.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">API for sites, table and configuration data</h1>
+</header>
+<h2 id="overview">Overview</h2>
+<hr />
+<p>CGI/API interface for managing and visualizing wave data partitions
+and comparing output to Ofcast active sites. It provides various
+functionalities, such as comparing active sites with configuration
+files, listing sites in HTML or JSON formats, and handling site-specific
+data.</p>
+<h2 id="features">Features</h2>
+<hr />
+<ul>
+<li>List wave data sites in both HTML and JSON formats.</li>
+<li>Compare active sites with site configurations and exclusions.</li>
+<li>Fetch and display site-specific data.</li>
+<li>Handle active partition names and site titles with latitude and
+longitude information.</li>
+</ul>
+<h2 id="api-endpoint">API Endpoint</h2>
+<hr />
+<p>The API supports various endpoints, some with its own set of
+parameters.</p>
+<h2 id="request-parameters">Request Parameters</h2>
+<ol type="1">
+<li><p><code>get=list_html</code> (default)</p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Lists all sites as HTML links.</li>
+</ul></li>
+<li><p><code>get=database</code></p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Displays database entries in HTML format.</li>
+</ul></li>
+<li><p><code>get=list_json</code></p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Lists all sites and data in JSON format.</li>
+</ul></li>
+<li><p><code>get=exclusion</code></p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Lists exclusion sites in JSON format.</li>
+</ul></li>
+<li><p><code>get=site</code></p>
+<ul>
+<li><code>site_name</code> (required)
+<ul>
+<li>Format: String with <code>%20</code> as whitespace</li>
+<li>Description: Specifies the site name for data retrieval.</li>
+</ul></li>
+<li><code>run_time</code> (required)
+<ul>
+<li>Format: <code>YYYYMMDDHH</code></li>
+<li>Description: Indicates the time step for data retrieval in UTC.</li>
+</ul></li>
+</ul></li>
+</ol>
+<p>Each endpoint serves a specific purpose and may require different
+parameters to function correctly. The <code>site_name</code> and
+<code>run_time</code> parameters are essential for fetching data related
+to a specific site and time.</p>
+<h3 id="examples">Examples</h3>
+<ul>
+<li><p><strong>List table names in HTML</strong>:
+<code>url http://wa-vw-er/webapps/amphitrite/sites_api.cgi</code></p>
+<h4 id="returns">returns:</h4>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">name</th>
+<th style="text-align: center;">lat</th>
+<th style="text-align: center;">lon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">22.5_107.5</td>
+<td style="text-align: center;">-22.5</td>
+<td style="text-align: center;">107.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Abbot_Poin</td>
+<td style="text-align: center;">-19.8</td>
+<td style="text-align: center;">148.07</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Adelaide</td>
+<td style="text-align: center;">-34.75</td>
+<td style="text-align: center;">138.375</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Wickham</td>
+<td style="text-align: center;">-12.52</td>
+<td style="text-align: center;">130.84</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Wonthaggi_</td>
+<td style="text-align: center;">-38.59</td>
+<td style="text-align: center;">145.51</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Xena</td>
+<td style="text-align: center;">-19.96</td>
+<td style="text-align: center;">115.218</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Yoorn</td>
+<td style="text-align: center;">-20.34</td>
+<td style="text-align: center;">115.79</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>List table names in json</strong>:
+<code>url http://wa-vw-er/webapps/amphitrite/sites_api.cgi?get=json_tables</code></p>
+<h4 id="returns-1">returns:</h4>
+<pre><code>[
+    {
+        &quot;name&quot;: &quot;22.5_107.5&quot;,
+        &quot;lat&quot;: -22.5,
+        &quot;lon&quot;: 107.5
+    },
+    {
+        &quot;name&quot;: &quot;Abbot_Poin&quot;,
+        &quot;lat&quot;: -19.8,
+        &quot;lon&quot;: 148.07
+    },
+    ...,
+    {
+        &quot;name&quot;: &quot;Xena&quot;,
+        &quot;lat&quot;: -19.96,
+        &quot;lon&quot;: 115.218
+    },
+    {
+        &quot;name&quot;: &quot;Yoorn&quot;,
+        &quot;lat&quot;: -20.34,
+        &quot;lon&quot;: 115.79
+    }
+]
+</code></pre></li>
+<li><p><strong>List active sites in HTML</strong>:
+<code>url http://wa-vw-er/webapps/amphitrite/sites_api.cgi?get=html_sites</code></p>
+<h4 id="returns-2">returns:</h4>
+<table>
+<thead>
+<tr class="header">
+<th>Company</th>
+<th>Project Name</th>
+<th>Coordinates</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Anglogold</td>
+<td>Tropicana</td>
+<td>-29.24, 124.54</td>
+</tr>
+<tr class="even">
+<td>Boskalis</td>
+<td>Dampier 7 Days</td>
+<td>-20.6, 116.75</td>
+</tr>
+<tr class="odd">
+<td>Chevron</td>
+<td>Gorgon</td>
+<td>-20.46, 114.84</td>
+</tr>
+<tr class="even">
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td>Woodside</td>
+<td>Pyrenees</td>
+<td>-21.54, 114.12</td>
+</tr>
+<tr class="even">
+<td>Woodside</td>
+<td>Scarborough 10 days</td>
+<td>-19.926, 113.242</td>
+</tr>
+<tr class="odd">
+<td>Woodside</td>
+<td>Stybarrow 10 Days</td>
+<td>-21.45, 113.82</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>List all sites in HTML</strong>:
+<code>url http://wa-vw-er/webapps/amphitrite/sites_api.cgi?get=compare</code></p>
+<h4 id="returns-3">returns:</h4>
+<pre><code>    Active Sites</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Forecast site</th>
+<th style="text-align: center;">lat</th>
+<th style="text-align: center;">lon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Anglogold - Tropicana</td>
+<td style="text-align: center;">-29.2400</td>
+<td style="text-align: center;">124.540</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Boskalis - Dampier 7 Days</td>
+<td style="text-align: center;">-20.6000</td>
+<td style="text-align: center;">116.750</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Chevron - Gorgon</td>
+<td style="text-align: center;">-20.4600</td>
+<td style="text-align: center;">114.840</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - Jansz</td>
+<td style="text-align: center;">-19.8100</td>
+<td style="text-align: center;">114.610</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+</tr>
+</tbody>
+</table>
+<pre><code>    Site Configurations</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">site</th>
+<th style="text-align: center;">table</th>
+<th style="text-align: center;">partitions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">BHP - Pyrenees</td>
+<td style="text-align: center;">Pyrenees</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Boskalis - Dampier 7 Days</td>
+<td style="text-align: center;">Dampier_Po</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Boskalis - Scarborough 7 Days</td>
+<td style="text-align: center;">Scarb_new</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - Gorgon</td>
+<td style="text-align: center;">Gorgon</td>
+<td style="text-align: center;">[0.001, 10.0], [10.0, 40.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+</tr>
+</tbody>
+</table>
+<pre><code>    Active Sites Not excluded</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">site</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Santos - Barossa</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Woodside - Scarborough 10 days</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Santos - Barossa KP40</td>
+</tr>
+</tbody>
+</table>
+<pre><code>    Excluded from Active Sites</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Anglogold - Tropicana</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - North Whites Beach</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Chevron - Wheatstone Platform AFS</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron Barrow Island AFS ML ext</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Santos - Van Gogh 4 days</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Woodside - Logistics Karratha 7
+days</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Woodside - Logistics Learmonth 7
+days</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+<h2 id="logging">Logging</h2>
+<hr />
+<p>Errors are logged to
+<a href="http://wa-vw-er/webapps/amphitrite/sites_api.log" target="_blank">sites_api.log</a>.
+Ensure the log file is writable by the web server.</p>
+<h2 id="author">Author</h2>
+<hr />
+<p>Daz Vink: <a
+href="mailto:daz.vink@bom.gov.au">daz.vink@bom.gov.au</a></p>
+</body>
+</html>

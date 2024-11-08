@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>API for wave data partitioning retrieval from database</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: 1;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="github-markdown.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">API for wave data partitioning retrieval from
+database</h1>
+</header>
+<h2 id="overview">Overview</h2>
+<hr />
+<p>This CGI script, provides a simple interface for managing and
+retrieving wave data. It offers functionalities like listing sites,
+fetching specific wave table data, and handling exclusion lists, both in
+HTML and JSON formats.</p>
+<h2 id="features">Features</h2>
+<hr />
+<ul>
+<li>List all sites as links in an HTML table format.</li>
+<li>Provide database checks and return results in HTML.</li>
+<li>Return site configurations and exclusion lists in JSON format.</li>
+<li>Fetch wave table data for specific sites and run times.</li>
+</ul>
+<h2 id="api-endpoint">API Endpoint</h2>
+<p>The API supports various endpoints, some with its own set of
+parameters.</p>
+<hr />
+<h3 id="endpoints-and-parameters">Endpoints and Parameters</h3>
+<ol type="1">
+<li><p><code>get=list_html</code></p>
+<ul>
+<li>Default endpoint.</li>
+<li>No additional parameters required.</li>
+<li>Description: Lists all sites as HTML links.</li>
+</ul></li>
+<li><p><code>get=database</code></p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Displays database entries in HTML format.</li>
+</ul></li>
+<li><p><code>get=list_json</code></p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Lists all sites and data in JSON format.</li>
+</ul></li>
+<li><p><code>get=exclusion</code></p>
+<ul>
+<li>No additional parameters required.</li>
+<li>Description: Lists exclusion sites in JSON format.</li>
+</ul></li>
+<li><p><code>get=site</code></p>
+<ul>
+<li><code>site_name</code> (required)
+<ul>
+<li>Format: String with <code>%20</code> as whitespace.</li>
+<li>Description: Specifies the site name for data retrieval.</li>
+</ul></li>
+<li><code>run_time</code>
+<ul>
+<li>Default: latest runtime available in the database</li>
+<li>Format: <code>YYYYMMDDHH</code>.</li>
+<li>Description: Indicates the time step for data retrieval in UTC.</li>
+</ul></li>
+</ul></li>
+</ol>
+<p>Each endpoint serves a specific purpose and may require different
+parameters to function correctly. The <code>site_name</code> and
+<code>run_time</code> parameters are essential for fetching data related
+to a specific site and time.</p>
+<h3 id="examples">Examples</h3>
+<ul>
+<li><p><strong>List all sites in HTML</strong>:
+<code>url http://wa-vw-er/webapps/amphitrite/api.cgi?get=list_html</code></p>
+<h4 id="returns">returns:</h4>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Forecast site</th>
+<th style="text-align: center;">Auswave table</th>
+<th style="text-align: center;">Partitions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">BHP - Pyrenees</td>
+<td style="text-align: center;">Pyrenees</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Boskalis - Dampier 7 Days</td>
+<td style="text-align: center;">Dampier_Po</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Boskalis - Scarborough 7 Days</td>
+<td style="text-align: center;">Scarb_new</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - Gorgon</td>
+<td style="text-align: center;">Gorgon</td>
+<td style="text-align: center;">[0.001, 10.0], [10.0, 40.0]</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>List entries in database</strong>:
+<code>url http://wa-vw-er/webapps/amphitrite/api.cgi?get=database</code></p>
+<h4 id="returns-1">returns:</h4>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">sites</th>
+<th style="text-align: center;">table</th>
+<th style="text-align: center;">partitions</th>
+<th style="text-align: center;">run_times</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">BHP - Pyrenees</td>
+<td style="text-align: center;">Pyrenees</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+<td style="text-align: center;">24/0124/12</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Boskalis - Dampier 7 Days</td>
+<td style="text-align: center;">Dampier_Po</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+<td style="text-align: center;">24/0124/00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Boskalis - Scarborough 7 Days</td>
+<td style="text-align: center;">Scarb_new</td>
+<td style="text-align: center;">[0.001, 9.0], [9.0, 40.0]</td>
+<td style="text-align: center;">24/0123/12</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Chevron - Gorgon</td>
+<td style="text-align: center;">Gorgon</td>
+<td style="text-align: center;">[0.001, 10.0], [10.0, 40.0]</td>
+<td style="text-align: center;">24/0123/00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+<td style="text-align: center;">...</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>List sites in json</strong>:
+<code>url http://wa-vw-er/webapps/amphitrite/api.cgi?get=list_json</code></p>
+<h4 id="returns-2">returns:</h4>
+<pre><code>{
+    &quot;BHP - Pyrenees&quot;: {
+        &quot;table&quot;: &quot;Pyrenees&quot;,
+        &quot;parts&quot;: [
+            [
+                0.001,
+                9
+            ],
+            [
+                9,
+                40
+            ]
+        ]
+    },
+    ...,
+    &quot;Woodside - Dampier Port DPS1 10 days&quot;: {
+        &quot;table&quot;: &quot;Dampier_Po&quot;,
+        &quot;parts&quot;: [
+            [
+                0.001,
+                9
+            ],
+            [
+                9,
+                40
+            ]
+        ]
+    }
+}</code></pre></li>
+<li><p><strong>List exclusion sites in json</strong>:
+<code>url http://wa-vw-er/webapps/amphitrite/api.cgi?get=exclusion</code></p>
+<h4 id="returns-3">returns:</h4>
+<pre><code>{
+    &quot;Anglogold - Tropicana&quot;: {
+        &quot;name&quot;: &quot;Anglogold - Tropicana&quot;
+    },
+    &quot;Santos - Van Gogh 4 days&quot;: {
+        &quot;name&quot;: &quot;Santos - Van Gogh 4 days&quot;
+    },
+    &quot;Woodside - Logistics Learmonth 7 days&quot;: {
+        &quot;name&quot;: &quot;Woodside - Logistics Learmonth 7 days&quot;
+    },
+    &quot;Chevron - Wheatstone Platform AFS&quot;: {
+        &quot;name&quot;: &quot;Chevron - Wheatstone Platform AFS&quot;
+    },
+    &quot;Chevron Barrow Island AFS ML ext&quot;: {
+        &quot;name&quot;: &quot;Chevron Barrow Island AFS ML ext&quot;
+    },
+    &quot;Woodside - Logistics Karratha 7 days&quot;: {
+        &quot;name&quot;: &quot;Woodside - Logistics Karratha 7 days&quot;
+    },
+    &quot;Chevron - North Whites Beach&quot;: {
+        &quot;name&quot;: &quot;Chevron - North Whites Beach&quot;
+    }
+}</code></pre></li>
+<li><p><strong>Get Specific Site Data in JSON</strong>:
+<code>url http://wa-vw-er/webapps/amphitrite/api.cgi?get=site&amp;site_name=Woodside - Scarborough 10 Days&amp;run_time=2024010112</code></p>
+<h4 id="returns-4">returns</h4>
+<pre><code>### AUSWAVE Partition Forecast ###
+# Location:  Woodside - Scarborough 10 Days
+# Table:  Scarb_new
+# StartTime: 1706097600
+# StartUTC:  20240124 1200
+# Partitions:  [0.001, 9.0], [9.0, 40.0]
+# Fields:    time[hrs], time[UTC], time[WST], wind_dir[degrees], wind_spd[kn], seasw_ht[m], seasw_dir[degree], seasw_pd[s], sea_ht[m], sea_dir[degree], sea_pd[s], sw1_ht[m], sw1_dir[degree], sw1_pd[s]
+###
+000,  2024-01-24 12:00,  2024-01-24 20:00,  201,  19,  3.02,  204,  9,   2.59,  204,  9,  1.55,  204,  17
+001,  2024-01-24 13:00,  2024-01-24 21:00,  203,  19,  2.97,  204,  9,   2.54,  204,  9,  1.53,  204,  17
+002,  2024-01-24 14:00,  2024-01-24 22:00,  204,  19,  2.93,  204,  9,   2.5,   204,  9,  1.52,  204,  17
+003,  2024-01-24 15:00,  2024-01-24 23:00,  206,  19,  2.89,  204,  9,   2.46,  204,  9,  1.5,   204,  17</code></pre></li>
+</ul>
+<h2 id="logging">Logging</h2>
+<hr />
+<p>Errors are logged to
+<a href="http://wa-vw-er/webapps/amphitrite/api.log" target="_blank">api.log</a>.
+Ensure the log file is writable by the web server.</p>
+<h2 id="author">Author</h2>
+<hr />
+<p>Daz Vink: <a
+href="mailto:daz.vink@bom.gov.au">daz.vink@bom.gov.au</a></p>
+</body>
+</html>

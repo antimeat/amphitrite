@@ -1,0 +1,11 @@
+# Site Exclusion File
+
+Abbot Point Threat Matrix
+Anglogold - Tropicana
+Kalgoorlie - Mixing
+Kanowna Belle Gold Mines - Kalgoorlie
+TC Outlook - 28 Day
+Woodside - Logistics Learmonth 7 days
+Woodside - Logistics Karratha 7 days
+Santos - Tow - Ichthys to MEFF
+Woodside - Mermaid Sound 7 days Amphitrite
