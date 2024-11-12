@@ -1,4 +1,4 @@
 import os
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-BASE_URL = BASE_DIR.replace("/cws/op", "http://wa-vw-er")
+BASE_DIR = "/app/amphitrite"
+BASE_URL = "http://127.0.0.1:8000"

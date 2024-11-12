@@ -4,11 +4,12 @@ Name:
     plotting.py
 """
 
-import os
-import json
-import urllib.request
-import amphitrite_configs as configs
 import argparse
+import json
+import os
+import urllib.request
+
+import amphitrite_configs as configs
 
 # Set the umask to 0 to ensure that no permissions are masked
 os.umask(0)
@@ -17,11 +18,11 @@ BASE_DIR = configs.BASE_DIR
 BASE_URL = configs.BASE_URL
 
 # Base URL for the iframe and image sources
-BASE_URL_GHPLOTS = "http://wa-vw-er.bom.gov.au/webapps/vwave/plots/"
-BASE_URL_IMAGES = BASE_URL + "/plots/spectral/"  
-BASE_URL_TABLES = BASE_URL + "/transformer/tables/"  
+BASE_URL_GHPLOTS = configs.BASE_URL_GHPLOTS
+BASE_URL_IMAGES = configs.BASE_URL_IMAGES
+BASE_URL_TABLES = configs.BASE_URL_TABLES
+PLOT_DIR = configs.PLOT_DIR
 
-OUTPUT_DIR = os.path.join(BASE_DIR, "plots")
 TABLES = {}
 
 def load_tables():
@@ -29,7 +30,7 @@ def load_tables():
     Load tables from the API
     """
     global TABLES  
-    url = BASE_URL + "/api.cgi?get=tables"  
+    url = os.path.join(BASE_URL, "api.cgi?get=tables")  
     response = urllib.request.urlopen(url)
     data = response.read().decode("utf-8")
     TABLES = json.loads(data)
@@ -58,15 +59,15 @@ def generate_html(site_name):
             <div class="container">
                 <div class="left-column">
                     <div class="plot">
-                        <iframe src="{BASE_URL_GHPLOTS}{plot_file}"></iframe>
+                        <iframe src="{os.path.join(BASE_URL_GHPLOTS,plot_file)}"></iframe>
                     </div>
                     <div class="image">
-                        <img src="{BASE_URL_IMAGES}{image_file}" alt="{site_name} Wave Plot" />
+                        <img src="{os.path.join(BASE_URL_IMAGES,image_file)}," alt="{site_name} Wave Plot" />
                     </div>
                 </div>
                 <div class="right-column">
                     <div class="table">
-                        <iframe src="{BASE_URL_TABLES}{table_file}"></iframe>
+                        <iframe src="{os.path.join(BASE_URL_TABLES,table_file)}"></iframe>
                     </div>
                 </div>
             </div>
@@ -74,7 +75,7 @@ def generate_html(site_name):
     </html>"""
 
     # Write the HTML content to a file
-    out_file = os.path.join(OUTPUT_DIR, f"{site_name.lower().replace(' ', '_').replace('-', '')}.html")
+    out_file = os.path.join(PLOT_DIR, f"{site_name.lower().replace(' ', '_').replace('-', '')}.html")
     with open(out_file, "w") as file:
         file.write(html_content)
 

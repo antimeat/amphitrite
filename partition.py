@@ -10,15 +10,20 @@ Functions:
     multi_parts(*parts)
     mermaidSound()
 """
-import readSpectrum
-import xarray as xr
-import pandas as pd
-import numpy as np
+import datetime
 import glob
 import os
 import time
 import warnings
-import datetime
+
+import numpy as np
+import pandas as pd
+import xarray as xr
+
+import amphitrite_configs as configs
+import readSpectrum
+
+MODEL_DATA_DIR = configs.MODEL_DATA_DIR
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
@@ -29,7 +34,7 @@ class Partitions(object):
     """Class of methods for bespoke swell partitions and transformations"""
 
     def __init__(self):
-        self.dir = "/cws/data/wavewatch/"
+        self.dir = MODEL_DATA_DIR
         self.filename = self.get_latest_file_new()
         self.latest_run_time = self.set_latest_run_time(self.filename)
             
@@ -73,7 +78,7 @@ class Partitions(object):
     
     def get_latest_file(self):
         """Return current wavewatch file"""
-        extn = '/cws/data/wavewatch/IDY35050_G3_??????????.nc'
+        extn = os.path.join(MODEL_DATA_DIR,'wavewatch/IDY35050_G3_??????????.nc')
         files = glob.glob(extn)
         fresh_files = []
 
@@ -110,7 +115,7 @@ class Partitions(object):
         Returns:
         str: The file path to the most relevant wavewatch NetCDF file.
         """
-        extn = '/cws/data/wavewatch/IDY35050_G3_??????????.nc'
+        extn = os.path.join(MODEL_DATA_DIR,'wavewatch/IDY35050_G3_??????????.nc')
         files = glob.glob(extn)
 
         # Filter out files older than max_hours and sort by modification time

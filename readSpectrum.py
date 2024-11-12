@@ -9,22 +9,24 @@
 #
 ###################################################################
 
-import xarray as xr
-import numpy as np
-import wavespectra
 import os
+
+import numpy as np
 import pandas as pd
-import cmocean
+import wavespectra
+import xarray as xr
+
+import amphitrite_configs as configs
 
 # Set the Numba cache directory
-numba_cache_dir = '/tmp/numba_cache'
-os.environ['NUMBA_CACHE_DIR'] = numba_cache_dir
+NUMBA_CACHE_DIR = configs.NUMBA_CACHE_DIR
+os.environ['NUMBA_CACHE_DIR'] = NUMBA_CACHE_DIR
 os.environ[ 'NUMBA_DISABLE_JIT' ] = '1'
 
 # Create the directory if it doesn't exist
-if not os.path.exists(numba_cache_dir):
-    os.makedirs(numba_cache_dir)
-    os.chmod(numba_cache_dir, 0o777)
+if not os.path.exists(NUMBA_CACHE_DIR):
+    os.makedirs(NUMBA_CACHE_DIR)
+    os.chmod(NUMBA_CACHE_DIR, 0o777)
 
 def clip(ds, boundary = {'min_lon':110.88, 'min_lat':-25.68, 'max_lon':121.47,'max_lat':-16.38}):
     # clip dataset my lats and lons

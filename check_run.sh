@@ -1,7 +1,9 @@
 #!/bin/bash
+# get the BASE_DIR from amphitrite_configs.py
+BASE_DIR=$(python3 -c "from amphitrite_configs import BASE_DIR; print(BASE_DIR)")
 
 # Paths to your directories and files
-SCRIPT_DIR="/cws/op/webapps/amphitrite"
+SCRIPT_DIR=BASE_DIR
 LOG_FILE="$SCRIPT_DIR/script_errors.log"
 LAST_RUN_FILE="$SCRIPT_DIR/.last_check"
 EMAIL_SCRIPT="$SCRIPT_DIR/emails.py"
